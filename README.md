@@ -1,7 +1,7 @@
-macsetup
+smorin-devsetup
 ========
 
-Setsup a mac for development with virtualbox vagrant ansible and pip
+Sets up a mac for development with virtualbox vagrant ansible and pip
 
 bootstrap.sh
 ----
