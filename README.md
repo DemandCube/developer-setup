@@ -7,6 +7,7 @@ bootstrap.sh
 ----
 This installs pip and ansible
 
+* <http://commandlinemac.blogspot.com/2008/12/installing-dmg-application-from-command.html>
 
 Preferred Development Tools
 =====
