@@ -16,3 +16,6 @@ Preferred Development Tools
 - [Vangrant] (http://www.vagrantup.com/)
 - [Virtualbox] (https://www.virtualbox.org/)
 - [Gradle] (http://www.gradle.org/)
+
+
+- [Vagrant Video] (http://www.youtube.com/watch?v=Im4wNqlolqQ)
