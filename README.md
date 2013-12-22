@@ -17,6 +17,10 @@ Preferred Development Tools
 - [Virtualbox] (https://www.virtualbox.org/)
 - [Gradle] (http://www.gradle.org/)
 
+Ansible
+------
+- [Accelerated Mode] (http://www.ansibleworks.com/docs/playbooks_acceleration.html)
+
 
 Video's - Tutorials
 ======
