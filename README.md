@@ -18,6 +18,7 @@ Preferred Development Tools
 - [Gradle] (http://www.gradle.org/)
 
 
-Tutorials
+Video's - Tutorials
 ======
 - [Vagrant Video] (http://www.youtube.com/watch?v=Im4wNqlolqQ)
+- [Vagrant with Ansible] (http://www.youtube.com/watch?v=BTAgQ9-LD5o) 
