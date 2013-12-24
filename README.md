@@ -1,7 +1,7 @@
-macsetup
+smorin-devsetup
 ========
 
-Setsup a mac for development with virtualbox vagrant ansible and pip
+Sets up a mac for development with virtualbox vagrant ansible and pip
 
 bootstrap.sh
 ----
@@ -16,6 +16,10 @@ Preferred Development Tools
 - [Vangrant] (http://www.vagrantup.com/)
 - [Virtualbox] (https://www.virtualbox.org/)
 - [Gradle] (http://www.gradle.org/)
+
+Ansible
+------
+- [Accelerated Mode] (http://www.ansibleworks.com/docs/playbooks_acceleration.html)
 
 
 Video's - Tutorials
