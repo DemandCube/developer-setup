@@ -7,8 +7,11 @@ bootstrap.sh
 ----
 This installs pip and ansible
 
-* <http://commandlinemac.blogspot.com/2008/12/installing-dmg-application-from-command.html>
-* <http://www.vagrantup.com/downloads>
+setup.sh
+----
+This installs vagrant and virtualbox
+
+
 
 Preferred Development Tools
 =====
@@ -16,6 +19,11 @@ Preferred Development Tools
 - [Vangrant] (http://www.vagrantup.com/)
 - [Virtualbox] (https://www.virtualbox.org/)
 - [Gradle] (http://www.gradle.org/)
+
+
+# Research and Notes
+* <http://commandlinemac.blogspot.com/2008/12/installing-dmg-application-from-command.html>
+* <http://www.vagrantup.com/downloads>
 
 Ansible
 ------
