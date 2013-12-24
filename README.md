@@ -33,6 +33,7 @@ Ansible
 ----
 - [Accelerated Mode] (http://www.ansibleworks.com/docs/playbooks_acceleration.html)
 - [Provisioning Ansible] (http://docs.vagrantup.com/v2/provisioning/ansible.html)
+- [Modules] (http://www.ansibleworks.com/docs/modules.html)
 
 Video's - Tutorials
 ----
