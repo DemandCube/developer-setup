@@ -28,10 +28,11 @@ Preferred Development Tools
 - [Test if xcode] (http://railsapps.github.io/xcode-command-line-tools.html)
 - [Ansible Playbooks - including Virtualbox and Vagrant] (https://github.com/MWGriffin/ansible-playbooks)
 
+
 Ansible
 ----
 - [Accelerated Mode] (http://www.ansibleworks.com/docs/playbooks_acceleration.html)
-
+- [Provisioning Ansible] (http://docs.vagrantup.com/v2/provisioning/ansible.html)
 
 Video's - Tutorials
 ----
