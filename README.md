@@ -22,10 +22,14 @@ Preferred Development Tools
 
 
 # Research and Notes
-* <http://commandlinemac.blogspot.com/2008/12/installing-dmg-application-from-command.html>
-* <http://www.vagrantup.com/downloads>
-* <http://stackoverflow.com/questions/6682335/how-can-check-if-particular-application-software-is-installed-in-mac-os>
-* <http://julien.ponge.org/blog/scalable-and-understandable-provisioning-with-ansible-and-vagrant/>
+- [Install dmg on Mac with commandline] (http://commandlinemac.blogspot.com/2008/12/installing-dmg-application-from-command.html)
+- [Test if an app is install on Mac] (http://stackoverflow.com/questions/6682335/how-can-check-if-particular-application-software-is-installed-in-mac-os)
+- [Ansible and Vagrant] (http://julien.ponge.org/blog/scalable-and-understandable-provisioning-with-ansible-and-vagrant/)
+- [Test if xcode] (http://railsapps.github.io/xcode-command-line-tools.html)
+- [] ()
+- [] ()
+- [] ()
+- [] ()
 
 Ansible
 ----
