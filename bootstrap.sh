@@ -32,18 +32,21 @@ fi
 # python 2.7.5
 python -c 'import sys; version=sys.version_info[0]*10; version=version+sys.version_info[1];sys.exit(1)if(version<26) else sys.exit(0)'
 INSTALLED=$?
+echo ""
 
 if [ ! $INSTALLED == 0 ] ; then
 	echo "Install python greater than 2.5"
 	exit 1
 else
-	echo "INSTALLED: "
+	echo "INSTALLED: [ python ]"
+	printf "\t"
 	python -V
 fi
 
 # Test if easy_install if not install manually
 command -v easy_install >/dev/null 2>&1
 INSTALLED=$?
+echo ""
 
 if [ ! $INSTALLED == 0 ] ; then
 	echo "Install easy_install it's missing"
@@ -51,6 +54,8 @@ if [ ! $INSTALLED == 0 ] ; then
 	echo sudo python distribute_setup.py
 	echo sudo rm distribute_setup.py
 	exit 1
+else
+	echo "INSTALLED: [ easy_install ]"
 fi
 
 
@@ -58,12 +63,15 @@ fi
 # pip 1.4.1
 command -v pip >/dev/null 2>&1
 INSTALLED=$?
+echo ""
 
 if [ ! $INSTALLED == 0 ] ; then
-	echo "INSTALLING: pip"
+	echo "INSTALLING: [ pip ]"
+	printf "\t"
 	sudo easy_install pip
 else
-	echo "INSTALLED: pip"
+	echo "INSTALLED: [ pip ]"
+	printf "\t"
 	pip -V
 fi
 
@@ -82,13 +90,17 @@ fi
 	# MarkupSafe-0.18
 
 
+
 command -v ansible >/dev/null 2>&1
 INSTALLED=$?
+echo ""
 
 if [ ! $INSTALLED == 0 ] ; then
-	echo "INSTALLING: ansible"
+	echo "INSTALLING: [ ansible ]"
+	printf "\t"
 	sudo pip install ansible
 else
-	echo "INSTALLED: ansible"
+	echo "INSTALLED: [ ansible ]"
+	printf "\t"
 	ansible --version
 fi
