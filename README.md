@@ -26,10 +26,7 @@ Preferred Development Tools
 - [Test if an app is install on Mac] (http://stackoverflow.com/questions/6682335/how-can-check-if-particular-application-software-is-installed-in-mac-os)
 - [Ansible and Vagrant] (http://julien.ponge.org/blog/scalable-and-understandable-provisioning-with-ansible-and-vagrant/)
 - [Test if xcode] (http://railsapps.github.io/xcode-command-line-tools.html)
-- [] ()
-- [] ()
-- [] ()
-- [] ()
+- [Ansible Playbooks - including Virtualbox and Vagrant] (https://github.com/MWGriffin/ansible-playbooks)
 
 Ansible
 ----
