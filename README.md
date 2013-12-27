@@ -39,3 +39,11 @@ Video's - Tutorials
 ----
 - [Vagrant Video] (http://www.youtube.com/watch?v=Im4wNqlolqQ)
 - [Vagrant with Ansible] (http://www.youtube.com/watch?v=BTAgQ9-LD5o) 
+
+SSH
+----
+Add these setting to a minimal CentOS for Virtualbox
+```
+echo "PermitRootLogin without-password" >> /etc/ssh/sshd_config
+echo "UseDNS no" >> /etc/ssh/sshd_config
+```
