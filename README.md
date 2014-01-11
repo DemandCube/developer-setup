@@ -47,3 +47,64 @@ Add these setting to a minimal CentOS for Virtualbox
 echo "PermitRootLogin without-password" >> /etc/ssh/sshd_config
 echo "UseDNS no" >> /etc/ssh/sshd_config
 ```
+
+Nginx
+----
+```
+###############
+# Install nginx
+###############
+
+export NGINX_REPO_FILE=/etc/yum.repos.d/nginx.repo
+touch $NGINX_REPO_FILE
+chmod 644 $NGINX_REPO_FILE
+chown root:root $NGINX_REPO_FILE
+
+
+echo "[nginx]" > $NGINX_REPO_FILE
+echo "name=nginx repo" >> $NGINX_REPO_FILE
+echo 'baseurl=http://nginx.org/packages/centos/$releasever/$basearch/' >> $NGINX_REPO_FILE
+echo "gpgcheck=0" >> $NGINX_REPO_FILE
+echo "enabled=1" >> $NGINX_REPO_FILE
+
+# Verify it worked
+cat $NGINX_REPO_FILE
+yum repolist
+
+#install nginx 
+yum -y install nginx.x86_64
+```
+
+selinux 
+----
+```
+sestatus
+setenforce 0 #to disable
+setenforce 1 #to enable
+
+# /etc/sysconfig/selinux 
+#change from
+#SELINUX=enforcing 
+SELINUX=disabled
+# Fix selinux context
+# http://blog.rem.co/blog/2013/02/19/selinux-allowing-ssh-public-key-authentication/
+# Check: /var/log/audit/audit.log
+# command to fix context: restorecon -R -v /root/.ssh
+
+
+# If issues investigate in
+# /var/log/messages
+#/var/log/secure
+chown root:root /root/.ssh/
+chmod 700 /root/.ssh/
+ssh-keygen
+cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
+chown root:root /root/.ssh/authorized_keys
+chmod 600 /root/.ssh/authorized_keys
+
+
+```
+
+virtualbox
+----
+- Machine Setup with SSH and local networking <http://webees.me/installing-centos-6-4-in-virtualbox-and-setting-up-host-only-networking/>
