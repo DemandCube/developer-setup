@@ -1,5 +1,3 @@
-#!/bin/sh
-
 # -*- coding: utf-8 -*-
 # (c) 2013, Steve Morin <steve@stevemorin.com>
 #
@@ -17,3 +15,17 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this Project.  If not, see <http://www.gnu.org/licenses/agpl-3.0.html>.
+
+---
+- hosts: $hosts
+  user: $user
+  vars:
+    app_name: VirtualBox
+    app_name_pretty: VirtualBox
+    app_url: http://download.virtualbox.org/virtualbox/4.3.6/VirtualBox-4.3.6-91406-OSX.dmg
+    installer_type: pkg
+    install_method: dmg
+  vars_files:
+    - common-vars.yaml
+  tasks:
+    - include: dmg.yaml

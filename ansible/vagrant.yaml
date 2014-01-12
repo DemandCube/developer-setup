@@ -1,5 +1,3 @@
-#!/bin/sh
-
 # -*- coding: utf-8 -*-
 # (c) 2013, Steve Morin <steve@stevemorin.com>
 #
@@ -17,3 +15,17 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this Project.  If not, see <http://www.gnu.org/licenses/agpl-3.0.html>.
+
+---
+- hosts: $hosts
+  user: $user
+  vars:
+    app_name: Vagrant
+    app_name_pretty: Vagrant
+    app_url: https://dl.bintray.com/mitchellh/vagrant/Vagrant-1.4.1.dmg
+    installer_type: pkg
+    install_method: dmg
+  vars_files:
+    - common-vars.yaml
+  tasks:
+    - include: dmg.yaml
