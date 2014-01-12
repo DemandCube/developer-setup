@@ -61,7 +61,7 @@ if [ ! $INSTALLED == 0 ] ; then
 else
 	echo "INSTALLED: [ python ]"
 	printf "\t"
-	python -V
+	python -V 2>&1 | awk '{ print $2 }'
 fi
 
 # Test if easy_install if not install manually
@@ -158,6 +158,10 @@ command -v ansible >/dev/null 2>&1
 INSTALLED=$?
 echo ""
 
+# Todo test for version and upgrade
+
+# Version 1.4.4
+
 if [ ! $INSTALLED == 0 ] ; then
 	echo "INSTALLING: [ ansible ]"
 	printf "\t"
@@ -165,5 +169,5 @@ if [ ! $INSTALLED == 0 ] ; then
 else
 	echo "INSTALLED: [ ansible ]"
 	printf "\t"
-	ansible --version
+	ansible --version | awk '{ print $2 }'
 fi
