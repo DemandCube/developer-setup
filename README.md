@@ -8,14 +8,16 @@ Sets up a mac for development with virtualbox vagrant ansible and pip
 bootstrap.sh
 ----
 Installs: 
-- pip
-- ansible
+- setuptools
+- pip 1.5+
+- ansible 1.4.4+
 
 setup.sh
 ----
 Installs:
-- vagrant
 - virtualbox
+- vagrant
+
 
 
 
