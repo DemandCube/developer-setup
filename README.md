@@ -1,15 +1,21 @@
-smorin-devsetup
+DemandCube Developer Setup
 ========
+
+Copywrite 2013 Steve Morin <steve@stevemorin.com>
 
 Sets up a mac for development with virtualbox vagrant ansible and pip
 
 bootstrap.sh
 ----
-This installs pip and ansible
+Installs: 
+- pip
+- ansible
 
 setup.sh
 ----
-This installs vagrant and virtualbox
+Installs:
+- vagrant
+- virtualbox
 
 
 

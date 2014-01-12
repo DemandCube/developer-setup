@@ -37,6 +37,9 @@
 # echo $INSTALLED # -> 0
 
 
+BASE_DIR=$(cd $(dirname $0);  pwd -P)
+
+
 # Test if python is installed
 command -v python >/dev/null 2>&1
 INSTALLED=$?
@@ -80,6 +83,7 @@ fi
 # Test and install pip if not installed
 # pip 1.4.1
 command -v pip >/dev/null 2>&1
+PIP_VERSION=1.5
 INSTALLED=$?
 echo ""
 
@@ -90,7 +94,48 @@ if [ ! $INSTALLED == 0 ] ; then
 else
 	echo "INSTALLED: [ pip ]"
 	printf "\t"
-	pip -V
+	$BASE_DIR/bootstrap/version_compare.py `$BASE_DIR/bootstrap/pip_version.py` $PIP_VERSION
+	CMP_RESULT=$?
+	if [ $CMP_RESULT -lt 2 ] ; then
+	    # Upgrade pip
+	    $BASE_DIR/bootstrap/pip_version.py
+	    echo "Upgrading pip to $PIP_VERSION"
+	    # http://www.pip-installer.org/en/latest/installing.html#install-or-upgrade-pip
+	    sudo pip install --upgrade setuptools
+	    SETUPTOOLS_RESULT=$?
+	    if [ $SETUPTOOLS_RESULT -ne 0 ] ; then
+	        echo "upgrading setuptools failed try manually"
+	        exit 1
+        fi
+	    curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py -O
+	    CURL_RESULT=$?
+	    if [ $CURL_RESULT -ne 0 ] ; then
+	        echo "downloading new pip failed try manually"
+	        exit 1
+        fi
+	    sudo python get-pip.py
+	    PIP_RESULT=$?
+	    echo "PIP_RESULT:$PIP_RESULT"
+	    if [ $PIP_RESULT -ne 0 ] ; then
+	        echo "upgrading pip failed try manually"
+	        exit 1
+        fi
+	    rm get-pip.py
+	    echo "New Pip Version"
+	    $BASE_DIR/bootstrap/pip_version.py
+	    # https://pypi.python.org/pypi/setuptools#installation-instructions
+	    # Instructions to Install setuptools
+	    # 
+        # curl https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py -O
+        # sudo python ez_setup.py
+        # rm ez_setup.py
+	elif [ $CMP_RESULT -eq 0 ] ; then
+	    echo "There was an error comparing the pip version, please check manually"
+	    exit 1
+	else
+	    $BASE_DIR/bootstrap/pip_version.py
+    fi
+	# pip -V  # pip verions only works on 1.4
 fi
 
 
