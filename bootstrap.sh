@@ -165,6 +165,7 @@ echo ""
 if [ ! $INSTALLED == 0 ] ; then
 	echo "INSTALLING: [ ansible ]"
 	printf "\t"
+	sudo pip install paramiko PyYAML jinja2 httplib2
 	sudo pip install ansible
 else
 	echo "INSTALLED: [ ansible ]"

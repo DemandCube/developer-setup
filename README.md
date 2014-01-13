@@ -57,6 +57,29 @@ Ansible
 - [Modules] (http://www.ansibleworks.com/docs/modules.html)
 - [Best Practices - include Modules in ./library] (http://docs.ansible.com/playbooks_best_practices.html)
 
+Todo
+----
+- <http://docs.ansible.com/playbooks_best_practices.html#operating-system-and-distribution-variance>
+- <http://docs.ansible.com/playbooks_conditionals.html>
+- <http://commandlinemac.blogspot.com/2008/12/installing-dmg-application-from-command.html>
+- <http://docs.ansible.com/developing_modules.html>
+
+Mac OSX Parsing
+----
+- <http://docs.python.org/2.7/library/plistlib.html>
+- <http://docs.python.org/2/library/subprocess.html#module-subprocess>
+
+```
+import json
+from plistlib import readPlist
+import StringIO
+
+in_file = StringIO.StringIO(plist)
+plist_dict = readPlist(in_file)
+
+print json.dumps(plist_dict)
+```
+
 Video's - Tutorials
 ----
 - [Vagrant Video] (http://www.youtube.com/watch?v=Im4wNqlolqQ)
