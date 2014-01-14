@@ -1,6 +1,12 @@
 #!/usr/bin/python
 import sys
 
+# Return Statuses
+# 0 = Error
+# 1 = First is less than second
+# 2 = They are equal
+# 3 = First is greater than second
+
 def mycmp(version1, version2):
     parts1 = [int(x) for x in version1.split('.')]
     parts2 = [int(x) for x in version2.split('.')]
@@ -16,12 +22,6 @@ def mycmp(version1, version2):
         ret = cmp(p, parts2[i])
         if ret: return (ret+2)
     return (0+2)
-
-# Return Statuses
-# 0 = Error
-# 1 = First is less than second
-# 2 = They are equal
-# 3 = First is greater than second
 
 # assert mycmp('1', '2') == -1
 # assert mycmp('2', '1') == 1

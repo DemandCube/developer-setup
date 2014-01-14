@@ -56,7 +56,7 @@ INSTALLED=$?
 echo ""
 
 if [ ! $INSTALLED == 0 ] ; then
-	echo "Install python greater than 2.5"
+	echo "Install python greater than 2.6"
 	exit 1
 else
 	echo "INSTALLED: [ python ]"
