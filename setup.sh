@@ -56,6 +56,9 @@ echo ""
 
 INSTALL_VIRTUALBOX=''
 REQUIRED_VIRTUALBOX_VERSION=4.2.16
+REQUIRED_VAGRANT_VERSION=1.3.5
+
+# https://github.com/noitcudni/vagrant-ae
 
 if [ $INSTALLED == 1 ] ; then
     #  VirtualBox is installed
