@@ -171,6 +171,9 @@ if [ $INSTALLED == 0 ] ; then
                     # For Linux
                     # sudo rm -rf /opt/vagrant
                     # sudo rm /usr/bin/vagrant
+                    
+                    # User Dir
+                    # ~/.vagrant.d
                     INSTALL_VAGRANT=1
 					break;;
                 [Nn]* ) echo "No"; break;;
