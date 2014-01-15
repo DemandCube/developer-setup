@@ -5,7 +5,6 @@
 # whichapp Finder # -> '/System/Library/CoreServices/Finder.app'
 
 whichapp() {
-
     # Command-line help.
     if [[ "$1" == '--help' || "$1" == '-h' ]]; then
         cat <<EOF
