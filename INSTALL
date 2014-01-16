@@ -19,13 +19,8 @@
 To install:
   pip
   ansible
-
-Run:
-  $./boostrap.sh
-  
-To install:
   VirtualBox
   Vagrant
-  
+
 Run:
   $./setup.sh
