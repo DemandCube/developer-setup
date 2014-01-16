@@ -3,20 +3,26 @@ DemandCube Developer Setup
 
 Copywrite 2013 Steve Morin <steve@stevemorin.com>
 
-Sets up a mac for development with virtualbox vagrant ansible and pip
+Sets a developers machine with a development environment with virtualbox vagrant ansible and pip
 
-bootstrap.sh
+Done:
+----
+- Mac OS X 10.7
+- Mac OS X 10.8
+
+Todo:
+----
+- Ubuntu 12+
+- CentOS 6.4
+
+setup.sh
 ----
 Installs: 
 - setuptools
 - pip 1.5+
 - ansible 1.4.4+
-
-setup.sh
-----
-Installs:
-- virtualbox
-- vagrant
+- virtualbox 4.2.16
+- vagrant 1.4.3
 
 
 
