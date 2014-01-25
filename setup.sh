@@ -191,7 +191,7 @@ case $OS_NAME in
             esac
             break
              ;;
-    "mac" ) 
+    "Darwin" ) 
 		# $BASE_DIR/bootstrap/mac_app_installed.sh
 		# $BASE_DIR/bootstrap/mac_app_version.sh
 		# org.virtualbox.app.VirtualBox
@@ -209,6 +209,10 @@ case $OS_NAME in
 		if [ $INSTALLED == 1 ] ; then
 		    #  VirtualBox is installed
 		    VERSION_VIRTUALBOX=`$BASE_DIR/bootstrap/mac_app_version.sh org.virtualbox.app.VirtualBox`
+	
+			echo "INSTALLED: [ VirtualBox ]"
+			printf "\t"
+			echo "$VERSION_VIRTUALBOX"
 
 		    $BASE_DIR/bootstrap/version_compare.py $VERSION_VIRTUALBOX $REQUIRED_VIRTUALBOX_VERSION
 		    CMP_RESULT=$?
@@ -292,6 +296,10 @@ case $OS_NAME in
 		if [ $INSTALLED == 0 ] ; then
 		    #  Vagrant is installed
 		    VERSION_VAGRANT=`vagrant -v | awk '{ print $2 }'`
+
+			echo "INSTALLED: [ Vagrant ]"
+			printf "\t"
+			echo "$VERSION_VAGRANT"
 
 		    $BASE_DIR/bootstrap/version_compare.py $VERSION_VAGRANT $REQUIRED_VAGRANT_VERSION
 		    CMP_RESULT=$?
