@@ -669,7 +669,7 @@ if [ -n "$INSTALL_GIT" ] ; then
         else
         	echo "INSTALLED: [ Git ]"
         	printf "\t"
-        	echo "$NEW_VERSION_GIT"
+        	echo "$TEST_VERSION_GIT"
         fi
     fi
     
