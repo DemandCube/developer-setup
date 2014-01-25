@@ -1,9 +1,9 @@
 #!/bin/sh
 #******************************************************************************************+
-#os_util_functions.sh
-#Script to find out OS related meta information                                            # 
+# os_meta_info.sh
+# Script to find out OS related meta information                                            # 
 #        To test this script run as:
-#        $os_util_functions.sh test                                                                                          # 
+#        $os_meta_info.sh test                                                                                          # 
 # Author: Hikmat Dhamee                                                                    #
 #******************************************************************************************+
 
