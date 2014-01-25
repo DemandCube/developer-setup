@@ -51,6 +51,14 @@ echo "\`--' \`---'  \`'  \`---'\`---'\`---'|---'\`---'\`        \`---'\`---'\`--
 echo "                               |                                      |    ";
 
 
+########################################
+########################################
+####    
+####   TEST OS
+####
+########################################
+########################################
+
 BASE_DIR=$(cd $(dirname $0);  pwd -P)
 source $BASE_DIR/bootstrap/os_meta_info.sh
 
@@ -83,6 +91,14 @@ case $OS_NAME in
 esac
 
 
+########################################
+########################################
+####    
+####   INSTALL PYTHON
+####
+########################################
+########################################
+
 # Test if python is installed
 command -v python >/dev/null 2>&1
 INSTALLED=$?
@@ -107,6 +123,15 @@ else
 	python -V 2>&1 | awk '{ print $2 }'
 fi
 
+
+########################################
+########################################
+####    
+####   INSTALL EASY_INSTALL
+####
+########################################
+########################################
+
 # Test if easy_install if not install manually
 command -v easy_install >/dev/null 2>&1
 INSTALLED=$?
@@ -121,6 +146,15 @@ if [ ! $INSTALLED == 0 ] ; then
 else
 	echo "INSTALLED: [ easy_install ]"
 fi
+
+
+########################################
+########################################
+####    
+####   INSTALL PIP
+####
+########################################
+########################################
 
 
 # Test and install pip if not installed
@@ -182,6 +216,14 @@ else
 fi
 
 
+########################################
+########################################
+####    
+####   INSTALL ANSIBLE
+####
+########################################
+########################################
+
 
 # installed ansible paramiko jinja2 PyYAML httplib2 pycrypto ecdsa markupsafe
 # install libselinux-python on remote nodes using selinux
@@ -217,6 +259,14 @@ else
 	ansible --version | awk '{ print $2 }'
 fi
 
+
+########################################
+########################################
+####    
+####   INSTALL VIRTUALBOX
+####
+########################################
+########################################
 
 
 # $BASE_DIR/bootstrap/mac_app_installed.sh
@@ -310,6 +360,14 @@ if [ -n "$INSTALL_VIRTUALBOX" ] ; then
 fi
 
 
+########################################
+########################################
+####    
+####   INSTALL VAGRANT
+####
+########################################
+########################################
+
 
 command -v vagrant >/dev/null 2>&1
 INSTALLED=$?
@@ -384,6 +442,111 @@ if [ -n "$INSTALL_VAGRANT" ] ; then
     
     rm $VAGRANT_FILE
 fi
+
+
+########################################
+########################################
+####    
+####   INSTALL JAVA
+####
+########################################
+########################################
+
+
+command -v java -version >/dev/null 2>&1
+INSTALLED=$?
+echo ""
+
+INSTALL_JAVA=''
+REQUIRED_JAVA_VERSION=1.7
+
+
+
+if [ $INSTALLED == 0 ] ; then
+    #  Java is installed
+    
+    # java version "1.7.0_17"
+    # Java(TM) SE Runtime Environment (build 1.7.0_17-b02)
+    # Java HotSpot(TM) 64-Bit Server VM (build 23.7-b01, mixed mode)
+    
+    # 1) send to standard out
+    # 2) pull third column "version"
+    # 3) only get first line
+    # 4) remove quotes
+    
+    VERSION_JAVA=`java -version 2>&1 | awk '{ print $3 }' | head -n 1 | tr -d '"'`
+
+    # 1) Remove everything after the "_" underscore
+    VERSION_JAVA=${VERSION_JAVA%%_*}
+    
+	echo "INSTALLED: [ Java ]"
+	printf "\t"
+	echo "$VERSION_JAVA"
+
+    $BASE_DIR/bootstrap/version_compare.py $VERSION_JAVA $REQUIRED_JAVA_VERSION
+    CMP_RESULT=$?
+    if [ ! $CMP_RESULT -eq 2 ] ; then
+        # Remove JAVA if not verion: $REQUIRED_JAVA_VERSION
+        # http://stackoverflow.com/questions/226703/how-do-i-prompt-for-input-in-a-linux-shell-script
+	
+		echo "Current Java Version: $VERSION_JAVA"
+		echo "Required Java Version: $REQUIRED_JAVA_VERSION"
+		echo ""
+	
+        echo "Install Correct Java (Delete and Install)?"
+        while true; do
+            read -p "Is this ok [y/N]:" yn
+            case $yn in
+                [Yy]* ) 
+					echo "Skipping Removing Java";
+				
+					# For Mac OS X
+                    #Navigate to /Library/Java/JavaVirtualMachines and remove the directory whose name matches the following format:*
+                    #    /Library/Java/JavaVirtualMachines/jdk<major>.<minor>.<macro[_update]>.jdk
+                    #For example, to uninstall 7u6:
+                    #    % rm -rf jdk1.7.0_06.jdk
+                
+                    # For Linux
+                    # sudo rm -rf /opt/vagrant
+                    # sudo rm /usr/bin/vagrant
+                
+                    # User Dir
+                    # ~/.vagrant.d
+                    INSTALL_JAVA=1
+					break;;
+                [Nn]* ) echo "No"; break;;
+                * ) echo "Please answer yes or no.";;
+            esac
+        done
+	
+    fi
+else
+    # Java is not installed
+    INSTALL_JAVA=1
+    echo "Not Installed"
+fi
+
+
+
+# Install Java
+if [ -n "$INSTALL_JAVA" ] ; then
+    echo "Install Java"
+    JAVA_FILE="$HOME/Downloads/jdk-7u51-macosx-x64.dmg"
+    if [ ! -d "$JAVA_FILE" ] ; then
+        # Find version here
+        # curl -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;" http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg -o jdk-7u51-macosx-x64.dmg
+        # http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg
+        # http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-linux-x64.rpm
+        
+		curl -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;" http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg -o $JAVA_FILE
+    fi
+    hdiutil attach $JAVA_FILE
+    sudo installer -package '/Volumes/JDK 7 Update 51/JDK 7 Update 51.pkg' -target '/Volumes/Macintosh HD'
+    hdiutil detach '/Volumes/JDK 7 Update 51/'
+
+    rm $JAVA_FILE
+fi
+
 
 
 # BASE_DIR=$(cd $(dirname $0);  pwd -P)
