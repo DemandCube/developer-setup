@@ -36,8 +36,51 @@
 # INSTALLED=$?
 # echo $INSTALLED # -> 0
 
+echo "                                                  ";
+echo ",--.                         |,---.     |         ";
+echo "|   |,---.,-.-.,---.,---.,---||    .   .|---.,---.";
+echo "|   ||---'| | |,---||   ||   ||    |   ||   ||---'";
+echo "\`--' \`---'\` ' '\`---^\`   '\`---'\`---'\`---'\`---'\`---'";
+echo "                                                  ";
+
+echo "                                                                           ";
+echo ",--.                 |                            ,---.     |              ";
+echo "|   |,---..    ,,---.|    ,---.,---.,---.,---.    \`---.,---.|--- .   .,---.";
+echo "|   ||---' \  / |---'|    |   ||   ||---'|            ||---'|    |   ||   |";
+echo "\`--' \`---'  \`'  \`---'\`---'\`---'|---'\`---'\`        \`---'\`---'\`---'\`---'|---'";
+echo "                               |                                      |    ";
+
+
 BASE_DIR=$(cd $(dirname $0);  pwd -P)
 source $BASE_DIR/bootstrap/os_meta_info.sh
+
+#Determining OS and taking action accordingly
+case $OS_NAME in
+	"linux" )
+			echo -e "$OS_NAME is current OS. \n"
+            case $OS_DISTRO in
+             	"CentOS" )
+                        echo "$OS_DISTRO - $OS_NAME Proceeding."
+                        break
+             	        ;;
+                * )     
+						#Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
+                        echo "Script to install is not tested for $OS_NAME. \n Submit Patch to https://github.com/DemandCube/developer-setup."
+						break
+						;;
+            esac
+            break
+             ;;
+    "Darwin" )
+        echo "Mac OS X - Proceeding"
+        break
+        ;;
+    * )
+      #Cases for other OS such as windows etc may come here 
+      echo "Script to install is not tested for $OS_NAME. \n Submit Patch to https://github.com/DemandCube/developer-setup."
+      break
+      ;;             
+esac
 
 
 # Test if python is installed
@@ -139,6 +182,7 @@ else
 fi
 
 
+
 # installed ansible paramiko jinja2 PyYAML httplib2 pycrypto ecdsa markupsafe
 # install libselinux-python on remote nodes using selinux
 
@@ -173,195 +217,174 @@ else
 	ansible --version | awk '{ print $2 }'
 fi
 
-#Determining OS and taking action accordingly
-case $OS_NAME in
-	"linux" )
-			echo -e "$OS_NAME is current OS. \n"
-            case $OS_DISTRO in
-             	"CentOS" )
-                        echo -e "$OS_DISTRO flavour of $OS_NAME found.\n"
-                        sh centos64-setup.sh
-                        break
-             	        ;;
-                * )     
-						#Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
-                        echo -e "Script to install is not available for $OS_NAME. \n Please install manually."
-						break
-						;;
+
+
+# $BASE_DIR/bootstrap/mac_app_installed.sh
+# $BASE_DIR/bootstrap/mac_app_version.sh
+# org.virtualbox.app.VirtualBox
+
+$BASE_DIR/bootstrap/mac_app_installed.sh org.virtualbox.app.VirtualBox
+INSTALLED=$?
+echo ""
+
+INSTALL_VIRTUALBOX=''
+REQUIRED_VIRTUALBOX_VERSION=4.2.16
+REQUIRED_VAGRANT_VERSION=1.3.5
+
+# https://github.com/noitcudni/vagrant-ae
+
+if [ $INSTALLED == 1 ] ; then
+    #  VirtualBox is installed
+    VERSION_VIRTUALBOX=`$BASE_DIR/bootstrap/mac_app_version.sh org.virtualbox.app.VirtualBox`
+
+	echo "INSTALLED: [ VirtualBox ]"
+	printf "\t"
+	echo "$VERSION_VIRTUALBOX"
+
+    $BASE_DIR/bootstrap/version_compare.py $VERSION_VIRTUALBOX $REQUIRED_VIRTUALBOX_VERSION
+    CMP_RESULT=$?
+    if [ ! $CMP_RESULT -eq 2 ] ; then
+        # Remove VIRTUALBOX if not verion: $REQUIRED_VIRTUALBOX_VERSION
+        # http://stackoverflow.com/questions/226703/how-do-i-prompt-for-input-in-a-linux-shell-script
+		
+		echo "Current VirtualBox Version: $VERSION_VIRTUALBOX"
+		echo "Required VirtualBox Version: $REQUIRED_VIRTUALBOX_VERSION"
+		echo ""
+		
+        echo "Install Correct VirtualBox (Delete and Install)?"
+        while true; do
+            read -p "Is this ok [y/N]:" yn
+            case $yn in
+                [Yy]* ) 
+					echo "Removing VirtualBox";
+					PATH_VIRTUALBOX=`$BASE_DIR/bootstrap/mac_app_path.sh org.virtualbox.app.VirtualBox`
+					if [ ! $? -eq 0 ] ; then
+						echo "Determining Path to VirtualBox returned and error."
+						echo "Please manually remove VirtualBox"
+						exit 1;
+					fi
+					
+			        echo "Remove Path ($PATH_VIRTUALBOX):?"
+			        while true; do
+			            read -p "Is this ok [y/N]:" yn
+			            case $yn in
+			                [Yy]* ) 
+								echo "Removing VirtualBox";
+								INSTALL_VIRTUALBOX=1
+								if [ -n "$PATH_VIRTUALBOX" -a -d "$PATH_VIRTUALBOX" ] ; then
+									sudo rm -rf $PATH_VIRTUALBOX
+								fi
+								break;;
+			                [Nn]* ) echo "Skipping Removing"; break;;
+			                * ) echo "Please answer yes or no.";;
+			            esac
+			        done
+					
+					break;;
+                [Nn]* ) echo "No"; break;;
+                * ) echo "Please answer yes or no.";;
             esac
-            break
-             ;;
-    "Darwin" ) 
-		# $BASE_DIR/bootstrap/mac_app_installed.sh
-		# $BASE_DIR/bootstrap/mac_app_version.sh
-		# org.virtualbox.app.VirtualBox
+        done
+		
+    fi
+else
+    # VirtualBox is not installed
+    INSTALL_VIRTUALBOX=1
+    echo "Not Installed"
+fi
 
-		$BASE_DIR/bootstrap/mac_app_installed.sh org.virtualbox.app.VirtualBox
-		INSTALLED=$?
+# Install VirtualBox
+if [ -n "$INSTALL_VIRTUALBOX" ] ; then
+    echo "Install VirtualBox"
+    VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.dmg"
+    if [ ! -d "$VIRTUALBOX_FILE" ] ; then
+        # Find version here
+        # http://download.virtualbox.org/virtualbox/
+        curl -Lk http://download.virtualbox.org/virtualbox/4.2.16/VirtualBox-4.2.16-86992-OSX.dmg -o $VIRTUALBOX_FILE
+    fi
+    hdiutil attach $VIRTUALBOX_FILE
+    sudo installer -package /Volumes/VirtualBox/VirtualBox.pkg -target '/Volumes/Macintosh HD'
+    hdiutil detach /Volumes/VirtualBox/
+    
+    rm $VIRTUALBOX_FILE
+fi
+
+
+
+command -v vagrant >/dev/null 2>&1
+INSTALLED=$?
+echo ""
+
+INSTALL_VAGRANT=''
+REQUIRED_VAGRANT_VERSION=1.4.3
+
+# https://github.com/noitcudni/vagrant-ae
+
+if [ $INSTALLED == 0 ] ; then
+    #  Vagrant is installed
+    VERSION_VAGRANT=`vagrant -v | awk '{ print $2 }'`
+
+	echo "INSTALLED: [ Vagrant ]"
+	printf "\t"
+	echo "$VERSION_VAGRANT"
+
+    $BASE_DIR/bootstrap/version_compare.py $VERSION_VAGRANT $REQUIRED_VAGRANT_VERSION
+    CMP_RESULT=$?
+    if [ ! $CMP_RESULT -eq 2 ] ; then
+        # Remove VAGRANT if not verion: $REQUIRED_VAGRANT_VERSION
+        # http://stackoverflow.com/questions/226703/how-do-i-prompt-for-input-in-a-linux-shell-script
+		
+		echo "Current Vagrant Version: $VERSION_VAGRANT"
+		echo "Required Vagrant Version: $REQUIRED_VAGRANT_VERSION"
 		echo ""
+		
+        echo "Install Correct Vagrant (Delete and Install)?"
+        while true; do
+            read -p "Is this ok [y/N]:" yn
+            case $yn in
+                [Yy]* ) 
+					echo "Removing Vagrant";
+					
+					# For Mac OS X
+                    sudo rm -rf /Applications/Vagrant
+                    sudo rm /usr/bin/vagrant
+                    
+                    # For Linux
+                    # sudo rm -rf /opt/vagrant
+                    # sudo rm /usr/bin/vagrant
+                    
+                    # User Dir
+                    # ~/.vagrant.d
+                    INSTALL_VAGRANT=1
+					break;;
+                [Nn]* ) echo "No"; break;;
+                * ) echo "Please answer yes or no.";;
+            esac
+        done
+		
+    fi
+else
+    # Vagrant is not installed
+    INSTALL_VAGRANT=1
+    echo "Not Installed"
+fi
 
-		INSTALL_VIRTUALBOX=''
-		REQUIRED_VIRTUALBOX_VERSION=4.2.16
-		REQUIRED_VAGRANT_VERSION=1.3.5
-
-		# https://github.com/noitcudni/vagrant-ae
-
-		if [ $INSTALLED == 1 ] ; then
-		    #  VirtualBox is installed
-		    VERSION_VIRTUALBOX=`$BASE_DIR/bootstrap/mac_app_version.sh org.virtualbox.app.VirtualBox`
-	
-			echo "INSTALLED: [ VirtualBox ]"
-			printf "\t"
-			echo "$VERSION_VIRTUALBOX"
-
-		    $BASE_DIR/bootstrap/version_compare.py $VERSION_VIRTUALBOX $REQUIRED_VIRTUALBOX_VERSION
-		    CMP_RESULT=$?
-		    if [ ! $CMP_RESULT -eq 2 ] ; then
-		        # Remove VIRTUALBOX if not verion: $REQUIRED_VIRTUALBOX_VERSION
-		        # http://stackoverflow.com/questions/226703/how-do-i-prompt-for-input-in-a-linux-shell-script
-				
-				echo "Current VirtualBox Version: $VERSION_VIRTUALBOX"
-				echo "Required VirtualBox Version: $REQUIRED_VIRTUALBOX_VERSION"
-				echo ""
-				
-		        echo "Install Correct VirtualBox (Delete and Install)?"
-		        while true; do
-		            read -p "Is this ok [y/N]:" yn
-		            case $yn in
-		                [Yy]* ) 
-							echo "Removing VirtualBox";
-							PATH_VIRTUALBOX=`$BASE_DIR/bootstrap/mac_app_path.sh org.virtualbox.app.VirtualBox`
-							if [ ! $? -eq 0 ] ; then
-								echo "Determining Path to VirtualBox returned and error."
-								echo "Please manually remove VirtualBox"
-								exit 1;
-							fi
-							
-					        echo "Remove Path ($PATH_VIRTUALBOX):?"
-					        while true; do
-					            read -p "Is this ok [y/N]:" yn
-					            case $yn in
-					                [Yy]* ) 
-										echo "Removing VirtualBox";
-										INSTALL_VIRTUALBOX=1
-										if [ -n "$PATH_VIRTUALBOX" -a -d "$PATH_VIRTUALBOX" ] ; then
-											sudo rm -rf $PATH_VIRTUALBOX
-										fi
-										break;;
-					                [Nn]* ) echo "Skipping Removing"; break;;
-					                * ) echo "Please answer yes or no.";;
-					            esac
-					        done
-							
-							break;;
-		                [Nn]* ) echo "No"; break;;
-		                * ) echo "Please answer yes or no.";;
-		            esac
-		        done
-				
-		    fi
-		else
-		    # VirtualBox is not installed
-		    INSTALL_VIRTUALBOX=1
-		    echo "Not Installed"
-		fi
-
-		# Install VirtualBox
-		if [ -n "$INSTALL_VIRTUALBOX" ] ; then
-		    echo "Install VirtualBox"
-		    VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.dmg"
-		    if [ ! -d "$VIRTUALBOX_FILE" ] ; then
-		        # Find version here
-		        # http://download.virtualbox.org/virtualbox/
-		        curl -Lk http://download.virtualbox.org/virtualbox/4.2.16/VirtualBox-4.2.16-86992-OSX.dmg -o $VIRTUALBOX_FILE
-		    fi
-		    hdiutil attach $VIRTUALBOX_FILE
-		    sudo installer -package /Volumes/VirtualBox/VirtualBox.pkg -target '/Volumes/Macintosh HD'
-		    hdiutil detach /Volumes/VirtualBox/
-		    
-		    rm $VIRTUALBOX_FILE
-		fi
+# Install Vagrant
+if [ -n "$INSTALL_VAGRANT" ] ; then
+    echo "Install Vagrant"
+    VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.dmg"
+    if [ ! -d "$VAGRANT_FILE" ] ; then
+        # Find version here
+        # http://download.virtualbox.org/virtualbox/
+        curl -Lk https://dl.bintray.com/mitchellh/vagrant/Vagrant-1.4.3.dmg -o $VAGRANT_FILE
+    fi
+    hdiutil attach $VAGRANT_FILE
+    sudo installer -package /Volumes/Vagrant/Vagrant.pkg -target '/Volumes/Macintosh HD'
+    hdiutil detach /Volumes/Vagrant/
+    
+    rm $VAGRANT_FILE
+fi
 
 
-
-		command -v vagrant >/dev/null 2>&1
-		INSTALLED=$?
-		echo ""
-
-		INSTALL_VAGRANT=''
-		REQUIRED_VAGRANT_VERSION=1.4.3
-
-		# https://github.com/noitcudni/vagrant-ae
-
-		if [ $INSTALLED == 0 ] ; then
-		    #  Vagrant is installed
-		    VERSION_VAGRANT=`vagrant -v | awk '{ print $2 }'`
-
-			echo "INSTALLED: [ Vagrant ]"
-			printf "\t"
-			echo "$VERSION_VAGRANT"
-
-		    $BASE_DIR/bootstrap/version_compare.py $VERSION_VAGRANT $REQUIRED_VAGRANT_VERSION
-		    CMP_RESULT=$?
-		    if [ ! $CMP_RESULT -eq 2 ] ; then
-		        # Remove VAGRANT if not verion: $REQUIRED_VAGRANT_VERSION
-		        # http://stackoverflow.com/questions/226703/how-do-i-prompt-for-input-in-a-linux-shell-script
-				
-				echo "Current Vagrant Version: $VERSION_VAGRANT"
-				echo "Required Vagrant Version: $REQUIRED_VAGRANT_VERSION"
-				echo ""
-				
-		        echo "Install Correct Vagrant (Delete and Install)?"
-		        while true; do
-		            read -p "Is this ok [y/N]:" yn
-		            case $yn in
-		                [Yy]* ) 
-							echo "Removing Vagrant";
-							
-							# For Mac OS X
-		                    sudo rm -rf /Applications/Vagrant
-		                    sudo rm /usr/bin/vagrant
-		                    
-		                    # For Linux
-		                    # sudo rm -rf /opt/vagrant
-		                    # sudo rm /usr/bin/vagrant
-		                    
-		                    # User Dir
-		                    # ~/.vagrant.d
-		                    INSTALL_VAGRANT=1
-							break;;
-		                [Nn]* ) echo "No"; break;;
-		                * ) echo "Please answer yes or no.";;
-		            esac
-		        done
-				
-		    fi
-		else
-		    # Vagrant is not installed
-		    INSTALL_VAGRANT=1
-		    echo "Not Installed"
-		fi
-
-		# Install Vagrant
-		if [ -n "$INSTALL_VAGRANT" ] ; then
-		    echo "Install Vagrant"
-		    VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.dmg"
-		    if [ ! -d "$VAGRANT_FILE" ] ; then
-		        # Find version here
-		        # http://download.virtualbox.org/virtualbox/
-		        curl -Lk https://dl.bintray.com/mitchellh/vagrant/Vagrant-1.4.3.dmg -o $VAGRANT_FILE
-		    fi
-		    hdiutil attach $VAGRANT_FILE
-		    sudo installer -package /Volumes/Vagrant/Vagrant.pkg -target '/Volumes/Macintosh HD'
-		    hdiutil detach /Volumes/Vagrant/
-		    
-		    rm $VAGRANT_FILE
-		fi
-           break
-           ;;
-    * )
-      #Cases for other OS such as windows etc may come here 
-      echo -e "Script to install is not available for $OS_NAME. \n Please install manually."
-      break
-      ;;             
-esac
+# BASE_DIR=$(cd $(dirname $0);  pwd -P)
+# ansible-playbook $BASE_DIR/helloworld_local.yaml -i $BASE_DIR/inventoryfile
