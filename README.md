@@ -85,7 +85,3 @@ git checkout master
 ```
 git merge upstream/master
 ```
-
-# How to update from a Forked Repo on Github
-- <http://stackoverflow.com/questions/7244321/how-to-update-github-forked-repository>
-
