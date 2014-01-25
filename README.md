@@ -7,13 +7,29 @@ Sets a developers machine with a development environment with virtualbox vagrant
 
 setup.sh
 ====
-Installs: 
+Installs
+- setuptools
+- pip
+- ansible
+- java
+- git
+- virtualbox
+- vagrant
+
+Upgrades if less than version: 
 - setuptools
 - pip 1.5+
 - ansible 1.4.4+
+- java 1.7+
+- git 1.8+
+
+Installs if not exactly version:
 - virtualbox 4.2.16
 - vagrant 1.4.3
 
+
+
+Notes: Looks to install exact versions of VirtualBox and Vagrant because of compatibility issues with the images.
 
 Preferred Development Tools
 ----

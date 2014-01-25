@@ -279,7 +279,6 @@ echo ""
 
 INSTALL_VIRTUALBOX=''
 REQUIRED_VIRTUALBOX_VERSION=4.2.16
-REQUIRED_VAGRANT_VERSION=1.3.5
 
 # https://github.com/noitcudni/vagrant-ae
 
@@ -388,6 +387,7 @@ if [ $INSTALLED == 0 ] ; then
 
     $BASE_DIR/bootstrap/version_compare.py $VERSION_VAGRANT $REQUIRED_VAGRANT_VERSION
     CMP_RESULT=$?
+    # Test if install version is exact version
     if [ ! $CMP_RESULT -eq 2 ] ; then
         # Remove VAGRANT if not verion: $REQUIRED_VAGRANT_VERSION
         # http://stackoverflow.com/questions/226703/how-do-i-prompt-for-input-in-a-linux-shell-script
@@ -485,7 +485,8 @@ if [ $INSTALLED == 0 ] ; then
 
     $BASE_DIR/bootstrap/version_compare.py $VERSION_JAVA $REQUIRED_JAVA_VERSION
     CMP_RESULT=$?
-    if [ ! $CMP_RESULT -eq 2 ] ; then
+    # Test if installed version is less than required version
+    if [ $CMP_RESULT -lt 2 ] ; then
         # Remove JAVA if not verion: $REQUIRED_JAVA_VERSION
         # http://stackoverflow.com/questions/226703/how-do-i-prompt-for-input-in-a-linux-shell-script
 	
@@ -547,6 +548,143 @@ if [ -n "$INSTALL_JAVA" ] ; then
     rm $JAVA_FILE
 fi
 
+########################################
+########################################
+####    
+####   INSTALL GIT
+####
+########################################
+########################################
+
+
+command -v git --version >/dev/null 2>&1
+INSTALLED=$?
+echo ""
+
+INSTALL_GIT=''
+UNINSTALL_GIT=''
+REQUIRED_GIT_VERSION=1.8
+
+
+
+if [ $INSTALLED == 0 ] ; then
+    #  Git is installed
+    
+    # git version 1.7.4.4
+    
+    VERSION_GIT=`git --version | awk '{print $3}'`
+    
+	echo "INSTALLED: [ Git ]"
+	printf "\t"
+	echo "$VERSION_GIT"
+
+    $BASE_DIR/bootstrap/version_compare.py $VERSION_GIT $REQUIRED_GIT_VERSION
+    CMP_RESULT=$?
+    # Test if installed version is less than required version
+    if [ $CMP_RESULT -lt 2 ] ; then
+        # Remove GIT if not verion: $REQUIRED_GIT_VERSION
+        # http://stackoverflow.com/questions/226703/how-do-i-prompt-for-input-in-a-linux-shell-script
+	
+		echo "Current Git Version: $VERSION_GIT"
+		echo "Required Git Version: $REQUIRED_GIT_VERSION"
+		echo ""
+	
+        echo "Install Correct Git (Delete and Install)?"
+        while true; do
+            read -p "Is this ok [y/N]:" yn
+            case $yn in
+                [Yy]* ) 
+					echo "Setting Git to be removed";
+				    UNINSTALL_GIT=1
+					# For Mac OS X
+                    #Navigate to /Library/Git/GitVirtualMachines and remove the directory whose name matches the following format:*
+                    #    /Library/Git/GitVirtualMachines/jdk<major>.<minor>.<macro[_update]>.jdk
+                    #For example, to uninstall 7u6:
+                    #    % rm -rf jdk1.7.0_06.jdk
+                
+                    # For Linux
+                    # sudo rm -rf /opt/vagrant
+                    # sudo rm /usr/bin/vagrant
+                
+                    # User Dir
+                    # ~/.vagrant.d
+                    INSTALL_GIT=1
+					break;;
+                [Nn]* ) echo "Skipping"; break;;
+                * ) echo "Please answer yes or no.";;
+            esac
+        done
+	
+    fi
+else
+    # Git is not installed
+    INSTALL_GIT=1
+    echo "Not Installed"
+fi
+
+
+
+# Install Git
+if [ -n "$INSTALL_GIT" ] ; then
+    echo "Install Git"
+    GIT_FILE="$HOME/Downloads/git-1.8.4.2-intel-universal-snow-leopard.dmg"
+    if [ ! -d "$GIT_FILE" ] ; then
+        # Find version here
+        # curl -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;" http://download.oracle.com/otn-pub/git/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg -o jdk-7u51-macosx-x64.dmg
+        # http://download.oracle.com/otn-pub/git/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg
+        # http://download.oracle.com/otn-pub/git/jdk/7u51-b13/jdk-7u51-linux-x64.rpm
+        
+		curl -L https://git-osx-installer.googlecode.com/files/git-1.8.4.2-intel-universal-snow-leopard.dmg -o $GIT_FILE
+    fi
+    VOLUME_PATH_GIT='/Volumes/Git 1.8.4.2 Snow Leopard Intel Universal/'
+    PACKAGE_NAME_GIT='git-1.8.4.2-intel-universal-snow-leopard.pkg'
+    
+    hdiutil attach $GIT_FILE
+    
+    if [ -n "$INSTALL_GIT" ] ; then
+        sudo "${VOLUME_PATH_GIT}uninstall.sh"
+    fi
+    
+    sudo installer -package "${VOLUME_PATH_GIT}${PACKAGE_NAME_GIT}" -target '/Volumes/Macintosh HD'
+    sudo "${VOLUME_PATH_GIT}setup git PATH for non-terminal programs.sh"
+    
+    hdiutil detach "$VOLUME_PATH_GIT"
+    
+    NEW_VERSION_GIT=`git --version | awk '{print $3}'`
+    
+    if [ "$VERSION_GIT" == "$NEW_VERSION_GIT" ] ; then
+        echo "Installed git version isn't matching so creating symbolic link to correct version"
+        sudo mv /usr/bin/git /usr/bin/git-{$VERSION_GIT}
+        sudo ln -s /usr/local/git/bin/git /usr/bin/git
+        TEST_VERSION_GIT=`git --version | awk '{print $3}'`
+        if [ "$VERSION_GIT" == "$TEST_VERSION_GIT" ] ; then
+            echo "Didn't work!"
+            echo ""
+            echo "YOU!!!!!"
+            echo " Need to investigate why GIT didn't update properly, probably a path issue"
+            echo "Should install git to /usr/local/git"
+            echo "which git"
+            echo "git --version"
+            echo "ls -al `which git`"
+        else
+        	echo "INSTALLED: [ Git ]"
+        	printf "\t"
+        	echo "$NEW_VERSION_GIT"
+        fi
+    fi
+    
+    echo "Remove downloaded file ($GIT_FILE) ?"
+    while true; do
+        read -p "Is this ok [y/N]:" yn
+        case $yn in
+            [Yy]* ) 
+				rm $GIT_FILE
+				break;;
+            [Nn]* ) echo "Skipping"; break;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
+fi
 
 
 # BASE_DIR=$(cd $(dirname $0);  pwd -P)
