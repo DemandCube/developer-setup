@@ -113,7 +113,7 @@ if [ -n "$INSTALL_VAGRANT" ] ; then
     echo "Install Vagrant"
     VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.rpm"
     if [ ! -d "$VAGRANT_FILE" ] ; then
-        curl -Lk http://966b.http.dal05.cdn.softlayer.net/data-production/96ce8e4c0efb26bf5e1e70afd0483e15b57e7202?filename=vagrant_1.4.3_x86_64.rpm -o $VAGRANT_FILE
+        curl -Lk https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.rpm  -o $VAGRANT_FILE
     fi
     sudo rpm -i VAGRANT_FILE
     
