@@ -28,9 +28,15 @@ Installs if not exactly version:
 - virtualbox 4.2.16
 - vagrant 1.4.3
 
-
-
 Notes: Looks to install exact versions of VirtualBox and Vagrant because of compatibility issues with the images.
+
+Install
+====
+```
+git clone git@github.com:DemandCube/developer-setup.git
+cd developer-setup
+./setup.sh
+```
 
 Preferred Development Tools
 ----
