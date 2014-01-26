@@ -1,6 +1,7 @@
 DemandCube Developer Setup
 ====
-
+- A [NeverwinterDP](https://github.com/DemandCube/NeverwinterDP) and [DemandCube](https://github.com/DemandCube) Project
+- 
 Copywrite 2013 Steve Morin <steve@stevemorin.com>
 
 Sets a developers machine with a development environment with virtualbox vagrant ansible and pip
