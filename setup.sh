@@ -591,7 +591,7 @@ case $OS_NAME in
                         # Install VirtualBox
                         if [ -n "$INSTALL_VIRTUALBOX" ] ; then
                             echo "Install VirtualBox"
-                            VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.rpm"
+                            VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.deb"
                             if [ ! -d "$VIRTUALBOX_FILE" ] ; then
                                 # Find version here
                                 # http://download.virtualbox.org/virtualbox/
@@ -659,7 +659,7 @@ case $OS_NAME in
                         # Install Vagrant
                         if [ -n "$INSTALL_VAGRANT" ] ; then
                             echo "Install Vagrant"
-                            VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.rpm"
+                            VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.deb"
                             if [ ! -d "$VAGRANT_FILE" ] ; then
                                 curl -Lk https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.deb -o $VAGRANT_FILE
                             fi
