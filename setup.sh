@@ -68,12 +68,10 @@ case $OS_NAME in
 	"linux" )
 			echo  "$OS_NAME is current OS. "
             echo
-
             case $OS_DISTRO in
              	"CentOS" )
                         echo "$OS_DISTRO - $OS_NAME Proceeding."
                         echo 
-
                         ########################################
                         ########################################
                         ####    
@@ -106,7 +104,6 @@ case $OS_NAME in
                             python -V 2>&1 | awk '{ print $2 }'
                         fi
 
-
                         ########################################
                         ########################################
                         ####    
@@ -130,7 +127,6 @@ case $OS_NAME in
                             echo "INSTALLED: [ easy_install ]"
                         fi
 
-
                         ########################################
                         ########################################
                         ####    
@@ -138,7 +134,6 @@ case $OS_NAME in
                         ####
                         ########################################
                         ########################################
-
 
                         # Test and install pip if not installed
                         # pip 1.4.1
@@ -198,7 +193,6 @@ case $OS_NAME in
                             # pip -V  # pip verions only works on 1.4
                         fi
 
-
                         ########################################
                         ########################################
                         ####    
@@ -206,7 +200,6 @@ case $OS_NAME in
                         ####
                         ########################################
                         ########################################
-
 
                         # installed ansible paramiko jinja2 PyYAML httplib2 pycrypto ecdsa markupsafe
                         # install libselinux-python on remote nodes using selinux
@@ -220,8 +213,6 @@ case $OS_NAME in
                             # pycrypto-2.6.1
                             # ecdsa-0.10
                             # MarkupSafe-0.18
-
-
 
                         command -v ansible >/dev/null 2>&1
                         INSTALLED=$?
@@ -292,7 +283,7 @@ case $OS_NAME in
                         else
                             # VirtualBox is not installed
                             INSTALL_VIRTUALBOX=1
-                            echo "Not Installed"
+                            echo "VirtualBox is Not Installed"
                         fi
 
                         # Install VirtualBox
@@ -316,7 +307,6 @@ case $OS_NAME in
                         ####
                         ########################################
                         ########################################
-
 
                         # Test if vagrant is installed
                         command -v vagrant >/dev/null 2>&1
@@ -505,7 +495,6 @@ case $OS_NAME in
                             # pip -V  # pip verions only works on 1.4
                         fi
 
-
                         ########################################
                         ########################################
                         ####    
@@ -513,7 +502,6 @@ case $OS_NAME in
                         ####
                         ########################################
                         ########################################
-
 
                         # installed ansible paramiko jinja2 PyYAML httplib2 pycrypto ecdsa markupsafe
                         # install libselinux-python on remote nodes using selinux
@@ -527,8 +515,6 @@ case $OS_NAME in
                             # pycrypto-2.6.1
                             # ecdsa-0.10
                             # MarkupSafe-0.18
-
-
 
                         command -v ansible >/dev/null 2>&1
                         INSTALLED=$?
@@ -624,7 +610,6 @@ case $OS_NAME in
                         ########################################
                         ########################################
 
-
                         # Test if vagrant is installed
                         command -v vagrant >/dev/null 2>&1
                         INSTALLED=$?
@@ -692,6 +677,7 @@ case $OS_NAME in
             esac
             break
              ;;
+             
     "darwin" )
         echo "Mac OS X - Proceeding"
 

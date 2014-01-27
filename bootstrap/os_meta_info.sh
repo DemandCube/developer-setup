@@ -1,10 +1,10 @@
 #!/bin/sh
 #******************************************************************************************+
-# os_meta_info.sh                                                                          #
-# Script to find out OS related meta information                                           # 
-#        To test this script run as:                                                       #
-#        $ sh os_meta_info.sh test                                                             #
-# Author: Hikmat Dhamee                                                                    #
+#        file: os_meta_info.sh                                                             #
+#        purpose: Script to find out OS related meta information                           # 
+#        USAGE: To test this script run as:                                                #
+#               $ sh os_meta_info.sh test                                                  #
+#        Author: Hikmat Dhamee                                                             #
 #******************************************************************************************+
 
 #Variable declaralation to hold OS meta data
