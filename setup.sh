@@ -60,17 +60,630 @@ echo "                               |                                      |   
 ########################################
 
 BASE_DIR=$(cd $(dirname $0);  pwd -P)
+#sudo ln -sf bash /bin/sh should be done for Ubuntu in case if source didn't work
 source $BASE_DIR/bootstrap/os_meta_info.sh
 
 #Determining OS and taking action accordingly
 case $OS_NAME in
 	"linux" )
-			echo -e "$OS_NAME is current OS. \n"
+			echo  "$OS_NAME is current OS. "
+            echo
+
             case $OS_DISTRO in
              	"CentOS" )
                         echo "$OS_DISTRO - $OS_NAME Proceeding."
+                        echo 
+
+                        ########################################
+                        ########################################
+                        ####    
+                        ####   INSTALL PYTHON
+                        ####
+                        ########################################
+                        ########################################
+
+                        # Test if python is installed
+                        command -v python >/dev/null 2>&1
+                        INSTALLED=$?
+
+                        if [ ! $INSTALLED == 0 ] ; then
+                            echo "Install python it's missing"
+                            exit 1
+                        fi
+
+                        # Test if python version is 2.6 or above
+                        # python 2.7.5
+                        python -c 'import sys; version=sys.version_info[0]*10; version=version+sys.version_info[1];sys.exit(1)if(version<26) else sys.exit(0)'
+                        INSTALLED=$?
+                        echo ""
+
+                        if [ ! $INSTALLED == 0 ] ; then
+                            echo "Install python greater than 2.6"
+                            exit 1
+                        else
+                            echo "INSTALLED: [ python ]"
+                            printf "\t"
+                            python -V 2>&1 | awk '{ print $2 }'
+                        fi
+
+
+                        ########################################
+                        ########################################
+                        ####    
+                        ####   INSTALL EASY_INSTALL
+                        ####
+                        ########################################
+                        ########################################
+
+                        # Test if easy_install if not install manually
+                        command -v easy_install >/dev/null 2>&1
+                        INSTALLED=$?
+                        echo ""
+
+                        if [ ! $INSTALLED == 0 ] ; then
+                            echo "Install easy_install it's missing"
+                            echo curl -O http://python-distribute.org/distribute_setup.py
+                            echo sudo python distribute_setup.py
+                            echo sudo rm distribute_setup.py
+                            exit 1
+                        else
+                            echo "INSTALLED: [ easy_install ]"
+                        fi
+
+
+                        ########################################
+                        ########################################
+                        ####    
+                        ####   INSTALL PIP
+                        ####
+                        ########################################
+                        ########################################
+
+
+                        # Test and install pip if not installed
+                        # pip 1.4.1
+                        command -v pip >/dev/null 2>&1
+                        PIP_VERSION=1.5
+                        INSTALLED=$?
+                        echo ""
+
+                        if [ ! $INSTALLED == 0 ] ; then
+                            echo "INSTALLING: [ pip ]"
+                            printf "\t"
+                            sudo easy_install pip
+                        else
+                            echo "INSTALLED: [ pip ]"
+                            printf "\t"
+                            $BASE_DIR/bootstrap/version_compare.py `$BASE_DIR/bootstrap/pip_version.py` $PIP_VERSION
+                            CMP_RESULT=$?
+                            if [ $CMP_RESULT -lt 2 ] ; then
+                                # Upgrade pip
+                                $BASE_DIR/bootstrap/pip_version.py
+                                echo "Upgrading pip to $PIP_VERSION"
+                                # http://www.pip-installer.org/en/latest/installing.html#install-or-upgrade-pip
+                                sudo pip install --upgrade setuptools
+                                SETUPTOOLS_RESULT=$?
+                                if [ $SETUPTOOLS_RESULT -ne 0 ] ; then
+                                    echo "upgrading setuptools failed try manually"
+                                    exit 1
+                                fi
+                                curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py -O
+                                CURL_RESULT=$?
+                                if [ $CURL_RESULT -ne 0 ] ; then
+                                    echo "downloading new pip failed try manually"
+                                    exit 1
+                                fi
+                                sudo python get-pip.py
+                                PIP_RESULT=$?
+                                echo "PIP_RESULT:$PIP_RESULT"
+                                if [ $PIP_RESULT -ne 0 ] ; then
+                                    echo "upgrading pip failed try manually"
+                                    exit 1
+                                fi
+                                rm get-pip.py
+                                echo "New Pip Version"
+                                $BASE_DIR/bootstrap/pip_version.py
+                                # https://pypi.python.org/pypi/setuptools#installation-instructions
+                                # Instructions to Install setuptools
+                                # 
+                                # curl https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py -O
+                                # sudo python ez_setup.py
+                                # rm ez_setup.py
+                            elif [ $CMP_RESULT -eq 0 ] ; then
+                                echo "There was an error comparing the pip version, please check manually"
+                                exit 1
+                            else
+                                $BASE_DIR/bootstrap/pip_version.py
+                            fi
+                            # pip -V  # pip verions only works on 1.4
+                        fi
+
+
+                        ########################################
+                        ########################################
+                        ####    
+                        ####   INSTALL ANSIBLE
+                        ####
+                        ########################################
+                        ########################################
+
+
+                        # installed ansible paramiko jinja2 PyYAML httplib2 pycrypto ecdsa markupsafe
+                        # install libselinux-python on remote nodes using selinux
+
+                        # Test and install ansible if not installed
+                        # ansible 1.4.3
+                            # paramiko-1.12.0
+                            # Jinja2-2.7.1
+                            # PyYAML-3.10
+                            # httplib2-0.8
+                            # pycrypto-2.6.1
+                            # ecdsa-0.10
+                            # MarkupSafe-0.18
+
+
+
+                        command -v ansible >/dev/null 2>&1
+                        INSTALLED=$?
+                        echo ""
+
+                        # Todo test for version and upgrade
+
+                        # Version 1.4.4
+
+                        if [ ! $INSTALLED == 0 ] ; then
+                            echo "INSTALLING: [ ansible ]"
+                            printf "\t"
+                            sudo pip install paramiko PyYAML jinja2 httplib2
+                            sudo pip install ansible
+                        else
+                            echo "INSTALLED: [ ansible ]"
+                            printf "\t"
+                            ansible --version | awk '{ print $2 }'
+                        fi
+                        
+                        ########################################
+                        ########################################
+                        ####    
+                        ####   INSTALL VIRTUALBOX
+                        ####
+                        ########################################
+                        ########################################
+
+                        # variable declarations
+                        BASE_DIR=$(cd $(dirname $0);  pwd -P)
+                        INSTALL_VIRTUALBOX=''
+                        REQUIRED_VIRTUALBOX_VERSION=4.2.16
+
+                        # Test if VirtualBox is installed
+                        command -v virtualbox >/dev/null 2>&1
+                        INSTALLED=$?
+
+                        if [ $INSTALLED == 0 ] ; then
+                            echo "VirtualBox is installed."
+                            #  VirtualBox is installed
+                            VERSION_VIRTUALBOX=`VBoxManage -v`
+                            VERSION_VIRTUALBOX=${VERSION_VIRTUALBOX:0:5} 
+
+                            $BASE_DIR/bootstrap/version_compare.py $VERSION_VIRTUALBOX $REQUIRED_VIRTUALBOX_VERSION
+                            CMP_RESULT=$?
+                            if [ ! $CMP_RESULT -eq 2 ] ; then
+                                # Remove VIRTUALBOX if not verion: $REQUIRED_VIRTUALBOX_VERSION        
+                                
+                                echo "Current VirtualBox Version: $VERSION_VIRTUALBOX"
+                                echo "Required VirtualBox Version: $REQUIRED_VIRTUALBOX_VERSION"
+                                echo ""
+                                
+                                echo "Install Correct VirtualBox (Delete and Install)?"
+                                while true; do
+                                    read -p "Is this ok [y/N]:" yn
+                                    case $yn in
+                                        [Yy]* ) 
+                                                echo "Removing VirtualBox";
+                                                INSTALL_VIRTUALBOX=1
+                                                sudo yum remove virtualbox-$VERSION_VIRTUALBOX                  
+                                                break;;
+                                        [Nn]* ) echo "No"; break;;
+                                            * ) echo "Please answer yes or no.";;
+                                    esac
+                                done
+                                
+                            fi
+                        else
+                            # VirtualBox is not installed
+                            INSTALL_VIRTUALBOX=1
+                            echo "Not Installed"
+                        fi
+
+                        # Install VirtualBox
+                        if [ -n "$INSTALL_VIRTUALBOX" ] ; then
+                            echo "Install VirtualBox"
+                            VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.rpm"
+                            if [ ! -d "$VIRTUALBOX_FILE" ] ; then
+                                # Find version here
+                                # http://download.virtualbox.org/virtualbox/
+                                curl -Lk http://download.virtualbox.org/virtualbox/4.2.16/VirtualBox-4.2-4.2.16_86992_el6-1.x86_64.rpm -o $VIRTUALBOX_FILE
+                            fi
+                            sudo rpm -Uvh $VIRTUALBOX_FILE
+                            
+                            rm $VIRTUALBOX_FILE
+                        fi
+
+                        ########################################
+                        ########################################
+                        ####    
+                        ####   INSTALL VAGRANT
+                        ####
+                        ########################################
+                        ########################################
+
+
+                        # Test if vagrant is installed
+                        command -v vagrant >/dev/null 2>&1
+                        INSTALLED=$?
+                        echo ""
+
+                        INSTALL_VAGRANT=''
+                        REQUIRED_VAGRANT_VERSION=1.4.3
+
+                        if [ $INSTALLED == 0 ] ; then
+                            echo "Vagrant is installed"
+                            VERSION_VAGRANT=`vagrant -v | awk '{ print $2 }'`
+
+                            $BASE_DIR/bootstrap/version_compare.py $VERSION_VAGRANT $REQUIRED_VAGRANT_VERSION
+                            CMP_RESULT=$?
+                            if [ ! $CMP_RESULT -eq 2 ] ; then
+                                # Remove VAGRANT if not verion: $REQUIRED_VAGRANT_VERSION        
+                                
+                                echo "Current Vagrant Version: $VERSION_VAGRANT"
+                                echo "Required Vagrant Version: $REQUIRED_VAGRANT_VERSION"
+                                echo ""
+                                
+                                echo "Install Correct Vagrant (Delete and Install)?"
+                                while true; do
+                                    read -p "Is this ok [y/N]:" yn
+                                    case $yn in
+                                        [Yy]* ) 
+                                            echo "Removing Vagrant";
+                                            sudo rm -rf /opt/vagrant
+                                            sudo rm /usr/bin/vagrant
+                                            
+                                            # User Dir
+                                            # ~/.vagrant.d
+                                            INSTALL_VAGRANT=1
+                                            break;;
+                                        [Nn]* ) echo "No"; break;;
+                                        * ) echo "Please answer yes or no.";;
+                                    esac
+                                done
+                                
+                            fi
+                        else
+                            # Vagrant is not installed
+                            INSTALL_VAGRANT=1
+                            echo "Not Installed"
+                        fi
+
+                        # Install Vagrant
+                        if [ -n "$INSTALL_VAGRANT" ] ; then
+                            echo "Install Vagrant"
+                            VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.rpm"
+                            if [ ! -d "$VAGRANT_FILE" ] ; then
+                                curl -Lk https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.rpm -o $VAGRANT_FILE
+                            fi
+                            sudo rpm -i VAGRANT_FILE
+                            
+                            rm $VAGRANT_FILE
+                        fi
                         break
              	        ;;
+
+                "Ubuntu" )
+                        echo "$OS_DISTRO - $OS_NAME Proceeding."
+
+                        ########################################
+                        ########################################
+                        ####    
+                        ####   INSTALL PYTHON
+                        ####
+                        ########################################
+                        ########################################
+
+                        # Test if python is installed
+                        command -v python >/dev/null 2>&1
+                        INSTALLED=$?
+
+                        if [ ! $INSTALLED == 0 ] ; then
+                            echo "Install python it's missing"
+                            exit 1
+                        fi
+
+                        # Test if python version is 2.6 or above
+                        # python 2.7.5
+                        python -c 'import sys; version=sys.version_info[0]*10; version=version+sys.version_info[1];sys.exit(1)if(version<26) else sys.exit(0)'
+                        INSTALLED=$?
+                        echo ""
+
+                        if [ ! $INSTALLED == 0 ] ; then
+                            echo "Install python greater than 2.6"
+                            exit 1
+                        else
+                            echo "INSTALLED: [ python ]"
+                            printf "\t"
+                            python -V 2>&1 | awk '{ print $2 }'
+                        fi
+
+
+                        ########################################
+                        ########################################
+                        ####    
+                        ####   INSTALL EASY_INSTALL
+                        ####
+                        ########################################
+                        ########################################
+
+                        # Test if easy_install if not install manually
+                        command -v easy_install >/dev/null 2>&1
+                        INSTALLED=$?
+                        echo ""
+
+                        if [ ! $INSTALLED == 0 ] ; then
+                            echo "Install easy_install it's missing"
+                            echo curl -O http://python-distribute.org/distribute_setup.py
+                            echo sudo python distribute_setup.py
+                            echo sudo rm distribute_setup.py
+                            exit 1
+                        else
+                            echo "INSTALLED: [ easy_install ]"
+                        fi
+
+
+                        ########################################
+                        ########################################
+                        ####    
+                        ####   INSTALL PIP
+                        ####
+                        ########################################
+                        ########################################
+
+
+                        # Test and install pip if not installed
+                        # pip 1.4.1
+                        command -v pip >/dev/null 2>&1
+                        PIP_VERSION=1.5
+                        INSTALLED=$?
+                        echo ""
+
+                        if [ ! $INSTALLED == 0 ] ; then
+                            echo "INSTALLING: [ pip ]"
+                            printf "\t"
+                            sudo easy_install pip
+                        else
+                            echo "INSTALLED: [ pip ]"
+                            printf "\t"
+                            $BASE_DIR/bootstrap/version_compare.py `$BASE_DIR/bootstrap/pip_version.py` $PIP_VERSION
+                            CMP_RESULT=$?
+                            if [ $CMP_RESULT -lt 2 ] ; then
+                                # Upgrade pip
+                                $BASE_DIR/bootstrap/pip_version.py
+                                echo "Upgrading pip to $PIP_VERSION"
+                                # http://www.pip-installer.org/en/latest/installing.html#install-or-upgrade-pip
+                                sudo pip install --upgrade setuptools
+                                SETUPTOOLS_RESULT=$?
+                                if [ $SETUPTOOLS_RESULT -ne 0 ] ; then
+                                    echo "upgrading setuptools failed try manually"
+                                    exit 1
+                                fi
+                                curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py -O
+                                CURL_RESULT=$?
+                                if [ $CURL_RESULT -ne 0 ] ; then
+                                    echo "downloading new pip failed try manually"
+                                    exit 1
+                                fi
+                                sudo python get-pip.py
+                                PIP_RESULT=$?
+                                echo "PIP_RESULT:$PIP_RESULT"
+                                if [ $PIP_RESULT -ne 0 ] ; then
+                                    echo "upgrading pip failed try manually"
+                                    exit 1
+                                fi
+                                rm get-pip.py
+                                echo "New Pip Version"
+                                $BASE_DIR/bootstrap/pip_version.py
+                                # https://pypi.python.org/pypi/setuptools#installation-instructions
+                                # Instructions to Install setuptools
+                                # 
+                                # curl https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py -O
+                                # sudo python ez_setup.py
+                                # rm ez_setup.py
+                            elif [ $CMP_RESULT -eq 0 ] ; then
+                                echo "There was an error comparing the pip version, please check manually"
+                                exit 1
+                            else
+                                $BASE_DIR/bootstrap/pip_version.py
+                            fi
+                            # pip -V  # pip verions only works on 1.4
+                        fi
+
+
+                        ########################################
+                        ########################################
+                        ####    
+                        ####   INSTALL ANSIBLE
+                        ####
+                        ########################################
+                        ########################################
+
+
+                        # installed ansible paramiko jinja2 PyYAML httplib2 pycrypto ecdsa markupsafe
+                        # install libselinux-python on remote nodes using selinux
+
+                        # Test and install ansible if not installed
+                        # ansible 1.4.3
+                            # paramiko-1.12.0
+                            # Jinja2-2.7.1
+                            # PyYAML-3.10
+                            # httplib2-0.8
+                            # pycrypto-2.6.1
+                            # ecdsa-0.10
+                            # MarkupSafe-0.18
+
+
+
+                        command -v ansible >/dev/null 2>&1
+                        INSTALLED=$?
+                        echo ""
+
+                        # Todo test for version and upgrade
+
+                        # Version 1.4.4
+
+                        if [ ! $INSTALLED == 0 ] ; then
+                            echo "INSTALLING: [ ansible ]"
+                            printf "\t"
+                            sudo pip install paramiko PyYAML jinja2 httplib2
+                            sudo pip install ansible
+                        else
+                            echo "INSTALLED: [ ansible ]"
+                            printf "\t"
+                            ansible --version | awk '{ print $2 }'
+                        fi
+
+                        ########################################
+                        ########################################
+                        ####    
+                        ####   INSTALL VIRTUALBOX
+                        ####
+                        ########################################
+                        ########################################
+
+                        # variable declarations
+                        BASE_DIR=$(cd $(dirname $0);  pwd -P)
+                        INSTALL_VIRTUALBOX=''
+                        REQUIRED_VIRTUALBOX_VERSION=4.2.16
+
+                        # Test if VirtualBox is installed
+                        command -v virtualbox >/dev/null 2>&1
+                        INSTALLED=$?
+
+                        if [ $INSTALLED == 0 ] ; then
+                            echo "VirtualBox is installed."
+                            #  VirtualBox is installed
+                            VERSION_VIRTUALBOX=`VBoxManage -v`
+                            VERSION_VIRTUALBOX=${VERSION_VIRTUALBOX:0:5} 
+
+                            $BASE_DIR/bootstrap/version_compare.py $VERSION_VIRTUALBOX $REQUIRED_VIRTUALBOX_VERSION
+                            CMP_RESULT=$?
+                            if [ ! $CMP_RESULT -eq 2 ] ; then
+                                # Remove VIRTUALBOX if not verion: $REQUIRED_VIRTUALBOX_VERSION        
+                                
+                                echo "Current VirtualBox Version: $VERSION_VIRTUALBOX"
+                                echo "Required VirtualBox Version: $REQUIRED_VIRTUALBOX_VERSION"
+                                echo ""
+                                
+                                echo "Install Correct VirtualBox (Delete and Install)?"
+                                while true; do
+                                    read -p "Is this ok [y/N]:" yn
+                                    case $yn in
+                                        [Yy]* ) 
+                                                echo "Removing VirtualBox";
+                                                INSTALL_VIRTUALBOX=1
+                                                sudo yum remove virtualbox-$VERSION_VIRTUALBOX                  
+                                                break;;
+                                        [Nn]* ) echo "No"; break;;
+                                            * ) echo "Please answer yes or no.";;
+                                    esac
+                                done
+                                
+                            fi
+                        else
+                            # VirtualBox is not installed
+                            INSTALL_VIRTUALBOX=1
+                            echo "VirtualBox is not installed"
+                        fi
+
+                        # Install VirtualBox
+                        if [ -n "$INSTALL_VIRTUALBOX" ] ; then
+                            echo "Install VirtualBox"
+                            VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.rpm"
+                            if [ ! -d "$VIRTUALBOX_FILE" ] ; then
+                                # Find version here
+                                # http://download.virtualbox.org/virtualbox/
+                                curl -Lk http://download.virtualbox.org/virtualbox/4.2.22/virtualbox-4.2_4.2.22-91556~Ubuntu~precise_amd64.deb -o $VIRTUALBOX_FILE
+                            fi
+                            sudo dpkg -i $VIRTUALBOX_FILE
+                            
+                            rm $VIRTUALBOX_FILE
+                        fi
+
+                        ########################################
+                        ########################################
+                        ####    
+                        ####   INSTALL VAGRANT
+                        ####
+                        ########################################
+                        ########################################
+
+
+                        # Test if vagrant is installed
+                        command -v vagrant >/dev/null 2>&1
+                        INSTALLED=$?
+                        echo ""
+
+                        INSTALL_VAGRANT=''
+                        REQUIRED_VAGRANT_VERSION=1.4.3
+
+                        if [ $INSTALLED == 0 ] ; then
+                            echo "Vagrant is installed"
+                            VERSION_VAGRANT=`vagrant -v | awk '{ print $2 }'`
+
+                            $BASE_DIR/bootstrap/version_compare.py $VERSION_VAGRANT $REQUIRED_VAGRANT_VERSION
+                            CMP_RESULT=$?
+                            if [ ! $CMP_RESULT -eq 2 ] ; then
+                                # Remove VAGRANT if not verion: $REQUIRED_VAGRANT_VERSION        
+                                
+                                echo "Current Vagrant Version: $VERSION_VAGRANT"
+                                echo "Required Vagrant Version: $REQUIRED_VAGRANT_VERSION"
+                                echo ""
+                                
+                                echo "Install Correct Vagrant (Delete and Install)?"
+                                while true; do
+                                    read -p "Is this ok [y/N]:" yn
+                                    case $yn in
+                                        [Yy]* ) 
+                                            echo "Removing Vagrant";
+                                            sudo rm -rf /opt/vagrant
+                                            sudo rm /usr/bin/vagrant
+                                            
+                                            # User Dir
+                                            # ~/.vagrant.d
+                                            INSTALL_VAGRANT=1
+                                            break;;
+                                        [Nn]* ) echo "No"; break;;
+                                        * ) echo "Please answer yes or no.";;
+                                    esac
+                                done
+                                
+                            fi
+                        else
+                            # Vagrant is not installed
+                            INSTALL_VAGRANT=1
+                            echo "Not Installed"
+                        fi
+
+                        # Install Vagrant
+                        if [ -n "$INSTALL_VAGRANT" ] ; then
+                            echo "Install Vagrant"
+                            VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.rpm"
+                            if [ ! -d "$VAGRANT_FILE" ] ; then
+                                curl -Lk https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.deb -o $VAGRANT_FILE
+                            fi
+                            sudo dpkg -i VAGRANT_FILE
+                            
+                            rm $VAGRANT_FILE
+                        fi
+                        break
+                        ;;           
                 * )     
 						#Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
                         echo "Script to install is not tested for $OS_NAME. \n Submit Patch to https://github.com/DemandCube/developer-setup."
@@ -79,8 +692,603 @@ case $OS_NAME in
             esac
             break
              ;;
-    "Darwin" )
+    "darwin" )
         echo "Mac OS X - Proceeding"
+
+        ########################################
+        ########################################
+        ####    
+        ####   INSTALL PYTHON
+        ####
+        ########################################
+        ########################################
+
+        # Test if python is installed
+        command -v python >/dev/null 2>&1
+        INSTALLED=$?
+
+        if [ ! $INSTALLED == 0 ] ; then
+            echo "Install python it's missing"
+            exit 1
+        fi
+
+        # Test if python version is 2.6 or above
+        # python 2.7.5
+        python -c 'import sys; version=sys.version_info[0]*10; version=version+sys.version_info[1];sys.exit(1)if(version<26) else sys.exit(0)'
+        INSTALLED=$?
+        echo ""
+
+        if [ ! $INSTALLED == 0 ] ; then
+            echo "Install python greater than 2.6"
+            exit 1
+        else
+            echo "INSTALLED: [ python ]"
+            printf "\t"
+            python -V 2>&1 | awk '{ print $2 }'
+        fi
+
+
+        ########################################
+        ########################################
+        ####    
+        ####   INSTALL EASY_INSTALL
+        ####
+        ########################################
+        ########################################
+
+        # Test if easy_install if not install manually
+        command -v easy_install >/dev/null 2>&1
+        INSTALLED=$?
+        echo ""
+
+        if [ ! $INSTALLED == 0 ] ; then
+            echo "Install easy_install it's missing"
+            echo curl -O http://python-distribute.org/distribute_setup.py
+            echo sudo python distribute_setup.py
+            echo sudo rm distribute_setup.py
+            exit 1
+        else
+            echo "INSTALLED: [ easy_install ]"
+        fi
+
+
+        ########################################
+        ########################################
+        ####    
+        ####   INSTALL PIP
+        ####
+        ########################################
+        ########################################
+
+
+        # Test and install pip if not installed
+        # pip 1.4.1
+        command -v pip >/dev/null 2>&1
+        PIP_VERSION=1.5
+        INSTALLED=$?
+        echo ""
+
+        if [ ! $INSTALLED == 0 ] ; then
+            echo "INSTALLING: [ pip ]"
+            printf "\t"
+            sudo easy_install pip
+        else
+            echo "INSTALLED: [ pip ]"
+            printf "\t"
+            $BASE_DIR/bootstrap/version_compare.py `$BASE_DIR/bootstrap/pip_version.py` $PIP_VERSION
+            CMP_RESULT=$?
+            if [ $CMP_RESULT -lt 2 ] ; then
+                # Upgrade pip
+                $BASE_DIR/bootstrap/pip_version.py
+                echo "Upgrading pip to $PIP_VERSION"
+                # http://www.pip-installer.org/en/latest/installing.html#install-or-upgrade-pip
+                sudo pip install --upgrade setuptools
+                SETUPTOOLS_RESULT=$?
+                if [ $SETUPTOOLS_RESULT -ne 0 ] ; then
+                    echo "upgrading setuptools failed try manually"
+                    exit 1
+                fi
+                curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py -O
+                CURL_RESULT=$?
+                if [ $CURL_RESULT -ne 0 ] ; then
+                    echo "downloading new pip failed try manually"
+                    exit 1
+                fi
+                sudo python get-pip.py
+                PIP_RESULT=$?
+                echo "PIP_RESULT:$PIP_RESULT"
+                if [ $PIP_RESULT -ne 0 ] ; then
+                    echo "upgrading pip failed try manually"
+                    exit 1
+                fi
+                rm get-pip.py
+                echo "New Pip Version"
+                $BASE_DIR/bootstrap/pip_version.py
+                # https://pypi.python.org/pypi/setuptools#installation-instructions
+                # Instructions to Install setuptools
+                # 
+                # curl https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py -O
+                # sudo python ez_setup.py
+                # rm ez_setup.py
+            elif [ $CMP_RESULT -eq 0 ] ; then
+                echo "There was an error comparing the pip version, please check manually"
+                exit 1
+            else
+                $BASE_DIR/bootstrap/pip_version.py
+            fi
+            # pip -V  # pip verions only works on 1.4
+        fi
+
+
+        ########################################
+        ########################################
+        ####    
+        ####   INSTALL ANSIBLE
+        ####
+        ########################################
+        ########################################
+
+
+        # installed ansible paramiko jinja2 PyYAML httplib2 pycrypto ecdsa markupsafe
+        # install libselinux-python on remote nodes using selinux
+
+        # Test and install ansible if not installed
+        # ansible 1.4.3
+            # paramiko-1.12.0
+            # Jinja2-2.7.1
+            # PyYAML-3.10
+            # httplib2-0.8
+            # pycrypto-2.6.1
+            # ecdsa-0.10
+            # MarkupSafe-0.18
+
+
+
+        command -v ansible >/dev/null 2>&1
+        INSTALLED=$?
+        echo ""
+
+        # Todo test for version and upgrade
+
+        # Version 1.4.4
+
+        if [ ! $INSTALLED == 0 ] ; then
+            echo "INSTALLING: [ ansible ]"
+            printf "\t"
+            sudo pip install paramiko PyYAML jinja2 httplib2
+            sudo pip install ansible
+        else
+            echo "INSTALLED: [ ansible ]"
+            printf "\t"
+            ansible --version | awk '{ print $2 }'
+        fi
+
+
+        ########################################
+        ########################################
+        ####    
+        ####   INSTALL VIRTUALBOX
+        ####
+        ########################################
+        ########################################
+
+
+        # $BASE_DIR/bootstrap/mac_app_installed.sh
+        # $BASE_DIR/bootstrap/mac_app_version.sh
+        # org.virtualbox.app.VirtualBox
+
+        $BASE_DIR/bootstrap/mac_app_installed.sh org.virtualbox.app.VirtualBox
+        INSTALLED=$?
+        echo ""
+
+        INSTALL_VIRTUALBOX=''
+        REQUIRED_VIRTUALBOX_VERSION=4.2.16
+
+        # https://github.com/noitcudni/vagrant-ae
+
+        if [ $INSTALLED == 1 ] ; then
+            #  VirtualBox is installed
+            VERSION_VIRTUALBOX=`$BASE_DIR/bootstrap/mac_app_version.sh org.virtualbox.app.VirtualBox`
+
+            echo "INSTALLED: [ VirtualBox ]"
+            printf "\t"
+            echo "$VERSION_VIRTUALBOX"
+
+            $BASE_DIR/bootstrap/version_compare.py $VERSION_VIRTUALBOX $REQUIRED_VIRTUALBOX_VERSION
+            CMP_RESULT=$?
+            if [ ! $CMP_RESULT -eq 2 ] ; then
+                # Remove VIRTUALBOX if not verion: $REQUIRED_VIRTUALBOX_VERSION
+                # http://stackoverflow.com/questions/226703/how-do-i-prompt-for-input-in-a-linux-shell-script
+                
+                echo "Current VirtualBox Version: $VERSION_VIRTUALBOX"
+                echo "Required VirtualBox Version: $REQUIRED_VIRTUALBOX_VERSION"
+                echo ""
+                
+                echo "Install Correct VirtualBox (Delete and Install)?"
+                while true; do
+                    read -p "Is this ok [y/N]:" yn
+                    case $yn in
+                        [Yy]* ) 
+                            echo "Removing VirtualBox";
+                            PATH_VIRTUALBOX=`$BASE_DIR/bootstrap/mac_app_path.sh org.virtualbox.app.VirtualBox`
+                            if [ ! $? -eq 0 ] ; then
+                                echo "Determining Path to VirtualBox returned and error."
+                                echo "Please manually remove VirtualBox"
+                                exit 1;
+                            fi
+                            
+                            echo "Remove Path ($PATH_VIRTUALBOX):?"
+                            while true; do
+                                read -p "Is this ok [y/N]:" yn
+                                case $yn in
+                                    [Yy]* ) 
+                                        echo "Removing VirtualBox";
+                                        INSTALL_VIRTUALBOX=1
+                                        if [ -n "$PATH_VIRTUALBOX" -a -d "$PATH_VIRTUALBOX" ] ; then
+                                            sudo rm -rf $PATH_VIRTUALBOX
+                                        fi
+                                        break;;
+                                    [Nn]* ) echo "Skipping Removing"; break;;
+                                    * ) echo "Please answer yes or no.";;
+                                esac
+                            done
+                            
+                            break;;
+                        [Nn]* ) echo "No"; break;;
+                        * ) echo "Please answer yes or no.";;
+                    esac
+                done
+                
+            fi
+        else
+            # VirtualBox is not installed
+            INSTALL_VIRTUALBOX=1
+            echo "Not Installed"
+        fi
+
+        # Install VirtualBox
+        if [ -n "$INSTALL_VIRTUALBOX" ] ; then
+            echo "Install VirtualBox"
+            VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.dmg"
+            if [ ! -d "$VIRTUALBOX_FILE" ] ; then
+                # Find version here
+                # http://download.virtualbox.org/virtualbox/
+                curl -Lk http://download.virtualbox.org/virtualbox/4.2.16/VirtualBox-4.2.16-86992-OSX.dmg -o $VIRTUALBOX_FILE
+            fi
+            hdiutil attach $VIRTUALBOX_FILE
+            sudo installer -package /Volumes/VirtualBox/VirtualBox.pkg -target '/Volumes/Macintosh HD'
+            hdiutil detach /Volumes/VirtualBox/
+            
+            rm $VIRTUALBOX_FILE
+        fi
+
+
+        ########################################
+        ########################################
+        ####    
+        ####   INSTALL VAGRANT
+        ####
+        ########################################
+        ########################################
+
+
+        command -v vagrant >/dev/null 2>&1
+        INSTALLED=$?
+        echo ""
+
+        INSTALL_VAGRANT=''
+        REQUIRED_VAGRANT_VERSION=1.4.3
+
+        # https://github.com/noitcudni/vagrant-ae
+
+        if [ $INSTALLED == 0 ] ; then
+            #  Vagrant is installed
+            VERSION_VAGRANT=`vagrant -v | awk '{ print $2 }'`
+
+            echo "INSTALLED: [ Vagrant ]"
+            printf "\t"
+            echo "$VERSION_VAGRANT"
+
+            $BASE_DIR/bootstrap/version_compare.py $VERSION_VAGRANT $REQUIRED_VAGRANT_VERSION
+            CMP_RESULT=$?
+            # Test if install version is exact version
+            if [ ! $CMP_RESULT -eq 2 ] ; then
+                # Remove VAGRANT if not verion: $REQUIRED_VAGRANT_VERSION
+                # http://stackoverflow.com/questions/226703/how-do-i-prompt-for-input-in-a-linux-shell-script
+                
+                echo "Current Vagrant Version: $VERSION_VAGRANT"
+                echo "Required Vagrant Version: $REQUIRED_VAGRANT_VERSION"
+                echo ""
+                
+                echo "Install Correct Vagrant (Delete and Install)?"
+                while true; do
+                    read -p "Is this ok [y/N]:" yn
+                    case $yn in
+                        [Yy]* ) 
+                            echo "Removing Vagrant";
+                            
+                            # For Mac OS X
+                            sudo rm -rf /Applications/Vagrant
+                            sudo rm /usr/bin/vagrant
+                            
+                            # For Linux
+                            # sudo rm -rf /opt/vagrant
+                            # sudo rm /usr/bin/vagrant
+                            
+                            # User Dir
+                            # ~/.vagrant.d
+                            INSTALL_VAGRANT=1
+                            break;;
+                        [Nn]* ) echo "No"; break;;
+                        * ) echo "Please answer yes or no.";;
+                    esac
+                done
+                
+            fi
+        else
+            # Vagrant is not installed
+            INSTALL_VAGRANT=1
+            echo "Not Installed"
+        fi
+
+        # Install Vagrant
+        if [ -n "$INSTALL_VAGRANT" ] ; then
+            echo "Install Vagrant"
+            VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.dmg"
+            if [ ! -d "$VAGRANT_FILE" ] ; then
+                # Find version here
+                # http://download.virtualbox.org/virtualbox/
+                curl -Lk https://dl.bintray.com/mitchellh/vagrant/Vagrant-1.4.3.dmg -o $VAGRANT_FILE
+            fi
+            hdiutil attach $VAGRANT_FILE
+            sudo installer -package /Volumes/Vagrant/Vagrant.pkg -target '/Volumes/Macintosh HD'
+            hdiutil detach /Volumes/Vagrant/
+            
+            rm $VAGRANT_FILE
+        fi
+
+
+        ########################################
+        ########################################
+        ####    
+        ####   INSTALL JAVA
+        ####
+        ########################################
+        ########################################
+
+
+        command -v java -version >/dev/null 2>&1
+        INSTALLED=$?
+        echo ""
+
+        INSTALL_JAVA=''
+        REQUIRED_JAVA_VERSION=1.7
+
+
+
+        if [ $INSTALLED == 0 ] ; then
+            #  Java is installed
+            
+            # java version "1.7.0_17"
+            # Java(TM) SE Runtime Environment (build 1.7.0_17-b02)
+            # Java HotSpot(TM) 64-Bit Server VM (build 23.7-b01, mixed mode)
+            
+            # 1) send to standard out
+            # 2) pull third column "version"
+            # 3) only get first line
+            # 4) remove quotes
+            
+            VERSION_JAVA=`java -version 2>&1 | awk '{ print $3 }' | head -n 1 | tr -d '"'`
+
+            # 1) Remove everything after the "_" underscore
+            VERSION_JAVA=${VERSION_JAVA%%_*}
+            
+            echo "INSTALLED: [ Java ]"
+            printf "\t"
+            echo "$VERSION_JAVA"
+
+            $BASE_DIR/bootstrap/version_compare.py $VERSION_JAVA $REQUIRED_JAVA_VERSION
+            CMP_RESULT=$?
+            # Test if installed version is less than required version
+            if [ $CMP_RESULT -lt 2 ] ; then
+                # Remove JAVA if not verion: $REQUIRED_JAVA_VERSION
+                # http://stackoverflow.com/questions/226703/how-do-i-prompt-for-input-in-a-linux-shell-script
+            
+                echo "Current Java Version: $VERSION_JAVA"
+                echo "Required Java Version: $REQUIRED_JAVA_VERSION"
+                echo ""
+            
+                echo "Install Correct Java (Delete and Install)?"
+                while true; do
+                    read -p "Is this ok [y/N]:" yn
+                    case $yn in
+                        [Yy]* ) 
+                            echo "Skipping Removing Java";
+                        
+                            # For Mac OS X
+                            #Navigate to /Library/Java/JavaVirtualMachines and remove the directory whose name matches the following format:*
+                            #    /Library/Java/JavaVirtualMachines/jdk<major>.<minor>.<macro[_update]>.jdk
+                            #For example, to uninstall 7u6:
+                            #    % rm -rf jdk1.7.0_06.jdk
+                        
+                            # For Linux
+                            # sudo rm -rf /opt/vagrant
+                            # sudo rm /usr/bin/vagrant
+                        
+                            # User Dir
+                            # ~/.vagrant.d
+                            INSTALL_JAVA=1
+                            break;;
+                        [Nn]* ) echo "No"; break;;
+                        * ) echo "Please answer yes or no.";;
+                    esac
+                done
+            
+            fi
+        else
+            # Java is not installed
+            INSTALL_JAVA=1
+            echo "Not Installed"
+        fi
+
+
+
+        # Install Java
+        if [ -n "$INSTALL_JAVA" ] ; then
+            echo "Install Java"
+            JAVA_FILE="$HOME/Downloads/jdk-7u51-macosx-x64.dmg"
+            if [ ! -d "$JAVA_FILE" ] ; then
+                # Find version here
+                # curl -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;" http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg -o jdk-7u51-macosx-x64.dmg
+                # http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg
+                # http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-linux-x64.rpm
+                
+                curl -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;" http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg -o $JAVA_FILE
+            fi
+            hdiutil attach $JAVA_FILE
+            sudo installer -package '/Volumes/JDK 7 Update 51/JDK 7 Update 51.pkg' -target '/Volumes/Macintosh HD'
+            hdiutil detach '/Volumes/JDK 7 Update 51/'
+
+            rm $JAVA_FILE
+        fi
+
+        ########################################
+        ########################################
+        ####    
+        ####   INSTALL GIT
+        ####
+        ########################################
+        ########################################
+
+
+        command -v git --version >/dev/null 2>&1
+        INSTALLED=$?
+        echo ""
+
+        INSTALL_GIT=''
+        UNINSTALL_GIT=''
+        REQUIRED_GIT_VERSION=1.8
+
+
+
+        if [ $INSTALLED == 0 ] ; then
+            #  Git is installed
+            
+            # git version 1.7.4.4
+            
+            VERSION_GIT=`git --version | awk '{print $3}'`
+            
+            echo "INSTALLED: [ Git ]"
+            printf "\t"
+            echo "$VERSION_GIT"
+
+            $BASE_DIR/bootstrap/version_compare.py $VERSION_GIT $REQUIRED_GIT_VERSION
+            CMP_RESULT=$?
+            # Test if installed version is less than required version
+            if [ $CMP_RESULT -lt 2 ] ; then
+                # Remove GIT if not verion: $REQUIRED_GIT_VERSION
+                # http://stackoverflow.com/questions/226703/how-do-i-prompt-for-input-in-a-linux-shell-script
+            
+                echo "Current Git Version: $VERSION_GIT"
+                echo "Required Git Version: $REQUIRED_GIT_VERSION"
+                echo ""
+            
+                echo "Install Correct Git (Delete and Install)?"
+                while true; do
+                    read -p "Is this ok [y/N]:" yn
+                    case $yn in
+                        [Yy]* ) 
+                            echo "Setting Git to be removed";
+                            UNINSTALL_GIT=1
+                            # For Mac OS X
+                            #Navigate to /Library/Git/GitVirtualMachines and remove the directory whose name matches the following format:*
+                            #    /Library/Git/GitVirtualMachines/jdk<major>.<minor>.<macro[_update]>.jdk
+                            #For example, to uninstall 7u6:
+                            #    % rm -rf jdk1.7.0_06.jdk
+                        
+                            # For Linux
+                            # sudo rm -rf /opt/vagrant
+                            # sudo rm /usr/bin/vagrant
+                        
+                            # User Dir
+                            # ~/.vagrant.d
+                            INSTALL_GIT=1
+                            break;;
+                        [Nn]* ) echo "Skipping"; break;;
+                        * ) echo "Please answer yes or no.";;
+                    esac
+                done
+            
+            fi
+        else
+            # Git is not installed
+            INSTALL_GIT=1
+            echo "Not Installed"
+        fi
+
+
+
+        # Install Git
+        if [ -n "$INSTALL_GIT" ] ; then
+            echo "Install Git"
+            GIT_FILE="$HOME/Downloads/git-1.8.4.2-intel-universal-snow-leopard.dmg"
+            if [ ! -d "$GIT_FILE" ] ; then
+                # Find version here
+                # curl -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;" http://download.oracle.com/otn-pub/git/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg -o jdk-7u51-macosx-x64.dmg
+                # http://download.oracle.com/otn-pub/git/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg
+                # http://download.oracle.com/otn-pub/git/jdk/7u51-b13/jdk-7u51-linux-x64.rpm
+                
+                curl -L https://git-osx-installer.googlecode.com/files/git-1.8.4.2-intel-universal-snow-leopard.dmg -o $GIT_FILE
+            fi
+            VOLUME_PATH_GIT='/Volumes/Git 1.8.4.2 Snow Leopard Intel Universal/'
+            PACKAGE_NAME_GIT='git-1.8.4.2-intel-universal-snow-leopard.pkg'
+            
+            hdiutil attach $GIT_FILE
+            
+            if [ -n "$INSTALL_GIT" ] ; then
+                sudo "${VOLUME_PATH_GIT}uninstall.sh"
+            fi
+            
+            sudo installer -package "${VOLUME_PATH_GIT}${PACKAGE_NAME_GIT}" -target '/Volumes/Macintosh HD'
+            sudo "${VOLUME_PATH_GIT}setup git PATH for non-terminal programs.sh"
+            
+            hdiutil detach "$VOLUME_PATH_GIT"
+            
+            NEW_VERSION_GIT=`git --version | awk '{print $3}'`
+            
+            if [ "$VERSION_GIT" == "$NEW_VERSION_GIT" ] ; then
+                echo "Installed git version isn't matching so creating symbolic link to correct version"
+                sudo mv /usr/bin/git /usr/bin/git-{$VERSION_GIT}
+                sudo ln -s /usr/local/git/bin/git /usr/bin/git
+                TEST_VERSION_GIT=`git --version | awk '{print $3}'`
+                if [ "$VERSION_GIT" == "$TEST_VERSION_GIT" ] ; then
+                    echo "Didn't work!"
+                    echo ""
+                    echo "YOU!!!!!"
+                    echo " Need to investigate why GIT didn't update properly, probably a path issue"
+                    echo "Should install git to /usr/local/git"
+                    echo "which git"
+                    echo "git --version"
+                    echo "ls -al `which git`"
+                else
+                    echo "INSTALLED: [ Git ]"
+                    printf "\t"
+                    echo "$TEST_VERSION_GIT"
+                fi
+            fi
+            
+            echo "Remove downloaded file ($GIT_FILE) ?"
+            while true; do
+                read -p "Is this ok [y/N]:" yn
+                case $yn in
+                    [Yy]* ) 
+                        rm $GIT_FILE
+                        break;;
+                    [Nn]* ) echo "Skipping"; break;;
+                    * ) echo "Please answer yes or no.";;
+                esac
+            done
+        fi
         break
         ;;
     * )
@@ -89,603 +1297,6 @@ case $OS_NAME in
       break
       ;;             
 esac
-
-
-########################################
-########################################
-####    
-####   INSTALL PYTHON
-####
-########################################
-########################################
-
-# Test if python is installed
-command -v python >/dev/null 2>&1
-INSTALLED=$?
-
-if [ ! $INSTALLED == 0 ] ; then
-	echo "Install python it's missing"
-	exit 1
-fi
-
-# Test if python version is 2.6 or above
-# python 2.7.5
-python -c 'import sys; version=sys.version_info[0]*10; version=version+sys.version_info[1];sys.exit(1)if(version<26) else sys.exit(0)'
-INSTALLED=$?
-echo ""
-
-if [ ! $INSTALLED == 0 ] ; then
-	echo "Install python greater than 2.6"
-	exit 1
-else
-	echo "INSTALLED: [ python ]"
-	printf "\t"
-	python -V 2>&1 | awk '{ print $2 }'
-fi
-
-
-########################################
-########################################
-####    
-####   INSTALL EASY_INSTALL
-####
-########################################
-########################################
-
-# Test if easy_install if not install manually
-command -v easy_install >/dev/null 2>&1
-INSTALLED=$?
-echo ""
-
-if [ ! $INSTALLED == 0 ] ; then
-	echo "Install easy_install it's missing"
-	echo curl -O http://python-distribute.org/distribute_setup.py
-	echo sudo python distribute_setup.py
-	echo sudo rm distribute_setup.py
-	exit 1
-else
-	echo "INSTALLED: [ easy_install ]"
-fi
-
-
-########################################
-########################################
-####    
-####   INSTALL PIP
-####
-########################################
-########################################
-
-
-# Test and install pip if not installed
-# pip 1.4.1
-command -v pip >/dev/null 2>&1
-PIP_VERSION=1.5
-INSTALLED=$?
-echo ""
-
-if [ ! $INSTALLED == 0 ] ; then
-	echo "INSTALLING: [ pip ]"
-	printf "\t"
-	sudo easy_install pip
-else
-	echo "INSTALLED: [ pip ]"
-	printf "\t"
-	$BASE_DIR/bootstrap/version_compare.py `$BASE_DIR/bootstrap/pip_version.py` $PIP_VERSION
-	CMP_RESULT=$?
-	if [ $CMP_RESULT -lt 2 ] ; then
-	    # Upgrade pip
-	    $BASE_DIR/bootstrap/pip_version.py
-	    echo "Upgrading pip to $PIP_VERSION"
-	    # http://www.pip-installer.org/en/latest/installing.html#install-or-upgrade-pip
-	    sudo pip install --upgrade setuptools
-	    SETUPTOOLS_RESULT=$?
-	    if [ $SETUPTOOLS_RESULT -ne 0 ] ; then
-	        echo "upgrading setuptools failed try manually"
-	        exit 1
-        fi
-	    curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py -O
-	    CURL_RESULT=$?
-	    if [ $CURL_RESULT -ne 0 ] ; then
-	        echo "downloading new pip failed try manually"
-	        exit 1
-        fi
-	    sudo python get-pip.py
-	    PIP_RESULT=$?
-	    echo "PIP_RESULT:$PIP_RESULT"
-	    if [ $PIP_RESULT -ne 0 ] ; then
-	        echo "upgrading pip failed try manually"
-	        exit 1
-        fi
-	    rm get-pip.py
-	    echo "New Pip Version"
-	    $BASE_DIR/bootstrap/pip_version.py
-	    # https://pypi.python.org/pypi/setuptools#installation-instructions
-	    # Instructions to Install setuptools
-	    # 
-        # curl https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py -O
-        # sudo python ez_setup.py
-        # rm ez_setup.py
-	elif [ $CMP_RESULT -eq 0 ] ; then
-	    echo "There was an error comparing the pip version, please check manually"
-	    exit 1
-	else
-	    $BASE_DIR/bootstrap/pip_version.py
-    fi
-	# pip -V  # pip verions only works on 1.4
-fi
-
-
-########################################
-########################################
-####    
-####   INSTALL ANSIBLE
-####
-########################################
-########################################
-
-
-# installed ansible paramiko jinja2 PyYAML httplib2 pycrypto ecdsa markupsafe
-# install libselinux-python on remote nodes using selinux
-
-# Test and install ansible if not installed
-# ansible 1.4.3
-	# paramiko-1.12.0
-	# Jinja2-2.7.1
-	# PyYAML-3.10
-	# httplib2-0.8
-	# pycrypto-2.6.1
-	# ecdsa-0.10
-	# MarkupSafe-0.18
-
-
-
-command -v ansible >/dev/null 2>&1
-INSTALLED=$?
-echo ""
-
-# Todo test for version and upgrade
-
-# Version 1.4.4
-
-if [ ! $INSTALLED == 0 ] ; then
-	echo "INSTALLING: [ ansible ]"
-	printf "\t"
-	sudo pip install paramiko PyYAML jinja2 httplib2
-	sudo pip install ansible
-else
-	echo "INSTALLED: [ ansible ]"
-	printf "\t"
-	ansible --version | awk '{ print $2 }'
-fi
-
-
-########################################
-########################################
-####    
-####   INSTALL VIRTUALBOX
-####
-########################################
-########################################
-
-
-# $BASE_DIR/bootstrap/mac_app_installed.sh
-# $BASE_DIR/bootstrap/mac_app_version.sh
-# org.virtualbox.app.VirtualBox
-
-$BASE_DIR/bootstrap/mac_app_installed.sh org.virtualbox.app.VirtualBox
-INSTALLED=$?
-echo ""
-
-INSTALL_VIRTUALBOX=''
-REQUIRED_VIRTUALBOX_VERSION=4.2.16
-
-# https://github.com/noitcudni/vagrant-ae
-
-if [ $INSTALLED == 1 ] ; then
-    #  VirtualBox is installed
-    VERSION_VIRTUALBOX=`$BASE_DIR/bootstrap/mac_app_version.sh org.virtualbox.app.VirtualBox`
-
-	echo "INSTALLED: [ VirtualBox ]"
-	printf "\t"
-	echo "$VERSION_VIRTUALBOX"
-
-    $BASE_DIR/bootstrap/version_compare.py $VERSION_VIRTUALBOX $REQUIRED_VIRTUALBOX_VERSION
-    CMP_RESULT=$?
-    if [ ! $CMP_RESULT -eq 2 ] ; then
-        # Remove VIRTUALBOX if not verion: $REQUIRED_VIRTUALBOX_VERSION
-        # http://stackoverflow.com/questions/226703/how-do-i-prompt-for-input-in-a-linux-shell-script
-		
-		echo "Current VirtualBox Version: $VERSION_VIRTUALBOX"
-		echo "Required VirtualBox Version: $REQUIRED_VIRTUALBOX_VERSION"
-		echo ""
-		
-        echo "Install Correct VirtualBox (Delete and Install)?"
-        while true; do
-            read -p "Is this ok [y/N]:" yn
-            case $yn in
-                [Yy]* ) 
-					echo "Removing VirtualBox";
-					PATH_VIRTUALBOX=`$BASE_DIR/bootstrap/mac_app_path.sh org.virtualbox.app.VirtualBox`
-					if [ ! $? -eq 0 ] ; then
-						echo "Determining Path to VirtualBox returned and error."
-						echo "Please manually remove VirtualBox"
-						exit 1;
-					fi
-					
-			        echo "Remove Path ($PATH_VIRTUALBOX):?"
-			        while true; do
-			            read -p "Is this ok [y/N]:" yn
-			            case $yn in
-			                [Yy]* ) 
-								echo "Removing VirtualBox";
-								INSTALL_VIRTUALBOX=1
-								if [ -n "$PATH_VIRTUALBOX" -a -d "$PATH_VIRTUALBOX" ] ; then
-									sudo rm -rf $PATH_VIRTUALBOX
-								fi
-								break;;
-			                [Nn]* ) echo "Skipping Removing"; break;;
-			                * ) echo "Please answer yes or no.";;
-			            esac
-			        done
-					
-					break;;
-                [Nn]* ) echo "No"; break;;
-                * ) echo "Please answer yes or no.";;
-            esac
-        done
-		
-    fi
-else
-    # VirtualBox is not installed
-    INSTALL_VIRTUALBOX=1
-    echo "Not Installed"
-fi
-
-# Install VirtualBox
-if [ -n "$INSTALL_VIRTUALBOX" ] ; then
-    echo "Install VirtualBox"
-    VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.dmg"
-    if [ ! -d "$VIRTUALBOX_FILE" ] ; then
-        # Find version here
-        # http://download.virtualbox.org/virtualbox/
-        curl -Lk http://download.virtualbox.org/virtualbox/4.2.16/VirtualBox-4.2.16-86992-OSX.dmg -o $VIRTUALBOX_FILE
-    fi
-    hdiutil attach $VIRTUALBOX_FILE
-    sudo installer -package /Volumes/VirtualBox/VirtualBox.pkg -target '/Volumes/Macintosh HD'
-    hdiutil detach /Volumes/VirtualBox/
-    
-    rm $VIRTUALBOX_FILE
-fi
-
-
-########################################
-########################################
-####    
-####   INSTALL VAGRANT
-####
-########################################
-########################################
-
-
-command -v vagrant >/dev/null 2>&1
-INSTALLED=$?
-echo ""
-
-INSTALL_VAGRANT=''
-REQUIRED_VAGRANT_VERSION=1.4.3
-
-# https://github.com/noitcudni/vagrant-ae
-
-if [ $INSTALLED == 0 ] ; then
-    #  Vagrant is installed
-    VERSION_VAGRANT=`vagrant -v | awk '{ print $2 }'`
-
-	echo "INSTALLED: [ Vagrant ]"
-	printf "\t"
-	echo "$VERSION_VAGRANT"
-
-    $BASE_DIR/bootstrap/version_compare.py $VERSION_VAGRANT $REQUIRED_VAGRANT_VERSION
-    CMP_RESULT=$?
-    # Test if install version is exact version
-    if [ ! $CMP_RESULT -eq 2 ] ; then
-        # Remove VAGRANT if not verion: $REQUIRED_VAGRANT_VERSION
-        # http://stackoverflow.com/questions/226703/how-do-i-prompt-for-input-in-a-linux-shell-script
-		
-		echo "Current Vagrant Version: $VERSION_VAGRANT"
-		echo "Required Vagrant Version: $REQUIRED_VAGRANT_VERSION"
-		echo ""
-		
-        echo "Install Correct Vagrant (Delete and Install)?"
-        while true; do
-            read -p "Is this ok [y/N]:" yn
-            case $yn in
-                [Yy]* ) 
-					echo "Removing Vagrant";
-					
-					# For Mac OS X
-                    sudo rm -rf /Applications/Vagrant
-                    sudo rm /usr/bin/vagrant
-                    
-                    # For Linux
-                    # sudo rm -rf /opt/vagrant
-                    # sudo rm /usr/bin/vagrant
-                    
-                    # User Dir
-                    # ~/.vagrant.d
-                    INSTALL_VAGRANT=1
-					break;;
-                [Nn]* ) echo "No"; break;;
-                * ) echo "Please answer yes or no.";;
-            esac
-        done
-		
-    fi
-else
-    # Vagrant is not installed
-    INSTALL_VAGRANT=1
-    echo "Not Installed"
-fi
-
-# Install Vagrant
-if [ -n "$INSTALL_VAGRANT" ] ; then
-    echo "Install Vagrant"
-    VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.dmg"
-    if [ ! -d "$VAGRANT_FILE" ] ; then
-        # Find version here
-        # http://download.virtualbox.org/virtualbox/
-        curl -Lk https://dl.bintray.com/mitchellh/vagrant/Vagrant-1.4.3.dmg -o $VAGRANT_FILE
-    fi
-    hdiutil attach $VAGRANT_FILE
-    sudo installer -package /Volumes/Vagrant/Vagrant.pkg -target '/Volumes/Macintosh HD'
-    hdiutil detach /Volumes/Vagrant/
-    
-    rm $VAGRANT_FILE
-fi
-
-
-########################################
-########################################
-####    
-####   INSTALL JAVA
-####
-########################################
-########################################
-
-
-command -v java -version >/dev/null 2>&1
-INSTALLED=$?
-echo ""
-
-INSTALL_JAVA=''
-REQUIRED_JAVA_VERSION=1.7
-
-
-
-if [ $INSTALLED == 0 ] ; then
-    #  Java is installed
-    
-    # java version "1.7.0_17"
-    # Java(TM) SE Runtime Environment (build 1.7.0_17-b02)
-    # Java HotSpot(TM) 64-Bit Server VM (build 23.7-b01, mixed mode)
-    
-    # 1) send to standard out
-    # 2) pull third column "version"
-    # 3) only get first line
-    # 4) remove quotes
-    
-    VERSION_JAVA=`java -version 2>&1 | awk '{ print $3 }' | head -n 1 | tr -d '"'`
-
-    # 1) Remove everything after the "_" underscore
-    VERSION_JAVA=${VERSION_JAVA%%_*}
-    
-	echo "INSTALLED: [ Java ]"
-	printf "\t"
-	echo "$VERSION_JAVA"
-
-    $BASE_DIR/bootstrap/version_compare.py $VERSION_JAVA $REQUIRED_JAVA_VERSION
-    CMP_RESULT=$?
-    # Test if installed version is less than required version
-    if [ $CMP_RESULT -lt 2 ] ; then
-        # Remove JAVA if not verion: $REQUIRED_JAVA_VERSION
-        # http://stackoverflow.com/questions/226703/how-do-i-prompt-for-input-in-a-linux-shell-script
-	
-		echo "Current Java Version: $VERSION_JAVA"
-		echo "Required Java Version: $REQUIRED_JAVA_VERSION"
-		echo ""
-	
-        echo "Install Correct Java (Delete and Install)?"
-        while true; do
-            read -p "Is this ok [y/N]:" yn
-            case $yn in
-                [Yy]* ) 
-					echo "Skipping Removing Java";
-				
-					# For Mac OS X
-                    #Navigate to /Library/Java/JavaVirtualMachines and remove the directory whose name matches the following format:*
-                    #    /Library/Java/JavaVirtualMachines/jdk<major>.<minor>.<macro[_update]>.jdk
-                    #For example, to uninstall 7u6:
-                    #    % rm -rf jdk1.7.0_06.jdk
-                
-                    # For Linux
-                    # sudo rm -rf /opt/vagrant
-                    # sudo rm /usr/bin/vagrant
-                
-                    # User Dir
-                    # ~/.vagrant.d
-                    INSTALL_JAVA=1
-					break;;
-                [Nn]* ) echo "No"; break;;
-                * ) echo "Please answer yes or no.";;
-            esac
-        done
-	
-    fi
-else
-    # Java is not installed
-    INSTALL_JAVA=1
-    echo "Not Installed"
-fi
-
-
-
-# Install Java
-if [ -n "$INSTALL_JAVA" ] ; then
-    echo "Install Java"
-    JAVA_FILE="$HOME/Downloads/jdk-7u51-macosx-x64.dmg"
-    if [ ! -d "$JAVA_FILE" ] ; then
-        # Find version here
-        # curl -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;" http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg -o jdk-7u51-macosx-x64.dmg
-        # http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg
-        # http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-linux-x64.rpm
-        
-		curl -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;" http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg -o $JAVA_FILE
-    fi
-    hdiutil attach $JAVA_FILE
-    sudo installer -package '/Volumes/JDK 7 Update 51/JDK 7 Update 51.pkg' -target '/Volumes/Macintosh HD'
-    hdiutil detach '/Volumes/JDK 7 Update 51/'
-
-    rm $JAVA_FILE
-fi
-
-########################################
-########################################
-####    
-####   INSTALL GIT
-####
-########################################
-########################################
-
-
-command -v git --version >/dev/null 2>&1
-INSTALLED=$?
-echo ""
-
-INSTALL_GIT=''
-UNINSTALL_GIT=''
-REQUIRED_GIT_VERSION=1.8
-
-
-
-if [ $INSTALLED == 0 ] ; then
-    #  Git is installed
-    
-    # git version 1.7.4.4
-    
-    VERSION_GIT=`git --version | awk '{print $3}'`
-    
-	echo "INSTALLED: [ Git ]"
-	printf "\t"
-	echo "$VERSION_GIT"
-
-    $BASE_DIR/bootstrap/version_compare.py $VERSION_GIT $REQUIRED_GIT_VERSION
-    CMP_RESULT=$?
-    # Test if installed version is less than required version
-    if [ $CMP_RESULT -lt 2 ] ; then
-        # Remove GIT if not verion: $REQUIRED_GIT_VERSION
-        # http://stackoverflow.com/questions/226703/how-do-i-prompt-for-input-in-a-linux-shell-script
-	
-		echo "Current Git Version: $VERSION_GIT"
-		echo "Required Git Version: $REQUIRED_GIT_VERSION"
-		echo ""
-	
-        echo "Install Correct Git (Delete and Install)?"
-        while true; do
-            read -p "Is this ok [y/N]:" yn
-            case $yn in
-                [Yy]* ) 
-					echo "Setting Git to be removed";
-				    UNINSTALL_GIT=1
-					# For Mac OS X
-                    #Navigate to /Library/Git/GitVirtualMachines and remove the directory whose name matches the following format:*
-                    #    /Library/Git/GitVirtualMachines/jdk<major>.<minor>.<macro[_update]>.jdk
-                    #For example, to uninstall 7u6:
-                    #    % rm -rf jdk1.7.0_06.jdk
-                
-                    # For Linux
-                    # sudo rm -rf /opt/vagrant
-                    # sudo rm /usr/bin/vagrant
-                
-                    # User Dir
-                    # ~/.vagrant.d
-                    INSTALL_GIT=1
-					break;;
-                [Nn]* ) echo "Skipping"; break;;
-                * ) echo "Please answer yes or no.";;
-            esac
-        done
-	
-    fi
-else
-    # Git is not installed
-    INSTALL_GIT=1
-    echo "Not Installed"
-fi
-
-
-
-# Install Git
-if [ -n "$INSTALL_GIT" ] ; then
-    echo "Install Git"
-    GIT_FILE="$HOME/Downloads/git-1.8.4.2-intel-universal-snow-leopard.dmg"
-    if [ ! -d "$GIT_FILE" ] ; then
-        # Find version here
-        # curl -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;" http://download.oracle.com/otn-pub/git/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg -o jdk-7u51-macosx-x64.dmg
-        # http://download.oracle.com/otn-pub/git/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg
-        # http://download.oracle.com/otn-pub/git/jdk/7u51-b13/jdk-7u51-linux-x64.rpm
-        
-		curl -L https://git-osx-installer.googlecode.com/files/git-1.8.4.2-intel-universal-snow-leopard.dmg -o $GIT_FILE
-    fi
-    VOLUME_PATH_GIT='/Volumes/Git 1.8.4.2 Snow Leopard Intel Universal/'
-    PACKAGE_NAME_GIT='git-1.8.4.2-intel-universal-snow-leopard.pkg'
-    
-    hdiutil attach $GIT_FILE
-    
-    if [ -n "$INSTALL_GIT" ] ; then
-        sudo "${VOLUME_PATH_GIT}uninstall.sh"
-    fi
-    
-    sudo installer -package "${VOLUME_PATH_GIT}${PACKAGE_NAME_GIT}" -target '/Volumes/Macintosh HD'
-    sudo "${VOLUME_PATH_GIT}setup git PATH for non-terminal programs.sh"
-    
-    hdiutil detach "$VOLUME_PATH_GIT"
-    
-    NEW_VERSION_GIT=`git --version | awk '{print $3}'`
-    
-    if [ "$VERSION_GIT" == "$NEW_VERSION_GIT" ] ; then
-        echo "Installed git version isn't matching so creating symbolic link to correct version"
-        sudo mv /usr/bin/git /usr/bin/git-{$VERSION_GIT}
-        sudo ln -s /usr/local/git/bin/git /usr/bin/git
-        TEST_VERSION_GIT=`git --version | awk '{print $3}'`
-        if [ "$VERSION_GIT" == "$TEST_VERSION_GIT" ] ; then
-            echo "Didn't work!"
-            echo ""
-            echo "YOU!!!!!"
-            echo " Need to investigate why GIT didn't update properly, probably a path issue"
-            echo "Should install git to /usr/local/git"
-            echo "which git"
-            echo "git --version"
-            echo "ls -al `which git`"
-        else
-        	echo "INSTALLED: [ Git ]"
-        	printf "\t"
-        	echo "$TEST_VERSION_GIT"
-        fi
-    fi
-    
-    echo "Remove downloaded file ($GIT_FILE) ?"
-    while true; do
-        read -p "Is this ok [y/N]:" yn
-        case $yn in
-            [Yy]* ) 
-				rm $GIT_FILE
-				break;;
-            [Nn]* ) echo "Skipping"; break;;
-            * ) echo "Please answer yes or no.";;
-        esac
-    done
-fi
-
 
 # BASE_DIR=$(cd $(dirname $0);  pwd -P)
 # ansible-playbook $BASE_DIR/helloworld_local.yaml -i $BASE_DIR/inventoryfile

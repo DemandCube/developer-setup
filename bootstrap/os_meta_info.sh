@@ -1,9 +1,9 @@
 #!/bin/sh
 #******************************************************************************************+
-# os_meta_info.sh
-# Script to find out OS related meta information                                            # 
-#        To test this script run as:
-#        $os_meta_info.sh test                                                                                          # 
+# os_meta_info.sh                                                                          #
+# Script to find out OS related meta information                                           # 
+#        To test this script run as:                                                       #
+#        $ sh os_meta_info.sh test                                                             #
 # Author: Hikmat Dhamee                                                                    #
 #******************************************************************************************+
 
@@ -22,19 +22,18 @@ OS_KERNEL_VER=`uname -r`
 OS_ARCH=`uname -m`
 
 #Finding value of above variables based on os name
-if [ "{$OS_NAME}" == "windowsnt" ]; then
+if [ "$OS_NAME" = "windowsnt" ]; then
     OS_NAME=windows
-elif [ "{$OS_NAME}" == "darwin" ]; then
-    OS_NAME=mac
-else
-    OS_NAME=`uname`
-    if [ "${OS_NAME}" = "SunOS" ] ; then
+elif [ "$OS_NAME" = "darwin" ]; then
+    OS_NAME=Darwin
+else    
+    if [ "$OS_NAME" = "sunos" ] ; then
         OS_NAME=Solaris
         OS_ARCH=`uname -p`
-        OSSTR="${OS_NAME} ${OS_REVISION}(${OS_ARCH} `uname -v`)"
-    elif [ "${OS_NAME}" = "AIX" ] ; then
-        OSSTR="${OS_NAME} `oslevel` (`oslevel -r`)"
-    elif [ "${OS_NAME}" = "Linux" ] ; then
+        OSSTR="$OS_NAME $OS_REVISION($OS_ARCH `uname -v`)"
+    elif [ "$OS_NAME" = "aix" ] ; then
+        OSSTR="$OS_NAME `oslevel` (`oslevel -r`)"
+    elif [ "$OS_NAME" = "linux" ] ; then
         if [ -f /etc/redhat-release ] ; then
             OS_DISTRO_BASED_ON='RedHat'
             OS_DISTRO=`cat /etc/redhat-release |sed s/\ release.*//`
@@ -55,7 +54,7 @@ else
             OS_REVISION=`cat /etc/lsb-release | grep '^DISTRIB_RELEASE' | awk -F=  '{ print $2 }'`
         fi
         if [ -f /etc/UnitedLinux-release ] ; then
-            OS_DISTRO="${OS_DISTRO}[`cat /etc/UnitedLinux-release | tr "\n" ' ' | sed s/VERSION.*//`]"
+            OS_DISTRO="$OS_DISTRO[`cat /etc/UnitedLinux-release | tr "\n" ' ' | sed s/VERSION.*//`]"
         fi
 
         OS_NAME=`echo $OS_NAME |tr A-Z a-z`
@@ -73,15 +72,23 @@ else
 fi
 
 #Prints the OS meta information to stdout
-function test(){
+test(){
     echo "==========================================="
-    echo -e "OS_NAME:\t $OS_NAME"
-    echo -e "OS_DISTRO:\t $OS_DISTRO"
-    echo -e "OS_DISTRO_BASED_ON:\t $OS_DISTRO_BASED_ON"
-    echo -e "OS_PSUEDO_NAME:\t $OS_PSUEDO_NAME"
-    echo -e "OS_REVISION:\t $OS_REVISION"
-    echo -e "OS_KERNEL_VER:\t $OS_KERNEL_VER"
-    echo -e "OS_ARCH:\t $OS_ARCH"
+    echo
+    echo  "OS_NAME: $OS_NAME"
+    echo
+    echo  "OS_DISTRO: $OS_DISTRO"
+    echo
+    echo  "OS_DISTRO_BASED_ON: $OS_DISTRO_BASED_ON"
+    echo
+    echo  "OS_PSUEDO_NAME: $OS_PSUEDO_NAME"
+    echo
+    echo  "OS_REVISION: $OS_REVISION"
+    echo
+    echo  "OS_KERNEL_VER: $OS_KERNEL_VER"
+    echo
+    echo  "OS_ARCH: $OS_ARCH"
+    echo
     echo "==========================================="
 }
 
@@ -90,7 +97,7 @@ if [ $# -ne 0 ] && [ "$1" = "test" ] && [ $(basename $0) = "os_meta_info.sh" ];
  then
     test
     exit
-else if [[ $(basename $0) = "os_meta_info.sh" ]]; then
+else if [ $(basename $0) = "os_meta_info.sh" ]; then
         echo "For Testing-----USAGE: $(basename $0) test"
      fi   
 fi
