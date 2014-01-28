@@ -314,14 +314,14 @@ case $OS_NAME in
                     "CentOS" )
                        echo "$OS_DISTRO - $OS_NAME Proceeding."        
                        VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.rpm" 
-                       VIRTUALBOX_DOWNLOAD_URL='http://download.virtualbox.org/virtualbox/4.2.16/VirtualBox-4.2-4.2.16_86992_el6-1.x86_64.rpm'                 
-                       VIRTUALBOX_INSTALL_CMD='sudo rpm -i'
+                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.2.16/VirtualBox-4.2-4.2.16_86992_el6-1.x86_64.rpm"
+                       VIRTUALBOX_INSTALL_CMD="sudo rpm -i"
                        break;;
                     "Ubuntu" )
                        echo "$OS_DISTRO - $OS_NAME Proceeding."
                        VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.deb"
-                       VIRTUALBOX_DOWNLOAD_URL='http://download.virtualbox.org/virtualbox/4.2.16/virtualbox-4.2_4.2.16-86992~Ubuntu~precise_amd64.deb'
-                       VIRTUALBOX_INSTALL_CMD='suod dpkg -i'
+                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.2.16/virtualbox-4.2_4.2.16-86992~Ubuntu~precise_amd64.deb"
+                       VIRTUALBOX_INSTALL_CMD="suod dpkg -i"
                        break;;
                     *)
                        #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
@@ -530,14 +530,14 @@ case $OS_NAME in
                     "CentOS" )
                        echo "$OS_DISTRO - $OS_NAME Proceeding."        
                        VAGRANT_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VAGRANT_VERSION.rpm" 
-                       VAGRANT_DOWNLOAD_URL='https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.rpm'                 
+                       VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.rpm"
                        VAGRANT_INSTALL_CMD='sudo rpm -i'
                        break;;
                     "Ubuntu" )
                        echo "$OS_DISTRO - $OS_NAME Proceeding."
                        VAGRANT_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VAGRANT_VERSION.deb"
-                       VAGRANT_DOWNLOAD_URL='https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.deb'
-                       VIAGRANT_INSTALL_CMD='suod dpkg -i'
+                       VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.deb"
+                       VIAGRANT_INSTALL_CMD="suod dpkg -i"
                        break;;
                     *)
                        #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
@@ -566,9 +566,6 @@ case $OS_NAME in
        INSTALLED=$?
        echo ""
 
-       INSTALL_VAGRANT=''
-       REQUIRED_VAGRANT_VERSION=1.4.3
-
        # https://github.com/noitcudni/vagrant-ae
 
         if [ $INSTALLED == 0 ] ; then
@@ -581,6 +578,7 @@ case $OS_NAME in
 
             $BASE_DIR/bootstrap/version_compare.py $VERSION_VAGRANT $REQUIRED_VAGRANT_VERSION
             CMP_RESULT=$?
+
             # Test if install version is exact version
             if [ ! $CMP_RESULT -eq 2 ] ; then
                 # Remove VAGRANT if not verion: $REQUIRED_VAGRANT_VERSION
@@ -653,16 +651,20 @@ esac
 ########################################
 ########################################
 
+# Variable declarations
+INSTALL_JAVA=''
+VERSION_JAVA=''
+REQUIRED_JAVA_VERSION=1.7
+JAVA_DOWNLOAD_URL=''
+JAVA_FILE=''
+JAVA_INSTALL_CMD=''
 
+# Testing java installation
 command -v java -version >/dev/null 2>&1
 INSTALLED=$?
 echo ""
 
-INSTALL_JAVA=''
-REQUIRED_JAVA_VERSION=1.7
-
-
-
+# Checking java if installed
 if [ $INSTALLED == 0 ] ; then
     #  Java is installed
     
@@ -696,11 +698,13 @@ if [ $INSTALLED == 0 ] ; then
         echo ""
     
         echo "Install Correct Java (Delete and Install)?"
+        echo ""
         while true; do
             read -p "Is this ok [y/N]:" yn
             case $yn in
                 [Yy]* ) 
                     echo "Skipping Removing Java";
+                    echo ""
                 
                     # For Mac OS X
                     #Navigate to /Library/Java/JavaVirtualMachines and remove the directory whose name matches the following format:*
@@ -727,25 +731,55 @@ else
     INSTALL_JAVA=1
     echo "Not Installed"
 fi
-
-
-
 # Install Java
 if [ -n "$INSTALL_JAVA" ] ; then
     echo "Install Java"
-    JAVA_FILE="$HOME/Downloads/jdk-7u51-macosx-x64.dmg"
+    
+    case $OS_NAME in              
+        "linux" )
+           echo  "$OS_NAME is current OS"
+           echo ""
+           case $OS_DISTRO in
+               "CentOS" )
+                   echo "$OS_DISTRO-$OS_NAME Proceeding..."
+                   echo ""
+                   JAVA_FILE="$HOME/Downloads/jdk-7u51-linux-x64.rpm"
+                   JAVA_DOWNLOAD_URL="http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-linux-x64.rpm"
+                   JAVA_INSTALL_CMD="sudo rpm -i $JAVA_FILE"
+                   break ;;
+                "Ubuntu" )
+                   echo "$OS_DISTRO-$OS_NAME Proceeding..."
+                   echo ""
+                   JAVA_FILE="$HOME/Downloads/dk-7u51-linux-x64.deb"
+                   JAVA_DOWNLOAD_URL="http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-macosx-x64.deb"
+                   JAVA_INSTALL_CMD=''
+                   break ;;
+                * )
+                  break ;;
+           esac
+           break ;;
+        "darwin" )
+           echo "Mac OS X Proceeding..."
+           echo ""
+           JAVA_FILE="$HOME/Downloads/jdk-7u51-macosx-x64.dmg"
+           JAVA_DOWNLOAD_URL='http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg'
+           JAVA_INSTALL_CMD=hdiutil attach $JAVA_FILE; sudo installer -package '/Volumes/JDK 7 Update 51/JDK 7 Update 51.pkg' -target '/Volumes/Macintosh HD'; hdiutil detach '/Volumes/JDK 7 Update 51/'
+           break ;;
+        * )
+           #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
+           echo "Script for $OS_NAME has not been tested yet."
+           echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+           break;; 
+    esac   
     if [ ! -d "$JAVA_FILE" ] ; then
         # Find version here
         # curl -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;" http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg -o jdk-7u51-macosx-x64.dmg
         # http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg
-        # http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-linux-x64.rpm
-        
-        curl -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;" http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg -o $JAVA_FILE
-    fi
-    hdiutil attach $JAVA_FILE
-    sudo installer -package '/Volumes/JDK 7 Update 51/JDK 7 Update 51.pkg' -target '/Volumes/Macintosh HD'
-    hdiutil detach '/Volumes/JDK 7 Update 51/'
-
+        # http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-linux-x64.rpm  
+        echo "Downloading Java..."      
+        curl -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;" $JAVA_DOWNLOAD_URL -o $JAVA_FILE
+    fi    
+    $JAVA_INSTALL_CMD
     rm $JAVA_FILE
 fi
 
@@ -765,7 +799,6 @@ echo ""
 INSTALL_GIT=''
 UNINSTALL_GIT=''
 REQUIRED_GIT_VERSION=1.8
-
 
 
 if [ $INSTALLED == 0 ] ; then
