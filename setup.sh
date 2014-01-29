@@ -450,7 +450,7 @@ esac
 
 # variable declarations                        
 INSTALL_VAGRANT=''
-REQUIRED_VAGRANT_VERSION=4.2.16
+REQUIRED_VAGRANT_VERSION=1.4.3
 VERSION_VAGRANT=''
 VAGRANT_DOWNLOAD_URL=''
 VAGRANT_INSTALL_CMD=''
@@ -486,18 +486,18 @@ case $OS_NAME in
                         read -p "Is this ok [y/N]:" yn
                         case $yn in
                             [Yy]* ) 
-                                echo "Removing Vagrant";
+                                echo -e "\n Removing Vagrant \n";
                                 INSTALL_VAGRANT=1
 
                                 #Determining OS Distribution and taking remove action accordingly
                                 case $OS_DISTRO in
                                     "CentOS" )
-                                       echo "$OS_DISTRO - $OS_NAME Proceeding."        
+                                       echo -e "$OS_DISTRO - $OS_NAME Proceeding.\n"        
                                        sudo rm -rf /opt/vagrant
                                        sudo rm /usr/bin/vagrant                 
                                        break;;
                                     "Ubuntu" )
-                                       echo "$OS_DISTRO - $OS_NAME Proceeding."
+                                       echo -e "$OS_DISTRO - $OS_NAME Proceeding.\n"
                                        sudo rm -rf /opt/vagrant
                                        sudo rm /usr/bin/vagrant
                                        break;;
@@ -537,7 +537,7 @@ case $OS_NAME in
                        echo "$OS_DISTRO - $OS_NAME Proceeding."
                        VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.deb"
                        VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.deb"
-                       VIAGRANT_INSTALL_CMD="sudo dpkg -i"
+                       VAGRANT_INSTALL_CMD="sudo dpkg -i"
                        break;;
                     *)
                        #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
