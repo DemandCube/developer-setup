@@ -537,7 +537,7 @@ case $OS_NAME in
                        echo "$OS_DISTRO - $OS_NAME Proceeding."
                        VAGRANT_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VAGRANT_VERSION.deb"
                        VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.deb"
-                       VIAGRANT_INSTALL_CMD="suod dpkg -i"
+                       VIAGRANT_INSTALL_CMD="sudo dpkg -i"
                        break;;
                     *)
                        #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
