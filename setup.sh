@@ -462,7 +462,7 @@ case $OS_NAME in
             echo  "$OS_NAME is current OS. "
             echo ""
             # Test if Vagrant is installed
-            command -v virtualbox >/dev/null 2>&1
+            command -v vagrant >/dev/null 2>&1
             INSTALLED=$?
 
             if [ $INSTALLED == 0 ] ; then
