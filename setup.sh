@@ -321,7 +321,7 @@ case $OS_NAME in
                        echo "$OS_DISTRO - $OS_NAME Proceeding."
                        VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.deb"
                        VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.2.16/virtualbox-4.2_4.2.16-86992~Ubuntu~precise_amd64.deb"
-                       VIRTUALBOX_INSTALL_CMD="suod dpkg -i"
+                       VIRTUALBOX_INSTALL_CMD="sudo dpkg -i"
                        break;;
                     *)
                        #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
