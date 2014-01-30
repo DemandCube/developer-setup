@@ -112,11 +112,10 @@ INSTALLED=$?
 echo ""
 
 if [ ! $INSTALLED == 0 ] ; then
-    echo "Install easy_install it's missing"
-    echo curl -O http://python-distribute.org/distribute_setup.py
-    echo sudo python distribute_setup.py
-    echo sudo rm distribute_setup.py
-    exit 1
+    echo "Installing easy_install it was missing"
+    curl http://python-distribute.org/distribute_setup.py -o distribute-setup.sh
+    sudo python distribute_setup.py
+    sudo rm distribute_setup.py
 else
     echo "INSTALLED: [ easy_install ]"
 fi
