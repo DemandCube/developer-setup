@@ -255,7 +255,7 @@ case $OS_NAME in
                 echo ""
 
                 VERSION_VIRTUALBOX=`VBoxManage -v`
-                VERSION_VIRTUALBOX=${VERSION_VIRTUALBOX:0:5} 
+                VERSION_VIRTUALBOX=${VERSION_VIRTUALBOX:0:6} 
 
                 # Compare the required and found versions 
                 $BASE_DIR/bootstrap/version_compare.py $VERSION_VIRTUALBOX $REQUIRED_VIRTUALBOX_VERSION
