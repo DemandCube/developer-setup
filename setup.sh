@@ -130,8 +130,8 @@ fi
 
 # Test and install pip if not installed
 # pip 1.4.1
-command -v pip >/dev/null 2>&1
 PIP_VERSION=1.5
+command -v pip >/dev/null 2>&1
 INSTALLED=$?
 echo ""
 
