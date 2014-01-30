@@ -531,7 +531,7 @@ case $OS_NAME in
                        echo "$OS_DISTRO - $OS_NAME Proceeding."        
                        VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.rpm" 
                        VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.rpm"
-                       VAGRANT_INSTALL_CMD='sudo rpm -i'
+                       VAGRANT_INSTALL_CMD='sudo rpm -ivh'
                        break;;
                     "Ubuntu" )
                        echo "$OS_DISTRO - $OS_NAME Proceeding."
