@@ -253,9 +253,9 @@ case $OS_NAME in
             if [ $INSTALLED == 0 ] ; then
                 echo "VirtualBox is already installed."
                 echo ""
-
-                VERSION_VIRTUALBOX=`VBoxManage -v`
-                VERSION_VIRTUALBOX=${VERSION_VIRTUALBOX:0:6} 
+                # first command outputs full version(eg. 4.2.6r02546) and second command removes release part of version(eg. r025) 
+                VERSION_VIRTUALBOX=`VBoxManage -v | cut -f1 -d"r"`
+                #VERSION_VIRTUALBOX=${VERSION_VIRTUALBOX:0:6} 
 
                 # Compare the required and found versions 
                 $BASE_DIR/bootstrap/version_compare.py $VERSION_VIRTUALBOX $REQUIRED_VIRTUALBOX_VERSION
@@ -455,191 +455,144 @@ VAGRANT_DOWNLOAD_URL=''
 VAGRANT_INSTALL_CMD=''
 VAGRANT_FILE=''
 
-#Determining OS and taking action accordingly
-case $OS_NAME in
-    "linux" )
-            echo  "$OS_NAME is current OS. "
+# Test if Vagrant is installed
+command -v vagrant >/dev/null 2>&1
+INSTALLED=$?
+ 
+# Test if already installed
+if [ $INSTALLED == 0 ] ; then
+    echo "Vagrant is already installed."
+    echo ""
+    
+    VERSION_VAGRANT=`vagrant -v | awk '{ print $2 }'`                
+    
+    echo "INSTALLED: [ Vagrant ]"
+    printf "\t"
+    echo "$VERSION_VAGRANT"  
+    
+    # Comparing installed and required versions
+    $BASE_DIR/bootstrap/version_compare.py $VERSION_VAGRANT $REQUIRED_VAGRANT_VERSION
+    CMP_RESULT=$?
+    
+    # Test if installed version is lower then required version
+    if [ ! $CMP_RESULT -eq 2 ] ; then
+        # Remove Vagrant if not verion: $REQUIRED_VAGRANT_VERSION      
+        echo "Current Vagrant Version: $VERSION_VAGRANT"
+        echo "Required Vagrant Version: $REQUIRED_VAGRANT_VERSION"
+        echo ""                    
+        echo "Install Correct Vagrant (Delete and Install)?"
+
+        while true; do
+            read -p "Is this ok [y/N]:" yn
+            case $yn in
+                [Yy]* ) 
+                    echo -e "\n Removing Vagrant \n";
+                    INSTALL_VAGRANT=1
+                    #Determining OS and taking action accordingly
+                    case $OS_NAME in
+                        "linux" )
+                            echo  "$OS_NAME is current OS. "
+                            echo ""
+
+                            #Determining OS Distribution and taking remove action accordingly
+                            case $OS_DISTRO in
+                                "CentOS" )
+                                   echo -e "$OS_DISTRO - $OS_NAME Proceeding.\n"        
+                                   sudo rm -rf /opt/vagrant
+                                   sudo rm /usr/bin/vagrant                 
+                                   break;;
+                                "Ubuntu" )
+                                   echo -e "$OS_DISTRO - $OS_NAME Proceeding.\n"
+                                   sudo rm -rf /opt/vagrant
+                                   sudo rm /usr/bin/vagrant
+                                   break;;
+                                *)
+                                   #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
+                                   echo "Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
+                                   echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+                                   break;;                                       
+                            esac
+                            break;;
+                        "darwin" )
+                            echo -e "Mac OS X Proceeding"
+
+                            break;;
+                        * )
+                            #Cases for other Distros such as Windows etc may come here 
+                            echo "Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
+                            echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+                            break;;
+                    esac
+                    break;;
+                [Nn]* ) 
+                    echo "No"; break;;
+                * ) 
+                    echo "Please answer yes or no.";;
+            esac
+        done            
+    fi                                             
+else
+    INSTALL_VAGRANT=1
+    echo "Vagrant is Not Installed"
+fi   
+
+# Test whether Vagrant needs to be installed or not
+if [ -n "$INSTALL_VAGRANT" ] ; then
+    echo "Install Vagrant"
+    
+    # Determining OS and talking actiion accordingly 
+    case $OS_NAME in              
+        "linux" )
+            echo  "$OS_NAME is current OS"
             echo ""
-            # Test if Vagrant is installed
-            command -v vagrant >/dev/null 2>&1
-            INSTALLED=$?
-
-            if [ $INSTALLED == 0 ] ; then
-                echo "Vagrant is already installed."  
-                echo ""
-                VERSION_VAGRANT=`vagrant -v | awk '{ print $2 }'`                
-                
-                # Comparing installed and required versions
-                $BASE_DIR/bootstrap/version_compare.py $VERSION_VAGRANT $REQUIRED_VAGRANT_VERSION
-                CMP_RESULT=$?
-                
-                # Test if installed version is lower then required version
-                if [ ! $CMP_RESULT -eq 2 ] ; then
-                    # Remove Vagrant if not verion: $REQUIRED_VAGRANT_VERSION      
-                    echo "Current Vagrant Version: $VERSION_VAGRANT"
-                    echo "Required Vagrant Version: $REQUIRED_VAGRANT_VERSION"
-                    echo ""                    
-                    echo "Install Correct Vagrant (Delete and Install)?"
-
-                    while true; do
-                        read -p "Is this ok [y/N]:" yn
-                        case $yn in
-                            [Yy]* ) 
-                                echo -e "\n Removing Vagrant \n";
-                                INSTALL_VAGRANT=1
-
-                                #Determining OS Distribution and taking remove action accordingly
-                                case $OS_DISTRO in
-                                    "CentOS" )
-                                       echo -e "$OS_DISTRO - $OS_NAME Proceeding.\n"        
-                                       sudo rm -rf /opt/vagrant
-                                       sudo rm /usr/bin/vagrant                 
-                                       break;;
-                                    "Ubuntu" )
-                                       echo -e "$OS_DISTRO - $OS_NAME Proceeding.\n"
-                                       sudo rm -rf /opt/vagrant
-                                       sudo rm /usr/bin/vagrant
-                                       break;;
-                                    *)
-                                       #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
-                                       echo "Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
-                                       echo "Submit Patch to https://github.com/DemandCube/developer-setup."
-                                       break;;                                       
-                                esac
-                                break;;
-
-                            [Nn]* ) 
-                                echo "No"; break;;
-                            * ) 
-                                echo "Please answer yes or no.";;
-                        esac
-                    done            
-                fi                                             
-            else
-                INSTALL_VAGRANT=1
-                echo "Vagrant is Not Installed"
-            fi   
-
-            # Test whether Vagrant needs to be installed or not
-            if [ -n "$INSTALL_VAGRANT" ] ; then
-                echo "Install Vagrant"
-
-                #Determining OS Distribution and taking install action accordingly
-                case $OS_DISTRO in
-                    "CentOS" )
-                       echo "$OS_DISTRO - $OS_NAME Proceeding."        
-                       VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.rpm" 
-                       VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.rpm"
-                       VAGRANT_INSTALL_CMD='sudo rpm -ivh'
-                       break;;
-                    "Ubuntu" )
-                       echo "$OS_DISTRO - $OS_NAME Proceeding."
-                       VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.deb"
-                       VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.deb"
-                       VAGRANT_INSTALL_CMD="sudo dpkg -i"
-                       break;;
-                    *)
-                       #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
-                       echo "Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
-                       echo "Submit Patch to https://github.com/DemandCube/developer-setup."
-                       break;;                                       
-                esac
-
-                # Test if Vagrant needs to be downloaded
-                if [ ! -d "$VAGRANT_FILE" ] ; then
-                    # Find version here
-                    # http://download.virtualbox.org/virtualbox/
-                    curl -Lk $VAGRANT_DOWNLOAD_URL -o $VAGRANT_FILE
-                fi
-                # Installing downloaded file
-                $VAGRANT_INSTALL_CMD $VAGRANT_FILE               
-                # Removing downloaded file
-                rm $VAGRANT_FILE
-            fi    
+            
+            # Determining OS Distribution and taking install action accordingly
+            case $OS_DISTRO in
+                "CentOS" )
+                   echo "$OS_DISTRO - $OS_NAME Proceeding."        
+                   VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.rpm" 
+                   VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.rpm"
+                   VAGRANT_INSTALL_CMD='sudo rpm -ivh'
+                   break;;
+                "Ubuntu" )
+                   echo "$OS_DISTRO - $OS_NAME Proceeding."
+                   VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.deb"
+                   VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.deb"
+                   VAGRANT_INSTALL_CMD="sudo dpkg -i"
+                   break;;
+                *)
+                   #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
+                   echo "Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
+                   echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+                   break;;                                       
+            esac
             break;;
 
-    "Darwin")
-       echo  "$OS_NAME is current OS. "
-       echo "" 
-       command -v vagrant >/dev/null 2>&1
-       INSTALLED=$?
-       echo ""
-
-       # https://github.com/noitcudni/vagrant-ae
-
-        if [ $INSTALLED == 0 ] ; then
-            #  Vagrant is installed
-            VERSION_VAGRANT=`vagrant -v | awk '{ print $2 }'`
-
-            echo "INSTALLED: [ Vagrant ]"
-            printf "\t"
-            echo "$VERSION_VAGRANT"
-
-            $BASE_DIR/bootstrap/version_compare.py $VERSION_VAGRANT $REQUIRED_VAGRANT_VERSION
-            CMP_RESULT=$?
-
-            # Test if install version is exact version
-            if [ ! $CMP_RESULT -eq 2 ] ; then
-                # Remove VAGRANT if not verion: $REQUIRED_VAGRANT_VERSION
-                # http://stackoverflow.com/questions/226703/how-do-i-prompt-for-input-in-a-linux-shell-script
-                
-                echo "Current Vagrant Version: $VERSION_VAGRANT"
-                echo "Required Vagrant Version: $REQUIRED_VAGRANT_VERSION"
-                echo ""
-                
-                echo "Install Correct Vagrant (Delete and Install)?"
-                while true; do
-                    read -p "Is this ok [y/N]:" yn
-                    case $yn in
-                        [Yy]* ) 
-                            echo "Removing Vagrant";
-                            
-                            # For Mac OS X
-                            sudo rm -rf /Applications/Vagrant
-                            sudo rm /usr/bin/vagrant
-                            
-                            # For Linux
-                            # sudo rm -rf /opt/vagrant
-                            # sudo rm /usr/bin/vagrant
-                            
-                            # User Dir
-                            # ~/.vagrant.d
-                            INSTALL_VAGRANT=1
-                            break;;
-                        [Nn]* ) echo "No"; break;;
-                        * ) echo "Please answer yes or no.";;
-                    esac
-                done
-                
-            fi
-        else
-            # Vagrant is not installed
-            INSTALL_VAGRANT=1
-            echo "Not Installed"
-        fi
-
-        # Install Vagrant
-        if [ -n "$INSTALL_VAGRANT" ] ; then
-            echo "Install Vagrant"
+        "darwin" )
+            echo "Mac OS X Proceeding"
+            echo ""
             VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.dmg"
-            if [ ! -d "$VAGRANT_FILE" ] ; then
-                # Find version here
-                # http://download.virtualbox.org/virtualbox/
-                curl -Lk https://dl.bintray.com/mitchellh/vagrant/Vagrant-1.4.3.dmg -o $VAGRANT_FILE
-            fi
-            hdiutil attach $VAGRANT_FILE
-            sudo installer -package /Volumes/Vagrant/Vagrant.pkg -target '/Volumes/Macintosh HD'
-            hdiutil detach /Volumes/Vagrant/
-            
-            rm $VAGRANT_FILE
-        fi
-       break;; 
-    * )
-       #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
-       echo "Script for $OS_NAME has not been tested yet."
-       echo "Submit Patch to https://github.com/DemandCube/developer-setup."
-       break;;                 
-esac    
+            VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/Vagrant-1.4.3.dmg"
+            VAGRANT_INSTALL_CMD=`hdiutil attach "$VAGRANT_FILE" && sudo installer -package /Volumes/Vagrant/Vagrant.pkg -target '/Volumes/Macintosh HD' && hdiutil detach /Volumes/Vagrant/`
+            break;;
+        * )
+           #Cases for other OS such as Windows etc may come here 
+           echo "Script for $OS_NAME has not been tested yet."
+           echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+           break;;                 
+    esac
+
+    # Test if Vagrant needs to be downloaded
+    if [ ! -d "$VAGRANT_FILE" ] ; then
+        # Find version here
+        # http://download.virtualbox.org/virtualbox/
+        curl -Lk $VAGRANT_DOWNLOAD_URL -o $VAGRANT_FILE
+    fi
+    # Installing downloaded file
+    $VAGRANT_INSTALL_CMD $VAGRANT_FILE               
+    # Removing downloaded file
+    rm $VAGRANT_FILE
+fi    
 
 
 ########################################
@@ -749,11 +702,14 @@ if [ -n "$INSTALL_JAVA" ] ; then
                 "Ubuntu" )
                    echo "$OS_DISTRO-$OS_NAME Proceeding..."
                    echo ""
-                   JAVA_FILE="$HOME/Downloads/dk-7u51-linux-x64.deb"
-                   JAVA_DOWNLOAD_URL="http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-macosx-x64.deb"
-                   JAVA_INSTALL_CMD=''
+                   JAVA_FILE="$HOME/Downloads/jdk-7u51-linux-x64.tar.gz"
+                   JAVA_DOWNLOAD_URL="http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-linux-x64.tar.gz"
+                   JAVA_INSTALL_CMD=`sudo cd /opt && tar -xzf "$JAVA_FILE" && echo JAVA_HOME=/opt/jdk-7u51-linux-x64 >> "$HOME"/.bashrc && echo PATH="$PATH":"$JAVA_HOME"/bin >> "$HOME"/.bashrc && source "$HOME"/.bashrc`
                    break ;;
                 * )
+                  #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
+                  echo "Script for $OS_NAME has not been tested yet."
+                  echo "Submit Patch to https://github.com/DemandCube/developer-setup."
                   break ;;
            esac
            break ;;
@@ -762,10 +718,10 @@ if [ -n "$INSTALL_JAVA" ] ; then
            echo ""
            JAVA_FILE="$HOME/Downloads/jdk-7u51-macosx-x64.dmg"
            JAVA_DOWNLOAD_URL='http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg'
-           JAVA_INSTALL_CMD=hdiutil attach $JAVA_FILE; sudo installer -package '/Volumes/JDK 7 Update 51/JDK 7 Update 51.pkg' -target '/Volumes/Macintosh HD'; hdiutil detach '/Volumes/JDK 7 Update 51/'
+           JAVA_INSTALL_CMD=`hdiutil attach "$JAVA_FILE" && sudo installer -package '/Volumes/JDK 7 Update 51/JDK 7 Update 51.pkg' -target '/Volumes/Macintosh HD' && hdiutil detach '/Volumes/JDK 7 Update 51/'`
            break ;;
         * )
-           #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
+           #Cases for other OS such as Windows etc may come here 
            echo "Script for $OS_NAME has not been tested yet."
            echo "Submit Patch to https://github.com/DemandCube/developer-setup."
            break;; 
@@ -837,7 +793,7 @@ if [ $INSTALLED == 0 ] ; then
                 
                     # For Linux
                     # sudo rm -rf /opt/vagrant
-                    # sudo rm /usr/bin/vagrant
+                    # sudo rm /usr/bin/vagrant http://git-core.googlecode.com/files/git-1.8.5.3.tar.gz
                 
                     # User Dir
                     # ~/.vagrant.d
