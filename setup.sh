@@ -278,7 +278,10 @@ INSTALLED=$?
 echo ""
 
 INSTALL_VIRTUALBOX=''
-REQUIRED_VIRTUALBOX_VERSION=4.2.16
+# REQUIRED_VIRTUALBOX_VERSION=4.2.16
+# REQUIRED_VIRTUALBOX_URL=http://download.virtualbox.org/virtualbox/4.2.16/VirtualBox-4.2.16-86992-OSX.dmg
+REQUIRED_VIRTUALBOX_VERSION=4.3.6
+REQUIRED_VIRTUALBOX_URL=http://download.virtualbox.org/virtualbox/4.3.6/VirtualBox-4.3.6-91406-OSX.dmg
 
 # https://github.com/noitcudni/vagrant-ae
 
@@ -320,6 +323,16 @@ if [ $INSTALLED == 1 ] ; then
 			                [Yy]* ) 
 								echo "Removing VirtualBox";
 								INSTALL_VIRTUALBOX=1
+								
+								# Test if there are any running VM's and shut them down
+								# VBoxManage controlvm `VBoxManage list runningvms | awk '{ print $1 }' | tr -d '"' | head -n 1` poweroff
+								VM_COUNT=`VBoxManage list runningvms | wc -l | awk '{ print $1 }'`
+								while [ $VM_COUNT -gt 0 ]
+								do
+								  VBoxManage controlvm `VBoxManage list runningvms | awk '{ print $1 }' | tr -d '"' | head -n 1` poweroff
+								  VM_COUNT=`VBoxManage list runningvms | wc -l | awk '{ print $1 }'`
+								done
+								
 								if [ -n "$PATH_VIRTUALBOX" -a -d "$PATH_VIRTUALBOX" ] ; then
 									sudo rm -rf $PATH_VIRTUALBOX
 								fi
@@ -349,7 +362,7 @@ if [ -n "$INSTALL_VIRTUALBOX" ] ; then
     if [ ! -d "$VIRTUALBOX_FILE" ] ; then
         # Find version here
         # http://download.virtualbox.org/virtualbox/
-        curl -Lk http://download.virtualbox.org/virtualbox/4.2.16/VirtualBox-4.2.16-86992-OSX.dmg -o $VIRTUALBOX_FILE
+        curl -Lk ${REQUIRED_VIRTUALBOX_URL} -o $VIRTUALBOX_FILE
     fi
     hdiutil attach $VIRTUALBOX_FILE
     sudo installer -package /Volumes/VirtualBox/VirtualBox.pkg -target '/Volumes/Macintosh HD'
