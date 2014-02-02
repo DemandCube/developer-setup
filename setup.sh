@@ -711,7 +711,7 @@ if [ -n "$INSTALL_JAVA" ] ; then
                    break ;;
                 * )
                   #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
-                  echo "Script for $OS_NAME has not been tested yet."
+                  echo "Script for $OS_DISTRO has not been tested yet."
                   echo "Submit Patch to https://github.com/DemandCube/developer-setup."
                   break ;;
            esac
@@ -788,18 +788,50 @@ if [ $INSTALLED == 0 ] ; then
                 [Yy]* ) 
                     echo "Setting Git to be removed";
                     UNINSTALL_GIT=1
-                    # For Mac OS X
-                    #Navigate to /Library/Git/GitVirtualMachines and remove the directory whose name matches the following format:*
-                    #    /Library/Git/GitVirtualMachines/jdk<major>.<minor>.<macro[_update]>.jdk
-                    #For example, to uninstall 7u6:
-                    #    % rm -rf jdk1.7.0_06.jdk
-                
-                    # For Linux
-                    # sudo rm -rf /opt/vagrant
-                    # sudo rm /usr/bin/vagrant http://git-core.googlecode.com/files/git-1.8.5.3.tar.gz
-                
-                    # User Dir
-                    # ~/.vagrant.d
+                    
+                    case $OS_NAME in
+                         "linux" )
+                            echo "$OS_NAME Proceeding"
+                            case $OS_DISTRO in
+                                "CentOS" )
+                                    echo "$OS_DISTRO-$OS_NAME Proceeding"
+                                    # For Linux
+                                    # sudo rm -rf /opt/vagrant
+                                    # sudo rm /usr/bin/vagrant http://git-core.googlecode.com/files/git-1.8.5.3.tar.gz
+                                
+                                    # User Dir
+                                    # ~/.vagrant.d
+                                    break;;
+                                "Ubuntu" )
+                                    echo "$OS_DISTRO-$OS_NAME Proceeding"
+                                    # For Linux
+                                    # sudo rm -rf /opt/vagrant
+                                    # sudo rm /usr/bin/vagrant http://git-core.googlecode.com/files/git-1.8.5.3.tar.gz
+                                
+                                    # User Dir
+                                    # ~/.vagrant.d
+                                    break;;
+                                * )
+                                     #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
+                                      echo "Script for $OS_DISTRO has not been tested yet."
+                                      echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+                                    break;;
+                            esac
+                            break;;
+                         "darwin" )
+                            echo "Mac OS X Proceeding"
+                            # For Mac OS X
+                            #Navigate to /Library/Git/GitVirtualMachines and remove the directory whose name matches the following format:*
+                            #    /Library/Git/GitVirtualMachines/jdk<major>.<minor>.<macro[_update]>.jdk
+                            #For example, to uninstall 7u6:
+                            #    % rm -rf jdk1.7.0_06.jdk
+                            break;;
+                          * )
+                            #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
+                            echo "Script for $OS_NAME has not been tested yet."
+                            echo  "Submit Patch to https://github.com/DemandCube/developer-setup."
+                            break;;
+                    esac                 
                     INSTALL_GIT=1
                     break;;
                 [Nn]* ) echo "Skipping"; break;;
@@ -814,69 +846,96 @@ else
     echo "Not Installed"
 fi
 
-
-
 # Install Git
 if [ -n "$INSTALL_GIT" ] ; then
     echo "Install Git"
-    GIT_FILE="$HOME/Downloads/git-1.8.4.2-intel-universal-snow-leopard.dmg"
-    if [ ! -d "$GIT_FILE" ] ; then
-        # Find version here
-        # curl -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;" http://download.oracle.com/otn-pub/git/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg -o jdk-7u51-macosx-x64.dmg
-        # http://download.oracle.com/otn-pub/git/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg
-        # http://download.oracle.com/otn-pub/git/jdk/7u51-b13/jdk-7u51-linux-x64.rpm
-        
-        curl -L https://git-osx-installer.googlecode.com/files/git-1.8.4.2-intel-universal-snow-leopard.dmg -o $GIT_FILE
-    fi
-    VOLUME_PATH_GIT='/Volumes/Git 1.8.4.2 Snow Leopard Intel Universal/'
-    PACKAGE_NAME_GIT='git-1.8.4.2-intel-universal-snow-leopard.pkg'
-    
-    hdiutil attach $GIT_FILE
-    
-    if [ -n "$INSTALL_GIT" ] ; then
-        sudo "${VOLUME_PATH_GIT}uninstall.sh"
-    fi
-    
-    sudo installer -package "${VOLUME_PATH_GIT}${PACKAGE_NAME_GIT}" -target '/Volumes/Macintosh HD'
-    sudo "${VOLUME_PATH_GIT}setup git PATH for non-terminal programs.sh"
-    
-    hdiutil detach "$VOLUME_PATH_GIT"
-    
-    NEW_VERSION_GIT=`git --version | awk '{print $3}'`
-    
-    if [ "$VERSION_GIT" == "$NEW_VERSION_GIT" ] ; then
-        echo "Installed git version isn't matching so creating symbolic link to correct version"
-        sudo mv /usr/bin/git /usr/bin/git-{$VERSION_GIT}
-        sudo ln -s /usr/local/git/bin/git /usr/bin/git
-        TEST_VERSION_GIT=`git --version | awk '{print $3}'`
-        if [ "$VERSION_GIT" == "$TEST_VERSION_GIT" ] ; then
-            echo "Didn't work!"
-            echo ""
-            echo "YOU!!!!!"
-            echo " Need to investigate why GIT didn't update properly, probably a path issue"
-            echo "Should install git to /usr/local/git"
-            echo "which git"
-            echo "git --version"
-            echo "ls -al `which git`"
-        else
-            echo "INSTALLED: [ Git ]"
-            printf "\t"
-            echo "$TEST_VERSION_GIT"
-        fi
-    fi
-    
-    echo "Remove downloaded file ($GIT_FILE) ?"
-    while true; do
-        read -p "Is this ok [y/N]:" yn
-        case $yn in
-            [Yy]* ) 
-                rm $GIT_FILE
-                break;;
-            [Nn]* ) echo "Skipping"; break;;
-            * ) echo "Please answer yes or no.";;
-        esac
-    done
-fi
 
+    case $OS_NAME in
+      "linux" )
+         echo "$OS_NAME Proceeding"
+         case $OS_DISTRO in
+             "CentOS" )
+                 echo "$OS_DISTRO-$OS_NAME Proceeding"
+                 break;;
+             "Ubuntu" )
+                 echo "$OS_DISTRO-$OS_NAME Proceeding"
+                 break;;
+             * )
+                 #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
+                 echo "Script for $OS_DISTRO has not been tested yet."
+                 echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+                 break;;
+         esac
+         break;;
+      "darwin" )
+        echo "Mac OS X Proceeding"
+        GIT_FILE="$HOME/Downloads/git-1.8.4.2-intel-universal-snow-leopard.dmg"
+        if [ ! -d "$GIT_FILE" ] ; then
+            # Find version here
+            # curl -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;" http://download.oracle.com/otn-pub/git/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg -o jdk-7u51-macosx-x64.dmg
+            # http://download.oracle.com/otn-pub/git/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg
+            # http://download.oracle.com/otn-pub/git/jdk/7u51-b13/jdk-7u51-linux-x64.rpm
+            
+            curl -L https://git-osx-installer.googlecode.com/files/git-1.8.4.2-intel-universal-snow-leopard.dmg -o $GIT_FILE
+        fi
+        VOLUME_PATH_GIT='/Volumes/Git 1.8.4.2 Snow Leopard Intel Universal/'
+        PACKAGE_NAME_GIT='git-1.8.4.2-intel-universal-snow-leopard.pkg'
+        
+        hdiutil attach $GIT_FILE
+        
+        if [ -n "$INSTALL_GIT" ] ; then
+            sudo "${VOLUME_PATH_GIT}uninstall.sh"
+        fi
+        
+        sudo installer -package "${VOLUME_PATH_GIT}${PACKAGE_NAME_GIT}" -target '/Volumes/Macintosh HD'
+        sudo "${VOLUME_PATH_GIT}setup git PATH for non-terminal programs.sh"
+        
+        hdiutil detach "$VOLUME_PATH_GIT"
+        
+        NEW_VERSION_GIT=`git --version | awk '{print $3}'`
+        
+        if [ "$VERSION_GIT" == "$NEW_VERSION_GIT" ] ; then
+            echo "Installed git version isn't matching so creating symbolic link to correct version"
+            sudo mv /usr/bin/git /usr/bin/git-{$VERSION_GIT}
+            sudo ln -s /usr/local/git/bin/git /usr/bin/git
+            TEST_VERSION_GIT=`git --version | awk '{print $3}'`
+            if [ "$VERSION_GIT" == "$TEST_VERSION_GIT" ] ; then
+                echo "Didn't work!"
+                echo ""
+                echo "YOU!!!!!"
+                echo " Need to investigate why GIT didn't update properly, probably a path issue"
+                echo "Should install git to /usr/local/git"
+                echo "which git"
+                echo "git --version"
+                echo "ls -al `which git`"
+            else
+                echo "INSTALLED: [ Git ]"
+                printf "\t"
+                echo "$TEST_VERSION_GIT"
+            fi
+        fi
+        
+        echo "Remove downloaded file ($GIT_FILE) ?"
+        while true; do
+            read -p "Is this ok [y/N]:" yn
+            case $yn in
+                [Yy]* ) 
+                    rm $GIT_FILE
+                    break;;
+                [Nn]* ) echo "Skipping"; break;;
+                * ) echo "Please answer yes or no.";;
+            esac
+        done
+
+
+      break;;
+      * )
+        #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
+        echo "Script for $OS_NAME has not been tested yet."
+        echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+        break;;
+   esac
+fi
+    
 # BASE_DIR=$(cd $(dirname $0);  pwd -P)
 # ansible-playbook $BASE_DIR/helloworld_local.yaml -i $BASE_DIR/inventoryfile
