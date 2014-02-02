@@ -279,8 +279,10 @@ case $OS_NAME in
                                 #Determining OS Distribution and taking remove action accordingly
                                 case $OS_DISTRO in
                                     "CentOS" )
-                                       echo "$OS_DISTRO - $OS_NAME Proceeding."        
-                                       sudo yum remove virtualbox*                  
+                                       echo "$OS_DISTRO - $OS_NAME Proceeding."  
+                                       VM="`rpm -qa | grep VirtualBox`"
+                                       echo "Removing package-$VM"      
+                                       sudo rpm -e "$VM"               
                                        break;;
                                     "Ubuntu" )
                                        echo "$OS_DISTRO - $OS_NAME Proceeding."
@@ -314,7 +316,7 @@ case $OS_NAME in
                        echo "$OS_DISTRO - $OS_NAME Proceeding."        
                        VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.rpm" 
                        VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.2.16/VirtualBox-4.2-4.2.16_86992_el6-1.x86_64.rpm"
-                       VIRTUALBOX_INSTALL_CMD="sudo rpm -i"
+                       VIRTUALBOX_INSTALL_CMD="sudo rpm -ivh"
                        break;;
                     "Ubuntu" )
                        echo "$OS_DISTRO - $OS_NAME Proceeding."
@@ -332,7 +334,8 @@ case $OS_NAME in
                 if [ ! -d "$VIRTUALBOX_FILE" ] ; then
                     # Find version here
                     # http://download.virtualbox.org/virtualbox/
-                    curl -Lk $VIRTUALBOX_DOWNLOAD_URL -o $VIRTUALBOX_FILE
+                    #curl -Lk $VIRTUALBOX_DOWNLOAD_URL -o $VIRTUALBOX_FILE
+                    echo "downloaded.........."
                 fi
                 # Installing downloaded file
                 $VIRTUALBOX_INSTALL_CMD $VIRTUALBOX_FILE                
