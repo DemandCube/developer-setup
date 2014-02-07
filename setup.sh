@@ -349,85 +349,102 @@ case $OS_NAME in
         # $BASE_DIR/bootstrap/mac_app_installed.sh
         # $BASE_DIR/bootstrap/mac_app_version.sh
         # org.virtualbox.app.VirtualBox
-        
-        # Test virtualbox in system
-        $BASE_DIR/bootstrap/version_compare.py $VERSION_VIRTUALBOX $REQUIRED_VIRTUALBOX_VERSION
-        CMP_RESULT=$?
-        if [ ! $CMP_RESULT -eq 2 ] ; then
-            # Remove VIRTUALBOX if not verion: $REQUIRED_VIRTUALBOX_VERSION
-            # http://stackoverflow.com/questions/226703/how-do-i-prompt-for-input-in-a-linux-shell-script
-            
-            echo "Current VirtualBox Version: $VERSION_VIRTUALBOX"
-            echo "Required VirtualBox Version: $REQUIRED_VIRTUALBOX_VERSION"
-            echo ""
-            
-            echo "Install Correct VirtualBox (Delete and Install)?"
-            while true; do
-                read -p "Is this ok [y/N]:" yn
-                case $yn in
-                    [Yy]* ) 
-                        echo "Removing VirtualBox";
-                        PATH_VIRTUALBOX=`$BASE_DIR/bootstrap/mac_app_path.sh org.virtualbox.app.VirtualBox`
-                        if [ ! $? -eq 0 ] ; then
-                            echo "Determining Path to VirtualBox returned and error."
-                            echo "Please manually remove VirtualBox"
-                            exit 1;
-                        fi
-                        
-                        echo "Remove Path ($PATH_VIRTUALBOX):?"
-                        while true; do
-                            read -p "Is this ok [y/N]:" yn
-                            case $yn in
-                                [Yy]* ) 
-                                    echo "Removing VirtualBox";
-                                    INSTALL_VIRTUALBOX=1
-                                    
-                                    # Test if there are any running VM's and shut them down
-                                    # VBoxManage controlvm `VBoxManage list runningvms | awk '{ print $1 }' | tr -d '"' | head -n 1` poweroff
-                                    VM_COUNT=`VBoxManage list runningvms | wc -l | awk '{ print $1 }'`
-                                    while [ $VM_COUNT -gt 0 ]
-                                    do
-                                      VBoxManage controlvm `VBoxManage list runningvms | awk '{ print $1 }' | tr -d '"' | head -n 1` poweroff
-                                      VM_COUNT=`VBoxManage list runningvms | wc -l | awk '{ print $1 }'`
-                                    done
-                                    
-                                    if [ -n "$PATH_VIRTUALBOX" -a -d "$PATH_VIRTUALBOX" ] ; then
-                                        sudo rm -rf $PATH_VIRTUALBOX
-                                    fi
-                                    break;;
-                                [Nn]* ) echo "Skipping Removing"; break;;
-                                * ) echo "Please answer yes or no.";;
-                            esac
-                        done
-                        
-                        break;;
-                    [Nn]* ) echo "No"; break;;
-                    * ) echo "Please answer yes or no.";;
-                esac
-            done
-            
-        fi
-    else
-        # VirtualBox is not installed
-        INSTALL_VIRTUALBOX=1
-        echo "Not Installed"
-    fi
+        $BASE_DIR/bootstrap/mac_app_installed.sh org.virtualbox.app.VirtualBox
+        INSTALLED=$?
+        echo ""
 
-    # Install VirtualBox
-    if [ -n "$INSTALL_VIRTUALBOX" ] ; then
-        echo "Install VirtualBox"
-        VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.dmg"
-        if [ ! -d "$VIRTUALBOX_FILE" ] ; then
-            # Find version here
-            # http://download.virtualbox.org/virtualbox/
-            curl -Lk ${REQUIRED_VIRTUALBOX_URL} -o $VIRTUALBOX_FILE
+        # REQUIRED_VIRTUALBOX_VERSION=4.2.16
+        # REQUIRED_VIRTUALBOX_URL=http://download.virtualbox.org/virtualbox/4.2.16/VirtualBox-4.2.16-86992-OSX.dmg
+        REQUIRED_VIRTUALBOX_VERSION=4.3.6
+        REQUIRED_VIRTUALBOX_URL=http://download.virtualbox.org/virtualbox/4.3.6/VirtualBox-4.3.6-91406-OSX.dmg
+
+        # https://github.com/noitcudni/vagrant-ae
+
+        if [ $INSTALLED == 1 ] ; then
+            # VirtualBox is installed
+            VERSION_VIRTUALBOX=`$BASE_DIR/bootstrap/mac_app_version.sh org.virtualbox.app.VirtualBox`
+
+            echo "INSTALLED: [ VirtualBox ]"
+            printf "\t"
+            echo "$VERSION_VIRTUALBOX"
+            # Test virtualbox in system
+            $BASE_DIR/bootstrap/version_compare.py $VERSION_VIRTUALBOX $REQUIRED_VIRTUALBOX_VERSION
+            CMP_RESULT=$?
+            if [ ! $CMP_RESULT -eq 2 ] ; then
+                # Remove VIRTUALBOX if not verion: $REQUIRED_VIRTUALBOX_VERSION
+                # http://stackoverflow.com/questions/226703/how-do-i-prompt-for-input-in-a-linux-shell-script
+                
+                echo "Current VirtualBox Version: $VERSION_VIRTUALBOX"
+                echo "Required VirtualBox Version: $REQUIRED_VIRTUALBOX_VERSION"
+                echo ""
+                
+                echo "Install Correct VirtualBox (Delete and Install)?"
+                while true; do
+                    read -p "Is this ok [y/N]:" yn
+                    case $yn in
+                        [Yy]* ) 
+                            echo "Removing VirtualBox";
+                            PATH_VIRTUALBOX=`$BASE_DIR/bootstrap/mac_app_path.sh org.virtualbox.app.VirtualBox`
+                            if [ ! $? -eq 0 ] ; then
+                                echo "Determining Path to VirtualBox returned and error."
+                                echo "Please manually remove VirtualBox"
+                                exit 1;
+                            fi
+                            
+                            echo "Remove Path ($PATH_VIRTUALBOX):?"
+                            while true; do
+                                read -p "Is this ok [y/N]:" yn
+                                case $yn in
+                                    [Yy]* ) 
+                                        echo "Removing VirtualBox";
+                                        INSTALL_VIRTUALBOX=1
+                                        
+                                        # Test if there are any running VM's and shut them down
+                                        # VBoxManage controlvm `VBoxManage list runningvms | awk '{ print $1 }' | tr -d '"' | head -n 1` poweroff
+                                        VM_COUNT=`VBoxManage list runningvms | wc -l | awk '{ print $1 }'`
+                                        while [ $VM_COUNT -gt 0 ]
+                                        do
+                                          VBoxManage controlvm `VBoxManage list runningvms | awk '{ print $1 }' | tr -d '"' | head -n 1` poweroff
+                                          VM_COUNT=`VBoxManage list runningvms | wc -l | awk '{ print $1 }'`
+                                        done
+                                        
+                                        if [ -n "$PATH_VIRTUALBOX" -a -d "$PATH_VIRTUALBOX" ] ; then
+                                            sudo rm -rf $PATH_VIRTUALBOX
+                                        fi
+                                        break;;
+                                    [Nn]* ) echo "Skipping Removing"; break;;
+                                    * ) echo "Please answer yes or no.";;
+                                esac
+                            done
+                            
+                            break;;
+                        [Nn]* ) echo "No"; break;;
+                        * ) echo "Please answer yes or no.";;
+                    esac
+                done
+                
+            fi
+        else
+            # VirtualBox is not installed
+            INSTALL_VIRTUALBOX=1
+            echo "Not Installed"
         fi
-        hdiutil attach $VIRTUALBOX_FILE
-        sudo installer -package /Volumes/VirtualBox/VirtualBox.pkg -target '/Volumes/Macintosh HD'
-        hdiutil detach /Volumes/VirtualBox/
-        
-        rm $VIRTUALBOX_FILE
-    fi
+
+        # Install VirtualBox
+        if [ -n "$INSTALL_VIRTUALBOX" ] ; then
+            echo "Install VirtualBox"
+            VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.dmg"
+            if [ ! -d "$VIRTUALBOX_FILE" ] ; then
+                # Find version here
+                # http://download.virtualbox.org/virtualbox/
+                curl -Lk ${REQUIRED_VIRTUALBOX_URL} -o $VIRTUALBOX_FILE
+            fi
+            hdiutil attach $VIRTUALBOX_FILE
+            sudo installer -package /Volumes/VirtualBox/VirtualBox.pkg -target '/Volumes/Macintosh HD'
+            hdiutil detach /Volumes/VirtualBox/
+            
+            rm $VIRTUALBOX_FILE
+        fi
     break;;
     * )
        #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
