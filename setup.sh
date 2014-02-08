@@ -334,7 +334,7 @@ case $OS_NAME in
                 if [ ! -d "$VIRTUALBOX_FILE" ] ; then
                     # Find version here
                     # http://download.virtualbox.org/virtualbox/
-                    #curl -Lk $VIRTUALBOX_DOWNLOAD_URL -o $VIRTUALBOX_FILE
+                    curl -Lk $VIRTUALBOX_DOWNLOAD_URL -o $VIRTUALBOX_FILE
                     echo "downloaded.........."
                 fi
                 # Installing downloaded file
