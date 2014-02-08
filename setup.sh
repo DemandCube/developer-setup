@@ -225,6 +225,76 @@ else
     ansible --version | awk '{ print $2 }'
 fi
 
+
+########################################
+########################################
+####    
+####   INSTALL NOSE
+####
+########################################
+########################################
+
+# variable declarations
+REQUIRED_NOSE_VERSION=1.3.0
+VERSION_NOSE=''
+NOSE_DOWNLOAD_URL='https://pypi.python.org/packages/source/n/nose/nose-1.3.0.tar.gz'
+NOSE_INSTALL_CMD='sudo pip install -I'
+NOSE_UNISTALL_CMD='sudo pip uninstall -y nose'
+INSTALL_NOSE=''
+
+# Test if nose already installed
+command -v nosetests >/dev/null 2>&1
+INSTALLED=$?
+echo ""
+if [ $INSTALLED == 0 ] ; then
+    # Already installed 
+    # test existing version and required version
+    # first command outputs full version(eg. nosetests version 1.3.0) and 
+    # second command extracts version part
+    VERSION_NOSE=`nosetests --version | cut -f3 -d" "`
+    echo "INSTALLED: [ nose ]"
+    printf "\t"
+    echo $VERSION_NOSE
+    echo
+    # Compare the required and found version
+    $BASE_DIR/bootstrap/version_compare.py $VERSION_NOSE $REQUIRED_NOSE_VERSION
+    CMP_RESULT=$?    
+    # Test if installed version is lower then required version  
+    if [ ! $CMP_RESULT -eq 2 ] ; then
+        # Remove Nose if not verion: $REQUIRED_NOSE_VERSION      
+        echo "[INFO] Current Nose Version: $VERSION_NOSE"
+        echo "[INFO] Required Nose Version: $REQUIRED_NOSE_VERSION"
+        echo ""                    
+        echo "Install Correct Nose (Delete and Install)?"
+        while true; do
+            read -p "Is this ok [y/N]:" yn
+            case $yn in
+                [Yy]* )
+                      echo "[INFO] Removing nose***********"
+                      $NOSE_UNISTALL_CMD
+                      INSTALL_NOSE=1
+                      break;;         
+                [Nn]* ) 
+                      echo "No"; break;;
+                * ) 
+                    echo "Please answer yes or no.";;
+            esac
+        done
+    fi
+else
+    echo "[INFO] Nose not installed"
+    INSTALL_NOSE=1
+fi
+# test if nose needs to be installed
+if [[ -n "$INSTALL_NOSE" ]]; then
+    echo "[INFO] Installing nose it was missing"
+    echo "INSTALLING: [ nose ]"
+    printf "\t"
+    $NOSE_INSTALL_CMD $NOSE_DOWNLOAD_URL
+    echo "[INFO] nose-$REQUIRED_NOSE_VERSION installed successfully"
+fi
+
+
 ########################################
 ########################################
 ####    
@@ -669,14 +739,33 @@ if [ $INSTALLED == 0 ] ; then
             read -p "Is this ok [y/N]:" yn
             case $yn in
                 [Yy]* ) 
-                    echo "Skipping Removing Java";
-                    echo ""
-                
+                    echo "[INFO] Removing Java";
+                      
+                    #http://www.java.com/en/download/help/linux_uninstall.xml                   
+                    ######################RPM uninstall####################################
+                    # Note: If you have RPM on your Linux box, you should first find out if Java is already installed using RPM. If Java is not installed using RPM, you should skip reading.
+
+                    # Open Terminal Window
+                    # Login as the super user
+                    # Try to find jre package by typing: rpm -qa
+                    # If RPM reports a package similar to jre-<version>-fcs, then Java is installed with RPM.
+
+                    # Note: Normally, you do not need to uninstall Java with RPM, because RPM is able to uninstall the old version of Java when installing a new version! You may skip reading, unless you want to remove Java permanently.
+                    # To uninstall Java, type: rpm -e jre-<version>-fcs
+
+                    #######################Self-extracting file uninstall##################
+
+                    # Find out if Java is installed in some folder. Common locations are /usr/java/jre_<version> or /opt/jre_nb/jre_<version>/bin/java/
+                    # When you have located the folder, you may delete folder.
+                    # Warning: You should be certain that Java is not already installed using RPM before removing the folder.
+                    # Type: rm -r jre<version>
+                    # For example: rm -r jre1.6.0
+
                     # For Mac OS X
                     #Navigate to /Library/Java/JavaVirtualMachines and remove the directory whose name matches the following format:*
                     #    /Library/Java/JavaVirtualMachines/jdk<major>.<minor>.<macro[_update]>.jdk
                     #For example, to uninstall 7u6:
-                    #    % rm -rf jdk1.7.0_06.jdk
+                    #  % rm -rf jdk1.7.0_06.jdk
                 
                     # For Linux
                     # sudo rm -rf /opt/vagrant
@@ -685,12 +774,44 @@ if [ $INSTALLED == 0 ] ; then
                     # User Dir
                     # ~/.vagrant.d
                     INSTALL_JAVA=1
+                    #Determining OS and taking remove action accordingly
+                    case $OS_NAME in
+                        "linux" )
+                            echo  "[INFO] $OS_NAME is current OS. "
+                           
+                            #Determining OS Distribution and taking remove action accordingly
+                            case $OS_DISTRO in
+                                "CentOS" )
+                                   echo -e "[INFO] $OS_DISTRO - $OS_NAME Proceeding.\n"        
+                                                 
+                                   break;;
+                                "Ubuntu" )
+                                   echo -e "[INFO::] $OS_DISTRO - $OS_NAME Proceeding.\n"
+                                   
+                                   break;;
+                                *)
+                                   #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
+                                   echo "[INFO] Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
+                                   echo "[INFO] Submit Patch to https://github.com/DemandCube/developer-setup."
+                                   break;;                                       
+                            esac
+                            break;;
+                        "darwin" )
+                            echo -e "Mac OS X Proceeding"
+                            echo  "[INFO] Script was unable to uninstall/remove java! Please uninstall/remove it manually"
+                            echo  "[INFO] Cause::: No Script to uninstall. Please add Script to uninstall****************"
+                            break;;
+                        * )
+                            #Cases for other OS such as Windows etc may come here 
+                            echo "Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
+                            echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+                            break;;
+                    esac
                     break;;
                 [Nn]* ) echo "No"; break;;
                 * ) echo "Please answer yes or no.";;
             esac
-        done
-    
+        done    
     fi
 else
     # Java is not installed
@@ -760,15 +881,17 @@ fi
 ########################################
 ########################################
 
+INSTALL_GIT=''
+VERSION_GIT=''
+REQUIRED_GIT_VERSION=1.8
+GIT_FILE=''
+GIT_DOWNLOAD_URL=''
+GIT_INSTALL_CMD=''
+UNINSTALL_GIT=''
 
 command -v git --version >/dev/null 2>&1
 INSTALLED=$?
 echo ""
-
-INSTALL_GIT=''
-UNINSTALL_GIT=''
-REQUIRED_GIT_VERSION=1.8
-
 
 if [ $INSTALLED == 0 ] ; then
     #  Git is installed
@@ -806,21 +929,15 @@ if [ $INSTALLED == 0 ] ; then
                             case $OS_DISTRO in
                                 "CentOS" )
                                     echo "$OS_DISTRO-$OS_NAME Proceeding"
-                                    # For Linux
-                                    # sudo rm -rf /opt/vagrant
-                                    # sudo rm /usr/bin/vagrant http://git-core.googlecode.com/files/git-1.8.5.3.tar.gz
-                                
-                                    # User Dir
-                                    # ~/.vagrant.d
+                                    GIT=`which git`
+                                    sudo rm $GIT
+                                    #### also git direcotry in home needs to be removed
                                     break;;
                                 "Ubuntu" )
                                     echo "$OS_DISTRO-$OS_NAME Proceeding"
-                                    # For Linux
-                                    # sudo rm -rf /opt/vagrant
-                                    # sudo rm /usr/bin/vagrant http://git-core.googlecode.com/files/git-1.8.5.3.tar.gz
-                                
-                                    # User Dir
-                                    # ~/.vagrant.d
+                                    GIT=`which git`
+                                    sudo rm $GIT
+                                    #### also git direcotry in home needs to be removed
                                     break;;
                                 * )
                                      #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
@@ -836,6 +953,9 @@ if [ $INSTALLED == 0 ] ; then
                             #    /Library/Git/GitVirtualMachines/jdk<major>.<minor>.<macro[_update]>.jdk
                             #For example, to uninstall 7u6:
                             #    % rm -rf jdk1.7.0_06.jdk
+                            GIT=`which git`
+                            sudo rm $GIT
+                            #### also needs git direcotry in home removed
                             break;;
                           * )
                             #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
@@ -867,9 +987,16 @@ if [ -n "$INSTALL_GIT" ] ; then
          case $OS_DISTRO in
              "CentOS" )
                  echo "$OS_DISTRO-$OS_NAME Proceeding"
+                 GIT_FILE="$HOME/Downloads/git-1.8.5.3.tar.gz"
+                 GIT_DOWNLOAD_URL="http://git-core.googlecode.com/files/git-1.8.5.3.tar.gz"
+                 GIT_INSTALL_CMD=`cd "$HOME/Downloads" && tar -xzf GIT_FILE && cd git-1.8.5.3 && ./Makefile --prefix=/usr && make && make install`
+
                  break;;
              "Ubuntu" )
                  echo "$OS_DISTRO-$OS_NAME Proceeding"
+                 GIT_FILE="$HOME/Downloads/git-1.8.5.3.tar.gz"
+                 GIT_DOWNLOAD_URL="http://git-core.googlecode.com/files/git-1.8.5.3.tar.gz"
+                 GIT_INSTALL_CMD=`cd "$HOME/Downloads" && tar -xzf GIT_FILE && cd git-1.8.5.3 && ./Makefile --prefix=/usr && make && make install`
                  break;;
              * )
                  #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
@@ -877,7 +1004,12 @@ if [ -n "$INSTALL_GIT" ] ; then
                  echo "Submit Patch to https://github.com/DemandCube/developer-setup."
                  break;;
          esac
-         break;;
+          if [ ! -d "$GIT_FILE" ] ; then
+              curl -L $GIT_DOWNLOAD_URL -o $GIT_FILE
+          fi 
+          $GIT_INSTALL_CMD
+          rm $GIT_FILE
+          break;;
       "darwin" )
         echo "Mac OS X Proceeding"
         GIT_FILE="$HOME/Downloads/git-1.8.4.2-intel-universal-snow-leopard.dmg"
