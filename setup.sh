@@ -989,14 +989,14 @@ if [ -n "$INSTALL_GIT" ] ; then
                  echo "$OS_DISTRO-$OS_NAME Proceeding"
                  GIT_FILE="$HOME/Downloads/git-1.8.5.3.tar.gz"
                  GIT_DOWNLOAD_URL="http://git-core.googlecode.com/files/git-1.8.5.3.tar.gz"
-                 GIT_INSTALL_CMD=`cd "$HOME/Downloads" && tar -xzf GIT_FILE && cd git-1.8.5.3 && ./Makefile --prefix=/usr && make && make install`
+                 GIT_INSTALL_CMD=`cd "$HOME/Downloads" && tar -xzf GIT_FILE && cd git-1.8.5.3 && ./configure --prefix=/usr && make && make install`
 
                  break;;
              "Ubuntu" )
                  echo "$OS_DISTRO-$OS_NAME Proceeding"
                  GIT_FILE="$HOME/Downloads/git-1.8.5.3.tar.gz"
                  GIT_DOWNLOAD_URL="http://git-core.googlecode.com/files/git-1.8.5.3.tar.gz"
-                 GIT_INSTALL_CMD=`cd "$HOME/Downloads" && tar -xzf GIT_FILE && cd git-1.8.5.3 && ./Makefile --prefix=/usr && make && make install`
+                 GIT_INSTALL_CMD=`cd "$HOME/Downloads" && tar -xzf GIT_FILE && cd git-1.8.5.3 && ./configure --prefix=/usr && make && make install`
                  break;;
              * )
                  #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
