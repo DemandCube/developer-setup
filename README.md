@@ -45,6 +45,7 @@ Preferred Development Tools
 - [Virtualbox] (https://www.virtualbox.org/)
 - [Gradle] (http://www.gradle.org/)
 - [Docker] (https://www.docker.io/)
+- [Packer] (http://www.packer.io/)
 - CentOS 6.4 x86_64
 
 Charts
