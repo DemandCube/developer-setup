@@ -113,7 +113,7 @@ echo ""
 
 if [ ! $INSTALLED == 0 ] ; then
     echo "Installing easy_install it was missing"
-    curl http://python-distribute.org/distribute_setup.py -o distribute-setup.sh
+    curl http://python-distribute.org/distribute_setup.py -o distribute-setup.py
     sudo python distribute_setup.py
     sudo rm distribute_setup.py
 else
@@ -305,7 +305,7 @@ fi
 
 # variable declarations                        
 INSTALL_VIRTUALBOX=''
-REQUIRED_VIRTUALBOX_VERSION=4.2.16
+REQUIRED_VIRTUALBOX_VERSION=4.3.6
 VERSION_VIRTUALBOX=''
 VIRTUALBOX_DOWNLOAD_URL=''
 VIRTUALBOX_INSTALL_CMD=''
@@ -385,13 +385,13 @@ case $OS_NAME in
                     "CentOS" )
                        echo "$OS_DISTRO - $OS_NAME Proceeding."        
                        VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.rpm" 
-                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.2.16/VirtualBox-4.2-4.2.16_86992_el6-1.x86_64.rpm"
+                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.6/VirtualBox-4.3-4.3.6_91406_el6-1.x86_64.rpm"
                        VIRTUALBOX_INSTALL_CMD="sudo rpm -ivh"
                        break;;
                     "Ubuntu" )
                        echo "$OS_DISTRO - $OS_NAME Proceeding."
                        VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.deb"
-                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.2.16/virtualbox-4.2_4.2.16-86992~Ubuntu~precise_amd64.deb"
+                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.6/virtualbox-4.3_4.3.6-91406~Ubuntu~precise_amd64.deb"
                        VIRTUALBOX_INSTALL_CMD="sudo dpkg -i"
                        break;;
                     *)
