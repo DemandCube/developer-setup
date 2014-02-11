@@ -437,8 +437,13 @@ case $OS_NAME in
                 if [ ! -d "$VIRTUALBOX_FILE" ] ; then
                     # Find version here
                     # http://download.virtualbox.org/virtualbox/
+                    
+                    # check if Downloads directory exists, other create it
+                    if [ ! -d "$HOME/Downloads" ]; then
+                        mkdir "$HOME/Downloads"
+                    fi
                     curl -Lk $VIRTUALBOX_DOWNLOAD_URL -o $VIRTUALBOX_FILE
-                    echo "downloaded.........."
+                    echo "[INFO::] Downloaded"
                 fi
                 # Installing downloaded file
                 $VIRTUALBOX_INSTALL_CMD $VIRTUALBOX_FILE                
@@ -540,6 +545,11 @@ case $OS_NAME in
             if [ ! -d "$VIRTUALBOX_FILE" ] ; then
                 # Find version here
                 # http://download.virtualbox.org/virtualbox/
+                
+                # check if Downloads directory exists, other create it
+                if [ ! -d "$HOME/Downloads" ]; then
+                    mkdir "$HOME/Downloads"
+                fi
                 curl -Lk ${REQUIRED_VIRTUALBOX_URL} -o $VIRTUALBOX_FILE
             fi
             hdiutil attach $VIRTUALBOX_FILE
@@ -703,6 +713,11 @@ if [ -n "$INSTALL_VAGRANT" ] ; then
     if [ ! -d "$VAGRANT_FILE" ] ; then
         # Find version here
         # http://download.virtualbox.org/virtualbox/
+        
+        # check if Downloads directory exists, other create it
+        if [ ! -d "$HOME/Downloads" ]; then
+            mkdir "$HOME/Downloads"
+        fi
         curl -Lk $VAGRANT_DOWNLOAD_URL -o $VAGRANT_FILE
     fi
     # Installing downloaded file
@@ -899,6 +914,11 @@ if [ -n "$INSTALL_JAVA" ] ; then
         # curl -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;" http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg -o jdk-7u51-macosx-x64.dmg
         # http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg
         # http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-linux-x64.rpm  
+        
+        # check if Downloads directory exists, other create it
+        if [ ! -d "$HOME/Downloads" ]; then
+            mkdir "$HOME/Downloads"
+        fi
         echo "Downloading Java..."      
         curl -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;" $JAVA_DOWNLOAD_URL -o $JAVA_FILE
     fi    
@@ -1052,6 +1072,10 @@ if [ -n "$INSTALL_GIT" ] ; then
             # http://download.oracle.com/otn-pub/git/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg
             # http://download.oracle.com/otn-pub/git/jdk/7u51-b13/jdk-7u51-linux-x64.rpm
             
+            # check if Downloads directory exists, other create it
+            if [ ! -d "$HOME/Downloads" ]; then
+                mkdir "$HOME/Downloads"
+            fi            
             curl -L https://git-osx-installer.googlecode.com/files/git-1.8.4.2-intel-universal-snow-leopard.dmg -o $GIT_FILE
         fi
         VOLUME_PATH_GIT='/Volumes/Git 1.8.4.2 Snow Leopard Intel Universal/'
