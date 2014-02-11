@@ -217,8 +217,40 @@ echo ""
 if [ ! $INSTALLED == 0 ] ; then
     echo "INSTALLING: [ ansible ]"
     printf "\t"
-    sudo pip install paramiko PyYAML jinja2 httplib2    
-    sudo pip install ansible
+    case $OS_NAME in
+        "linux" )
+            echo "[INFO] $OS_NAME is current OS"
+            case $OS_DISTRO in
+                "CentOS" )
+                    echo "[INFO] OS_DISTRO-$OS_NAME Proceeding"
+                    sudo yum install python-devel
+                    sudo pip install paramiko PyYAML jinja2 httplib2    
+                    sudo pip install ansible
+                    break;;
+                "Ubuntu" )
+                    echo "[INFO] OS_DISTRO-$OS_NAME Proceeding"
+                    sudo apt-get install python-devel
+                    sudo pip install paramiko PyYAML jinja2 httplib2    
+                    sudo pip install ansible
+                    break;;
+                * )
+                   #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
+                   echo "Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
+                   echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+                   break;;
+            esac
+            break;;
+        "Darwin" )
+            # script may be needed here to install python-devel
+            sudo pip install paramiko PyYAML jinja2 httplib2    
+            sudo pip install ansible
+            break;;
+        * )
+           #Cases for other OS such as Windows may come here 
+           echo "Script for $OS_NAME  has not been tested yet."
+           echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+           break;;
+    esac
 else
     echo "INSTALLED: [ ansible ]"
     printf "\t"
@@ -517,7 +549,7 @@ case $OS_NAME in
         fi
     break;;
     * )
-       #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
+       #Cases for other OS such as Windows may come here 
        echo "Script for $OS_NAME has not been tested yet."
        echo "Submit Patch to https://github.com/DemandCube/developer-setup."
        break;;
