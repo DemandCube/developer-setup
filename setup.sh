@@ -880,7 +880,7 @@ if [ -n "$INSTALL_JAVA" ] ; then
                    echo ""
                    JAVA_FILE="$HOME/Downloads/jdk-7u51-linux-x64.rpm"
                    JAVA_DOWNLOAD_URL="http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-linux-x64.rpm"
-                   JAVA_INSTALL_CMD="sudo rpm -i $JAVA_FILE"
+                   JAVA_INSTALL_CMD="sudo rpm -ivh $JAVA_FILE"
                    break ;;
                 "Ubuntu" )
                    echo "$OS_DISTRO-$OS_NAME Proceeding..."
@@ -1042,14 +1042,13 @@ if [ -n "$INSTALL_GIT" ] ; then
                  echo "$OS_DISTRO-$OS_NAME Proceeding"
                  GIT_FILE="$HOME/Downloads/git-1.8.5.3.tar.gz"
                  GIT_DOWNLOAD_URL="http://git-core.googlecode.com/files/git-1.8.5.3.tar.gz"
-                 GIT_INSTALL_CMD=`cd "$HOME/Downloads" && tar -xzf "$GIT_FILE" && cd git-1.8.5.3 && ./configure --prefix=/usr && make && make install`
-
+                 GIT_INSTALL_CMD="cd \"$HOME/Downloads\" && tar -xzf \"$GIT_FILE\" && cd git-1.8.5.3 && ./configure --prefix=/opt && make && sudo make install"
                  break;;
              "Ubuntu" )
                  echo "$OS_DISTRO-$OS_NAME Proceeding"
                  GIT_FILE="$HOME/Downloads/git-1.8.5.3.tar.gz"
                  GIT_DOWNLOAD_URL="http://git-core.googlecode.com/files/git-1.8.5.3.tar.gz"
-                 GIT_INSTALL_CMD=`cd "$HOME/Downloads" && tar -xzf "$GIT_FILE" && cd git-1.8.5.3 && ./configure --prefix=/usr && make && make install`
+                 GIT_INSTALL_CMD="cd \"$HOME/Downloads\" && tar -xzf \"$GIT_FILE\" && cd git-1.8.5.3 && ./configure --prefix=/opt && make && sudo make install"
                  break;;
              * )
                  #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
@@ -1058,9 +1057,14 @@ if [ -n "$INSTALL_GIT" ] ; then
                  break;;
          esac
           if [ ! -d "$GIT_FILE" ] ; then
-              curl -L $GIT_DOWNLOAD_URL -o $GIT_FILE
+            #checking for Downloads folder
+            if [ ! -d "$HOME/Downloads" ]; then
+                mkdir "$HOME/Downloads"
+            fi  
+            curl -Lk $GIT_DOWNLOAD_URL -o $GIT_FILE
           fi 
-          $GIT_INSTALL_CMD
+          #http://stackoverflow.com/questions/2005192/how-to-execute-a-bash-command-stored-as-a-string-with-quotes-and-asterisk
+          eval $GIT_INSTALL_CMD
           rm $GIT_FILE
           break;;
       "darwin" )
@@ -1126,9 +1130,7 @@ if [ -n "$INSTALL_GIT" ] ; then
                 * ) echo "Please answer yes or no.";;
             esac
         done
-
-
-      break;;
+        break;;
       * )
         #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
         echo "Script for $OS_NAME has not been tested yet."
