@@ -216,13 +216,14 @@ echo ""
 # Version 1.4.4
 if [ ! $INSTALLED == 0 ] ; then
     echo "INSTALLING: [ ansible ]"
-    printf "\t"
+    # determining OS and taking action accordingly
     case $OS_NAME in
         "linux" )
             echo "[INFO] $OS_NAME is current OS"
+            # determining os distribution in case of linux and taking action accordingly
             case $OS_DISTRO in
                 "CentOS" )
-                    echo "[INFO] OS_DISTRO-$OS_NAME Proceeding"
+                    echo "[INFO] $OS_DISTRO-$OS_NAME Proceeding"
                     sudo yum install python-devel
                     sudo pip install paramiko PyYAML jinja2 httplib2    
                     sudo pip install ansible
