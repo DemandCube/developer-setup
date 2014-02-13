@@ -224,12 +224,14 @@ if [ ! $INSTALLED == 0 ] ; then
             case $OS_DISTRO in
                 "CentOS" )
                     echo "[INFO] $OS_DISTRO-$OS_NAME Proceeding"
+                    #sudo yum groupinstall "Development Tools"
                     sudo yum install python-devel
                     sudo pip install paramiko PyYAML jinja2 httplib2    
                     sudo pip install ansible
                     break;;
                 "Ubuntu" )
                     echo "[INFO] OS_DISTRO-$OS_NAME Proceeding"
+                    #sudo apt-get groupinstall "Development Tools"
                     sudo apt-get install python-devel
                     sudo pip install paramiko PyYAML jinja2 httplib2    
                     sudo pip install ansible
@@ -1042,13 +1044,13 @@ if [ -n "$INSTALL_GIT" ] ; then
                  echo "$OS_DISTRO-$OS_NAME Proceeding"
                  GIT_FILE="$HOME/Downloads/git-1.8.5.3.tar.gz"
                  GIT_DOWNLOAD_URL="http://git-core.googlecode.com/files/git-1.8.5.3.tar.gz"
-                 GIT_INSTALL_CMD="cd \"$HOME/Downloads\" && tar -xzf \"$GIT_FILE\" && cd git-1.8.5.3 && ./configure --prefix=/opt && make && sudo make install"
+                 GIT_INSTALL_CMD="sudo yum install gettext zlib-devel perl-ExtUtils-MakeMaker asciidoc xmlto openssl-devel && cd \"$HOME/Downloads\" && tar -xzf \"$GIT_FILE\" && cd git-1.8.5.3 && ./configure --prefix=/usr --without-tcltk  && make && sudo make install"
                  break;;
              "Ubuntu" )
                  echo "$OS_DISTRO-$OS_NAME Proceeding"
                  GIT_FILE="$HOME/Downloads/git-1.8.5.3.tar.gz"
                  GIT_DOWNLOAD_URL="http://git-core.googlecode.com/files/git-1.8.5.3.tar.gz"
-                 GIT_INSTALL_CMD="cd \"$HOME/Downloads\" && tar -xzf \"$GIT_FILE\" && cd git-1.8.5.3 && ./configure --prefix=/opt && make && sudo make install"
+                 GIT_INSTALL_CMD="sudo apt-get install zlib-devel perl-ExtUtils-MakeMaker asciidoc xmlto openssl-devel &&  cd \"$HOME/Downloads\" && tar -xzf \"$GIT_FILE\" && cd git-1.8.5.3 && ./configure --prefix=/usr --without-tcltk && make && sudo make install"
                  break;;
              * )
                  #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
