@@ -409,7 +409,7 @@ case $OS_NAME in
                     done            
                 fi                                             
             else
-                INSTALL_VIRTUALBOX=''
+                INSTALL_VIRTUALBOX=1
                 echo "VirtualBox is Not Installed"
             fi                        
             # Test whether to install Virtualbox or not
