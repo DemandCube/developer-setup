@@ -23,17 +23,19 @@ OS_ARCH=`uname -m`
 
 #Finding value of above variables based on os name
 if [ "$OS_NAME" = "windowsnt" ]; then
-    OS_NAME=windows
+    OS_NAME='Windows'
 elif [ "$OS_NAME" = "darwin" ]; then
-    OS_NAME=Darwin
+    OS_NAME='Darwin'
 else    
     if [ "$OS_NAME" = "sunos" ] ; then
-        OS_NAME=Solaris
+        OS_NAME='Solaris'
         OS_ARCH=`uname -p`
         OSSTR="$OS_NAME $OS_REVISION($OS_ARCH `uname -v`)"
     elif [ "$OS_NAME" = "aix" ] ; then
+        OS_NAME='AIX'
         OSSTR="$OS_NAME `oslevel` (`oslevel -r`)"
     elif [ "$OS_NAME" = "linux" ] ; then
+        OS_NAME='Linux'
         if [ -f /etc/redhat-release ] ; then
             OS_DISTRO_BASED_ON='RedHat'
             OS_DISTRO=`cat /etc/redhat-release |sed s/\ release.*//`
@@ -57,8 +59,8 @@ else
             OS_DISTRO="$OS_DISTRO[`cat /etc/UnitedLinux-release | tr "\n" ' ' | sed s/VERSION.*//`]"
         fi
 
-        OS_NAME=`echo $OS_NAME |tr A-Z a-z`
-        OS_DISTRO_BASED_ON=`echo $OS_DISTRO_BASED_ON |tr A-Z a-z`
+        #OS_NAME=`echo $OS_NAME |tr A-Z a-z`
+        #OS_DISTRO_BASED_ON=`echo $OS_DISTRO_BASED_ON |tr A-Z a-z`
 
         readonly OS_NAME
         readonly OS_DISTRO
