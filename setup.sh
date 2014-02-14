@@ -409,7 +409,7 @@ case $OS_NAME in
                     done            
                 fi                                             
             else
-                INSTALL_VIRTUALBOX=1
+                INSTALL_VIRTUALBOX=''
                 echo "VirtualBox is Not Installed"
             fi                        
             # Test whether to install Virtualbox or not
@@ -590,7 +590,7 @@ INSTALLED=$?
  
 # Test if already installed
 if [ $INSTALLED == 0 ] ; then
-    echo "Vagrant is already installed."
+    #echo "Vagrant is already installed."
     echo ""
     
     VERSION_VAGRANT=`vagrant -v | awk '{ print $2 }'`                
@@ -893,7 +893,7 @@ if [ -n "$INSTALL_JAVA" ] ; then
                    echo ""
                    JAVA_FILE="$HOME/Downloads/jdk-7u51-linux-x64.tar.gz"
                    JAVA_DOWNLOAD_URL="http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-linux-x64.tar.gz"
-                   JAVA_INSTALL_CMD="sudo cd /opt && tar -xzf \"$JAVA_FILE\" && echo JAVA_HOME=/opt/jdk-7u51-linux-x64 >> "\$HOME\"/.bashrc && echo PATH="\$PATH\":"\$JAVA_HOME\"/bin >> "\$HOME\"/.bashrc && source "\$HOME\"/.bashrc"
+                   JAVA_INSTALL_CMD="sudo cd /opt && tar -xzf \"$JAVA_FILE\" && echo JAVA_HOME=/opt/jdk-7u51-linux-x64 >> \"$HOME\"/.bashrc && echo PATH="\$PATH\":"\$JAVA_HOME\"/bin >> "\$HOME\"/.bashrc && source "\$HOME\"/.bashrc"
                    break ;;
                 * )
                   #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
@@ -907,7 +907,7 @@ if [ -n "$INSTALL_JAVA" ] ; then
            echo ""
            JAVA_FILE="$HOME/Downloads/jdk-7u51-macosx-x64.dmg"
            JAVA_DOWNLOAD_URL='http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg'
-           JAVA_INSTALL_CMD="hdiutil attach "\$JAVA_FILE\" && sudo installer -package '/Volumes/JDK 7 Update 51/JDK 7 Update 51.pkg' -target '/Volumes/Macintosh HD' && hdiutil detach '/Volumes/JDK 7 Update 51/'"
+           JAVA_INSTALL_CMD="hdiutil attach \"$JAVA_FILE\" && sudo installer -package '/Volumes/JDK 7 Update 51/JDK 7 Update 51.pkg' -target '/Volumes/Macintosh HD' && hdiutil detach '/Volumes/JDK 7 Update 51/'"
            break ;;
         * )
            #Cases for other OS such as Windows etc may come here 
