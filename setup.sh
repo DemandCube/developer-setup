@@ -51,18 +51,36 @@ echo "\`--' \`---'  \`'  \`---'\`---'\`---'|---'\`---'\`        \`---'\`---'\`--
 echo "                               |                                      |    ";
 
 
-
+# present working directory
 BASE_DIR=$(cd $(dirname $0);  pwd -P)
-#sudo ln -sf bash /bin/sh should be done for Ubuntu in case if source didn't work
+
+# including os_meta_info.sh file which provides following meta information
+#### OS_NAME
+#### OS_DISTRO
+#### OS_DISTRO_BASED_ON 
+#### OS_PSUEDO_NAME
+#### OS_REVISION
+#### OS_KERNEL_VER
+#### OS_ARCH
+# sudo ln -sf bash /bin/sh should be done for Ubuntu in case if source command don't work
 source $BASE_DIR/bootstrap/os_meta_info.sh
 
+# installing developement tools withch are required to build and run softwares in linux
+if [[ $OS_DISTRO=="CentOS"]; then
+    # dkms for dynamic kernal module support;kernel-devel for kernel soruce
+    sudo yum install gcc make && sudo yum --enablerepo rpmforge install dkms && sudo yum install kernel-devel
+  
+elif [[ $OS_DISTRO=="Ubuntu" ]]; then
+    # dkms for dynamic kernal module support;kernel-devel for kernel soruce
+    sudo yum install gcc make && sudo yum --enablerepo rpmforge install dkms && sudo yum install kernel-devel
+fi
+
 #######################################
 #######################################
 ###
-### Installation of python,easy_install,
-### pip,and ansible is same for Ubuntu,
-### Mac,and CentOS
-###
+### Installation of python,easy_install
+### pip,and ansible with little change
+### is same for Ubuntu,Mac,and CentOS
 #######################################
 #######################################
 
@@ -536,7 +554,7 @@ case $OS_NAME in
             fi
         else
             # VirtualBox is not installed
-            INSTALL_VIRTUALBOX=1
+            INSTALL_VIRTUALBOX=''
             echo "Not Installed"
         fi
 

@@ -50,10 +50,13 @@ else
             OS_PSUEDO_NAME=`cat /etc/mandrake-release | sed s/.*\(// | sed s/\)//`
             OS_REVISION=`cat /etc/mandrake-release | sed s/.*release\ // | sed s/\ .*//`
         elif [ -f /etc/debian_version ] ; then
+            # In case of Debian/Ubuntu sometime by default /bin/sh points to dash which should be made to point bash
+            sudo ln -sf bash /bin/sh
             OS_DISTRO_BASED_ON='Debian'
             OS_DISTRO=`cat /etc/lsb-release | grep '^DISTRIB_ID' | awk -F=  '{ print $2 }'`
             OS_PSUEDO_NAME=`cat /etc/lsb-release | grep '^DISTRIB_CODENAME' | awk -F=  '{ print $2 }'`
             OS_REVISION=`cat /etc/lsb-release | grep '^DISTRIB_RELEASE' | awk -F=  '{ print $2 }'`
+            
         fi
         if [ -f /etc/UnitedLinux-release ] ; then
             OS_DISTRO="$OS_DISTRO[`cat /etc/UnitedLinux-release | tr "\n" ' ' | sed s/VERSION.*//`]"
