@@ -71,11 +71,11 @@ echo "[INFO] Installing common developement tools*******************************
 echo ""
 if [ $OS_DISTRO == "CentOS" ] ; then
     # dkms for dynamic kernal module support;kernel-devel for kernel soruce
-    sudo yum install gcc make && sudo yum --enablerepo rpmforge install dkms && sudo yum install kernel-devel
+    sudo yum install gcc make && sudo yum install dkms && sudo yum install kernel-devel
   
 elif [ $OS_DISTRO == "Ubuntu" ] ; then
     # dkms for dynamic kernal module support;kernel-devel for kernel soruce
-    sudo yum install gcc make && sudo yum --enablerepo rpmforge install dkms && sudo yum install kernel-devel
+    sudo apt-get install gcc make && sudo apt-get install dkms && sudo apt-get install kernel-devel
 fi
 
 #######################################
