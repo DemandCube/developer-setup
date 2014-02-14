@@ -66,11 +66,14 @@ BASE_DIR=$(cd $(dirname $0);  pwd -P)
 source $BASE_DIR/bootstrap/os_meta_info.sh
 
 # installing developement tools withch are required to build and run softwares in linux
-if [[ $OS_DISTRO=="CentOS"]; then
+echo ""
+echo "[INFO] Installing common developement tools************************************"
+echo ""
+if [ $OS_DISTRO == "CentOS" ] ; then
     # dkms for dynamic kernal module support;kernel-devel for kernel soruce
     sudo yum install gcc make && sudo yum --enablerepo rpmforge install dkms && sudo yum install kernel-devel
   
-elif [[ $OS_DISTRO=="Ubuntu" ]]; then
+elif [ $OS_DISTRO == "Ubuntu" ] ; then
     # dkms for dynamic kernal module support;kernel-devel for kernel soruce
     sudo yum install gcc make && sudo yum --enablerepo rpmforge install dkms && sudo yum install kernel-devel
 fi
