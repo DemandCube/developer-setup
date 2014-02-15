@@ -71,7 +71,7 @@ echo "[INFO] Installing common developement tools*******************************
 echo ""
 if [ $OS_DISTRO == "CentOS" ] ; then
     # dkms for dynamic kernal module support;kernel-devel for kernel soruce
-    sudo yum install binutils qt gcc make patch libgomp glibc-headers glibc-devel \ 
+    sudo yum install binutils qt gcc make patch libgomp glibc-headers glibc-devel \
     kernel-headers kernel-devel dkms alsa-lib cairo cdparanoia-libs fontconfig freetype \
     gstreamer gstreamer-plugins-base gstreamer-tools iso-codes lcms-libs libXft libXi \
     libXrandr libXv libgudev1 libjpeg-turbo libmng libogg liboil libthai libtheora libtiff \
@@ -469,7 +469,7 @@ case $OS_NAME in
                     if [ ! -d "$HOME/Downloads" ]; then
                         mkdir "$HOME/Downloads"
                     fi
-                    #curl -Lk $VIRTUALBOX_DOWNLOAD_URL -o $VIRTUALBOX_FILE
+                    curl -Lk $VIRTUALBOX_DOWNLOAD_URL -o $VIRTUALBOX_FILE
                     echo "[INFO::] Downloaded"
                 fi
                 # Installing downloaded file
