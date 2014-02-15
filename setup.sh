@@ -71,11 +71,15 @@ echo "[INFO] Installing common developement tools*******************************
 echo ""
 if [ $OS_DISTRO == "CentOS" ] ; then
     # dkms for dynamic kernal module support;kernel-devel for kernel soruce
-    sudo yum install gcc make && sudo yum install dkms && sudo yum install kernel-devel
+    sudo yum install binutils qt gcc make patch libgomp glibc-headers glibc-devel \ 
+    kernel-headers kernel-devel dkms alsa-lib cairo cdparanoia-libs fontconfig freetype \
+    gstreamer gstreamer-plugins-base gstreamer-tools iso-codes lcms-libs libXft libXi \
+    libXrandr libXv libgudev1 libjpeg-turbo libmng libogg liboil libthai libtheora libtiff \
+    libvisual libvorbis mesa-libGLU pango phonon-backend-gstreamer pixman qt-sqlite qt-x11 libudev
   
 elif [ $OS_DISTRO == "Ubuntu" ] ; then
     # dkms for dynamic kernal module support;kernel-devel for kernel soruce
-    sudo apt-get install gcc make && sudo apt-get install dkms && sudo apt-get install kernel-devel
+    sudo apt-get install gcc make curl kernel-devel
 fi
 
 #######################################
@@ -465,11 +469,12 @@ case $OS_NAME in
                     if [ ! -d "$HOME/Downloads" ]; then
                         mkdir "$HOME/Downloads"
                     fi
-                    curl -Lk $VIRTUALBOX_DOWNLOAD_URL -o $VIRTUALBOX_FILE
+                    #curl -Lk $VIRTUALBOX_DOWNLOAD_URL -o $VIRTUALBOX_FILE
                     echo "[INFO::] Downloaded"
                 fi
                 # Installing downloaded file
-                $VIRTUALBOX_INSTALL_CMD $VIRTUALBOX_FILE                
+                $VIRTUALBOX_INSTALL_CMD $VIRTUALBOX_FILE
+                sudo service vboxdrv setup                
                 # Removing downloaded file
                 rm $VIRTUALBOX_FILE
             fi
@@ -557,7 +562,7 @@ case $OS_NAME in
             fi
         else
             # VirtualBox is not installed
-            INSTALL_VIRTUALBOX=''
+            INSTALL_VIRTUALBOX=1
             echo "Not Installed"
         fi
 
