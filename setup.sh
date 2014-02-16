@@ -67,19 +67,43 @@ source $BASE_DIR/bootstrap/os_meta_info.sh
 
 # installing developement tools withch are required to build and run softwares in linux
 echo ""
-echo "[INFO] Installing common developement tools************************************"
+echo "[INFO]: Installing common developement tools************************************"
 echo ""
 if [ $OS_DISTRO == "CentOS" ] ; then
-    # dkms for dynamic kernal module support;kernel-devel for kernel soruce
+    #dkms for dynamic kernal module support;kernel-devel for kernel soruce
+    # and some of other below components are required by virtualbox
     sudo yum install binutils qt gcc make patch libgomp glibc-headers glibc-devel \
     kernel-headers kernel-devel dkms alsa-lib cairo cdparanoia-libs fontconfig freetype \
     gstreamer gstreamer-plugins-base gstreamer-tools iso-codes lcms-libs libXft libXi \
     libXrandr libXv libgudev1 libjpeg-turbo libmng libogg liboil libthai libtheora libtiff \
-    libvisual libvorbis mesa-libGLU pango phonon-backend-gstreamer pixman qt-sqlite qt-x11 libudev
+    libvisual libvorbis mesa-libGLU pango phonon-backend-gstreamer pixman qt-sqlite \
+    qt-x11 libudev libXmu SDL-static
+
+    #######################...........OR..........############################################
+    # sudo yum install gcc-c++ make libcap-devel libcurl-devel libIDL-devel libstdc++-static \
+    # libxslt-devel libXmu-devel openssl-devel pam-devel pulseaudio-libs-devel \
+    # python-devel qt-devel SDL_ttf-devel SDL-static texlive-latex wine-core \
+    # device-mapper-devel wget subversion subversion-gnome kernel-devel \
+    # glibc-static zlib-static glibc-devel.i686 libstdc++.i686 libpng-devel
+    ######################....if above first set of commands are insufficient...###############
   
 elif [ $OS_DISTRO == "Ubuntu" ] ; then
     # dkms for dynamic kernal module support;kernel-devel for kernel soruce
-    sudo apt-get install gcc make curl kernel-devel
+    # and some of other below components are required by virtualbox
+    sudo apt-get install binutils qt gcc make patch libgomp glibc-headers glibc-devel \
+    kernel-headers kernel-devel dkms alsa-lib cairo cdparanoia-libs fontconfig freetype \
+    gstreamer gstreamer-plugins-base gstreamer-tools iso-codes lcms-libs libXft libXi \
+    libXrandr libXv libgudev1 libjpeg-turbo libmng libogg liboil libthai libtheora libtiff \
+    libvisual libvorbis mesa-libGLU pango phonon-backend-gstreamer pixman qt-sqlite \
+    qt-x11 libudev libXmu SDL-static
+
+     #######################...........OR..........############################################
+    # sudo apt-get install gcc-c++ make libcap-devel libcurl-devel libIDL-devel libstdc++-static \
+    # libxslt-devel libXmu-devel openssl-devel pam-devel pulseaudio-libs-devel \
+    # python-devel qt-devel SDL_ttf-devel SDL-static texlive-latex wine-core \
+    # device-mapper-devel wget subversion subversion-gnome kernel-devel \
+    # glibc-static zlib-static glibc-devel.i686 libstdc++.i686 libpng-devel
+    ######################....if above first set of commands are insufficient...###############
 fi
 
 #######################################
@@ -374,18 +398,21 @@ VIRTUALBOX_FILE=''
 #Determining OS and taking action accordingly
 case $OS_NAME in
     "Linux" )
-            echo  "$OS_NAME is current OS. "
-            echo  ""
+            echo  "[INFO]: $OS_NAME is current OS. "
             # Test if VirtualBox is already installed
             command -v virtualbox >/dev/null 2>&1
             INSTALLED=$?
 
             if [ $INSTALLED == 0 ] ; then
-                echo "VirtualBox is already installed."
+                echo "[INFO]: VirtualBox is already installed."
                 echo ""
                 # first command outputs full version(eg. 4.2.6r02546) and second command removes release part of version(eg. r025) 
                 VERSION_VIRTUALBOX=`VBoxManage -v | cut -f1 -d"r"`
                 #VERSION_VIRTUALBOX=${VERSION_VIRTUALBOX:0:6} 
+                echo "INSTALLED: [Virtualbox]"
+                printf "\t"
+                echo $VERSION_VIRTUALBOX
+                echo ""
 
                 # Compare the required and found versions 
                 $BASE_DIR/bootstrap/version_compare.py $VERSION_VIRTUALBOX $REQUIRED_VIRTUALBOX_VERSION
@@ -715,7 +742,7 @@ if [ -n "$INSTALL_VAGRANT" ] ; then
                    VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.deb"
                    VAGRANT_INSTALL_CMD="sudo dpkg -i"
                    break;;
-                *)
+                * )
                    #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
                    echo "Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
                    echo "Submit Patch to https://github.com/DemandCube/developer-setup."
@@ -749,7 +776,7 @@ if [ -n "$INSTALL_VAGRANT" ] ; then
         curl -Lk $VAGRANT_DOWNLOAD_URL -o $VAGRANT_FILE
     fi
     # Installing downloaded file
-    if [ $OS_NAME=="Darwin"]; then
+    if [ $OS_NAME=="Darwin" ]; then
         eval $VAGRANT_INSTALL_CMD
     else
         $VAGRANT_INSTALL_CMD $VAGRANT_FILE
