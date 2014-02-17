@@ -777,11 +777,14 @@ if [ -n "$INSTALL_VAGRANT" ] ; then
         curl -Lk $VAGRANT_DOWNLOAD_URL -o $VAGRANT_FILE
     fi
     # Installing downloaded file
-    if [ $OS_NAME=="Darwin" ]; then
+    case $OS_NAME in
+        "Linux" )
+            $VAGRANT_INSTALL_CMD $VAGRANT_FILE
+            break;;
+        "Darwin" )
         eval $VAGRANT_INSTALL_CMD
-    else
-        $VAGRANT_INSTALL_CMD $VAGRANT_FILE
-    fi               
+        break;;   
+    esac               
     # Removing downloaded file
     rm $VAGRANT_FILE
 fi    
@@ -982,11 +985,14 @@ if [ -n "$INSTALL_JAVA" ] ; then
         echo "Downloading Java..."      
         curl -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;" $JAVA_DOWNLOAD_URL -o $JAVA_FILE
     fi 
-    if [ $OS_NAME=="Darwin"]; then
+    case $OS_DISTRO in
+        "CentOS" )
+            $JAVA_INSTALL_CMD
+            break;;
+        * )
         eval $JAVA_INSTALL_CMD
-    else   
-        $JAVA_INSTALL_CMD
-    fi
+        break;;   
+    esac
     rm $JAVA_FILE
 fi
 
