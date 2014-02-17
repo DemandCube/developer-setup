@@ -46,6 +46,7 @@ Preferred Development Tools
 - [Gradle] (http://www.gradle.org/)
 - [Docker] (https://www.docker.io/)
 - [Packer] (http://www.packer.io/)
+- [tmux] (http://tmux.sourceforge.net/)
 - CentOS 6.4 x86_64
 
 Charts
