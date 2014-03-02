@@ -942,7 +942,7 @@ if [ -n "$INSTALL_JAVA" ] ; then
                    echo ""
                    JAVA_FILE="$HOME/Downloads/jdk-7u51-linux-x64.tar.gz"
                    JAVA_DOWNLOAD_URL="http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-linux-x64.tar.gz"
-                   JAVA_INSTALL_CMD="cd /opt && sudo tar -xzf $JAVA_FILE && echo 'export JAVA_HOME=/opt/jdk1.7.0_51' >> $HOME/.bashrc && echo export PATH=$PATH:$JAVA_HOME/bin >> $HOME/.bashrc && cd $HOME && bash"
+                   JAVA_INSTALL_CMD="cd /opt && sudo tar -xzf $JAVA_FILE && echo 'export JAVA_HOME=/opt/jdk1.7.0_51' >> $HOME/.bashrc && echo export PATH=$PATH:$JAVA_HOME/bin >> $HOME/.bashrc && cd $HOME"
                    break ;;
                 * )
                   #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
@@ -1110,7 +1110,7 @@ if [ -n "$INSTALL_GIT" ] ; then
                  echo "$OS_DISTRO-$OS_NAME Proceeding"
                  GIT_FILE="$HOME/Downloads/git-1.8.5.3.tar.gz"
                  GIT_DOWNLOAD_URL="http://git-core.googlecode.com/files/git-1.8.5.3.tar.gz"
-                 GIT_INSTALL_CMD="sudo apt-get install gettext zlib-devel perl-ExtUtils-MakeMaker asciidoc xmlto openssl-devel &&  cd $HOME/Downloads && tar -xzf $GIT_FILE && cd git-1.8.5.3 && ./configure --prefix=/usr --without-tcltk && make && sudo make install"
+                 GIT_INSTALL_CMD="sudo apt-get install gettext zlib1g-dev &&  cd $HOME/Downloads && tar -xzf $GIT_FILE && cd git-1.8.5.3 && ./configure --prefix=/usr --without-tcltk && make && sudo make install"
                  break;;
              * )
                  #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
