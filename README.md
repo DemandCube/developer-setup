@@ -61,6 +61,11 @@ Done:
 ====
 - Mac OS X 10.7
 - Mac OS X 10.8
+- Mac OS X 10.9
+
+Notes:
+====
+`sudo ARCHFLAGS=-Wno-error=unused-command-line-argument-hard-error-in-future pip install pycrypto`
 
 Todo:
 ====
