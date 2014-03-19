@@ -65,7 +65,11 @@ Done:
 
 Notes:
 ====
+If a problem with pycrypto
 `sudo ARCHFLAGS=-Wno-error=unused-command-line-argument-hard-error-in-future pip install pycrypto`
+
+If a problem with vagrant-rspec or message "You have to install development tools first."
+`xcode-select --install`
 
 Todo:
 ====
