@@ -782,10 +782,29 @@ if [ -n "$INSTALL_VAGRANT" ] ; then
                    VAGRANT_INSTALL_CMD='sudo rpm -ivh'
                    break;;
                 "Ubuntu" )
-                   echo "$OS_DISTRO - $OS_NAME Proceeding."
-                   VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.deb"
-                   VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.deb"
-                   VAGRANT_INSTALL_CMD="sudo dpkg -i"
+                   echo "$OS_DISTRO-$OS_ARCH - $OS_NAME Proceeding."
+                   # Determining OS Architecture
+                   case $OS_ARCH in
+                       # 32-bit os
+                       "i686" )
+                           echo "$OS_DISTRO - $OS_NAME Proceeding."
+                           VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.deb"
+                           VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_i686.deb"
+                           VAGRANT_INSTALL_CMD="sudo dpkg -i"
+                           break;;
+                       # 64-bit os
+                       "x86_64" )
+                           VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.deb"
+                           VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.deb"
+                           VAGRANT_INSTALL_CMD="sudo dpkg -i"
+                           break;;
+                        # other
+                        * )
+                          #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
+                          echo "Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
+                          echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+                          break;;
+                   esac
                    break;;
                 * )
                    #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
