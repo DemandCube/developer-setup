@@ -470,9 +470,27 @@ case $OS_NAME in
                        break;;
                     "Ubuntu" )
                        echo "$OS_DISTRO - $OS_NAME Proceeding."
-                       VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.deb"
-                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.6/virtualbox-4.3_4.3.6-91406~Ubuntu~precise_amd64.deb"
-                       VIRTUALBOX_INSTALL_CMD="sudo dpkg -i"
+                       # Determining OS architecture 32-bit or 64-bit
+                       case $OS_ARCH in
+                           # 32-bit OS
+                           "i686" )
+                               # works for ubuntu 12.10 and 32-bit 
+                               VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.deb"
+                               VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.6/virtualbox-4.3_4.3.6-91406~Ubuntu~quantal_i386.deb"
+                               VIRTUALBOX_INSTALL_CMD="sudo dpkg -i"
+                               break;;
+                            # 64-bit OS
+                            "x86_64")
+                               # works for ubuntu 12.04/13.04 and 64-bit
+                               VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.deb"
+                               VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.6/virtualbox-4.3_4.3.6-91406~Ubuntu~precise_amd64.deb"
+                               VIRTUALBOX_INSTALL_CMD="sudo dpkg -i"
+                               break;;
+                            # other than 32-bit and 64-bit
+                            * ) 
+                               echo "[INFO] Current Version of Script doesn't support this architecture of $OS_NAME"
+                               break;;
+                       esac
                        break;;
                     *)
                        #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
