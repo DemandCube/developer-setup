@@ -45,6 +45,8 @@ Preferred Development Tools
 - [Virtualbox] (https://www.virtualbox.org/)
 - [Gradle] (http://www.gradle.org/)
 - [Docker] (https://www.docker.io/)
+- [Packer] (http://www.packer.io/)
+- [tmux] (http://tmux.sourceforge.net/)
 - CentOS 6.4 x86_64
 
 Charts
@@ -59,6 +61,15 @@ Done:
 ====
 - Mac OS X 10.7
 - Mac OS X 10.8
+- Mac OS X 10.9
+
+Notes:
+====
+If a problem with pycrypto
+`sudo ARCHFLAGS=-Wno-error=unused-command-line-argument-hard-error-in-future pip install pycrypto`
+
+If a problem with vagrant-rspec or message "You have to install development tools first."
+`xcode-select --install`
 
 Todo:
 ====
