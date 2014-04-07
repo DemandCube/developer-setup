@@ -1016,13 +1016,13 @@ if [ -n "$INSTALL_JAVA" ] ; then
                        "i686" )
                             JAVA_FILE="$HOME/Downloads/jdk-7u51-linux-x64.tar.gz"
                             JAVA_DOWNLOAD_URL="http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-linux-i586.tar.gz"
-                            JAVA_INSTALL_CMD="cd /opt && sudo tar -xzf $JAVA_FILE && echo 'export JAVA_HOME=/opt/jdk1.7.0_51' >> $HOME/.bashrc && echo export PATH=$PATH:$JAVA_HOME/bin >> $HOME/.bashrc && cd $HOME"
+                            JAVA_INSTALL_CMD="cd /opt && sudo tar -xzf $JAVA_FILE && echo 'export JAVA_HOME=/opt/jdk1.7.0_51' >> $HOME/.bashrc && echo 'export PATH=$PATH:$JAVA_HOME/bin' >> $HOME/.bashrc && cd $HOME"
                            break;;
                        # 64-bit os
                        "x86_64" )
                             JAVA_FILE="$HOME/Downloads/jdk-7u51-linux-x64.tar.gz"
                             JAVA_DOWNLOAD_URL="http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-linux-x64.tar.gz"
-                            JAVA_INSTALL_CMD="cd /opt && sudo tar -xzf $JAVA_FILE && echo 'export JAVA_HOME=/opt/jdk1.7.0_51' >> $HOME/.bashrc && echo export PATH=$PATH:$JAVA_HOME/bin >> $HOME/.bashrc && cd $HOME"
+                            JAVA_INSTALL_CMD="cd /opt && sudo tar -xzf $JAVA_FILE && echo 'export JAVA_HOME=/opt/jdk1.7.0_51' >> $HOME/.bashrc && echo export 'PATH=$PATH:$JAVA_HOME/bin' >> $HOME/.bashrc && cd $HOME"
                            break;;
                         # other
                         * )
