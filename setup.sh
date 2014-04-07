@@ -1063,7 +1063,12 @@ if [ -n "$INSTALL_JAVA" ] ; then
         if [ ! -d "$HOME/Downloads" ]; then
             mkdir "$HOME/Downloads"
         fi
-        echo "Downloading Java..."      
+        echo "Downloading Java..." 
+        
+        # OLD STYLE [not working since @DATE Mon April 7 2014]
+        #curl -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;" $JAVA_DOWNLOAD_URL -o $JAVA_FILE
+        
+        # NEW STYLE
         curl -L --header "Cookie: oraclelicense=accept-securebackup-cookie" $JAVA_DOWNLOAD_URL -o $JAVA_FILE
     fi 
     case $OS_DISTRO in
