@@ -469,7 +469,7 @@ case $OS_NAME in
                        VIRTUALBOX_INSTALL_CMD="sudo rpm -ivh"
                        break;;
                     "Ubuntu" )
-                       echo "$OS_DISTRO - $OS_NAME Proceeding."
+                       echo "$OS_DISTRO-$OS_ARCH - $OS_NAME Proceeding."
                        # Determining OS architecture 32-bit or 64-bit
                        case $OS_ARCH in
                            # 32-bit OS
