@@ -1064,7 +1064,7 @@ if [ -n "$INSTALL_JAVA" ] ; then
             mkdir "$HOME/Downloads"
         fi
         echo "Downloading Java..."      
-        curl -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;" $JAVA_DOWNLOAD_URL -o $JAVA_FILE
+        curl -L --header "Cookie: oraclelicense=accept-securebackup-cookie" $JAVA_DOWNLOAD_URL -o $JAVA_FILE
     fi 
     case $OS_DISTRO in
         "CentOS" )
