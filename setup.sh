@@ -676,7 +676,7 @@ esac
 
 # variable declarations                        
 INSTALL_VAGRANT=''
-REQUIRED_VAGRANT_VERSION=1.4.3
+REQUIRED_VAGRANT_VERSION=1.5.2
 VERSION_VAGRANT=''
 VAGRANT_DOWNLOAD_URL=''
 VAGRANT_INSTALL_CMD=''
@@ -778,7 +778,7 @@ if [ -n "$INSTALL_VAGRANT" ] ; then
                 "CentOS" )
                    echo "$OS_DISTRO - $OS_NAME Proceeding."        
                    VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.rpm" 
-                   VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.rpm"
+                   VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/vagrant_1.5.2_x86_64.rpm"
                    VAGRANT_INSTALL_CMD='sudo rpm -ivh'
                    break;;
                 "Ubuntu" )
@@ -789,13 +789,13 @@ if [ -n "$INSTALL_VAGRANT" ] ; then
                        "i686" )
                            echo "$OS_DISTRO - $OS_NAME Proceeding."
                            VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.deb"
-                           VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_i686.deb"
+                           VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/vagrant_1.5.2_i686.deb"
                            VAGRANT_INSTALL_CMD="sudo dpkg -i"
                            break;;
                        # 64-bit os
                        "x86_64" )
                            VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.deb"
-                           VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.deb"
+                           VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/vagrant_1.5.2_x86_64.deb"
                            VAGRANT_INSTALL_CMD="sudo dpkg -i"
                            break;;
                         # other
@@ -818,7 +818,7 @@ if [ -n "$INSTALL_VAGRANT" ] ; then
             echo "Mac OS X Proceeding"
             echo ""
             VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.dmg"
-            VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/Vagrant-1.4.3.dmg"
+            VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/vagrant_1.5.2.dmg"
             VAGRANT_INSTALL_CMD="hdiutil attach $VAGRANT_FILE && sudo installer -package /Volumes/Vagrant/Vagrant.pkg -target '/Volumes/Macintosh HD' && hdiutil detach /Volumes/Vagrant/"
             break;;
         * )
