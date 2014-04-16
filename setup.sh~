@@ -171,8 +171,8 @@ fi
 ########################################
 
 # Test and install pip if not installed
-# pip 1.5.4
-PIP_VERSION=1.5.4
+# pip 1.4.1
+PIP_VERSION=1.5
 command -v pip >/dev/null 2>&1
 INSTALLED=$?
 echo ""
@@ -382,7 +382,7 @@ fi
 
 # variable declarations                        
 INSTALL_VIRTUALBOX=''
-REQUIRED_VIRTUALBOX_VERSION=4.3.10
+REQUIRED_VIRTUALBOX_VERSION=4.3.6
 VERSION_VIRTUALBOX=''
 VIRTUALBOX_DOWNLOAD_URL=''
 VIRTUALBOX_INSTALL_CMD=''
