@@ -36,29 +36,19 @@ else
         OSSTR="$OS_NAME `oslevel` (`oslevel -r`)"
     elif [ "$OS_NAME" = "linux" ] ; then
         OS_NAME='Linux'
-        if [ -f /etc/redhat-release ] ; then
+        if [ `cat /etc/issue.net | awk '{print $1}' ` == 'Redhat' ] ; then
             OS_DISTRO_BASED_ON='RedHat'
             OS_DISTRO=`cat /etc/redhat-release |sed s/\ release.*//`
             OS_PSUEDO_NAME=`cat /etc/redhat-release | sed s/.*\(// | sed s/\)//`
             OS_REVISION=`cat /etc/redhat-release | sed s/.*release\ // | sed s/\ .*//`
-        elif [ -f /etc/SuSE-release ] ; then
-            OS_DISTRO_BASED_ON='SuSe'
-            OS_PSUEDO_NAME=`cat /etc/SuSE-release | tr "\n" ' '| sed s/VERSION.*//`
-            OS_REVISION=`cat /etc/SuSE-release | tr "\n" ' ' | sed s/.*=\ //`
-        elif [ -f /etc/mandrake-release ] ; then
-            OS_DISTRO_BASED_ON='Mandrake'
-            OS_PSUEDO_NAME=`cat /etc/mandrake-release | sed s/.*\(// | sed s/\)//`
-            OS_REVISION=`cat /etc/mandrake-release | sed s/.*release\ // | sed s/\ .*//`
-        elif [ -f /etc/debian_version ] ; then
+        elif [ `cat /etc/issue.net | awk '{print $1}' ` == 'Ubuntu' ] ; then
             # In case of Debian/Ubuntu sometime by default /bin/sh points to dash which should be made to point bash
             sudo ln -sf bash /bin/sh
             OS_DISTRO_BASED_ON='Debian'
-            OS_DISTRO=`cat /etc/lsb-release | grep '^DISTRIB_ID' | awk -F=  '{ print $2 }'`
+            OS_DISTRO=`cat /etc/issue.net | awk '{print $1}'`
             OS_PSUEDO_NAME=`cat /etc/lsb-release | grep '^DISTRIB_CODENAME' | awk -F=  '{ print $2 }'`
             OS_REVISION=`cat /etc/lsb-release | grep '^DISTRIB_RELEASE' | awk -F=  '{ print $2 }'`
-            
-        fi
-        if [ -f /etc/UnitedLinux-release ] ; then
+        elif [ -f /etc/UnitedLinux-release ] ; then
             OS_DISTRO="$OS_DISTRO[`cat /etc/UnitedLinux-release | tr "\n" ' ' | sed s/VERSION.*//`]"
         fi
 

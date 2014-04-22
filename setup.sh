@@ -87,7 +87,7 @@ if [ $OS_DISTRO == "CentOS" ] ; then
     # device-mapper-devel wget subversion subversion-gnome kernel-devel \
     # glibc-static zlib-static glibc-devel.i686 libstdc++.i686 libpng-devel
     ######################....if above first set of commands are insufficient...###############
-  
+
 elif [ $OS_DISTRO == "Ubuntu" ] ; then
     # dkms for dynamic kernal module support;kernel-devel for kernel soruce
     # and some of other below components are required by virtualbox
@@ -138,6 +138,35 @@ else
     echo "INSTALLED: [ python ]"
     printf "\t"
     python -V 2>&1 | awk '{ print $2 }'
+fi
+
+########################################
+########################################
+####    
+####   INSTALL CURL
+####
+########################################
+########################################
+
+# Test if easy_install if not install manually
+command -v curl >/dev/null 2>&1
+INSTALLED=$?
+echo ""
+
+if [ ! $INSTALLED == 0 ] ; then
+	echo "[INFO] $OS_NAME is current OS"
+	# determining os distribution in case of linux and taking action accordingly
+	case $OS_DISTRO in
+        	"CentOS" ) sudo yum install curl-devel break;;
+
+		"Ubuntu" ) sudo apt-get install curl break;;
+ 		
+		* ) 	#Cases for other Distros such as Debian,SuSe,Solaris etc
+			echo "Install curl"
+			break;;
+	esac
+else
+    echo "INSTALLED: [ curl ]"
 fi
 
 ########################################
