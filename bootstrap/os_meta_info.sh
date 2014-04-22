@@ -36,16 +36,16 @@ else
         OSSTR="$OS_NAME `oslevel` (`oslevel -r`)"
     elif [ "$OS_NAME" = "linux" ] ; then
         OS_NAME='Linux'
-        if [ `cat /etc/issue.net | awk '{print $1}' ` == 'Redhat' ] ; then
+        if [ `cat /etc/issue | awk '{print $1}' ` == 'Redhat' ] ; then
             OS_DISTRO_BASED_ON='RedHat'
-            OS_DISTRO=`cat /etc/redhat-release |sed s/\ release.*//`
+            OS_DISTRO=`cat /etc/issue | awk '{print $1}'`
             OS_PSUEDO_NAME=`cat /etc/redhat-release | sed s/.*\(// | sed s/\)//`
             OS_REVISION=`cat /etc/redhat-release | sed s/.*release\ // | sed s/\ .*//`
-        elif [ `cat /etc/issue.net | awk '{print $1}' ` == 'Ubuntu' ] ; then
+        elif [ `cat /etc/issue | awk '{print $1}' ` == 'Ubuntu' ] ; then
             # In case of Debian/Ubuntu sometime by default /bin/sh points to dash which should be made to point bash
             sudo ln -sf bash /bin/sh
             OS_DISTRO_BASED_ON='Debian'
-            OS_DISTRO=`cat /etc/issue.net | awk '{print $1}'`
+            OS_DISTRO=`cat /etc/issue | awk '{print $1}'`
             OS_PSUEDO_NAME=`cat /etc/lsb-release | grep '^DISTRIB_CODENAME' | awk -F=  '{ print $2 }'`
             OS_REVISION=`cat /etc/lsb-release | grep '^DISTRIB_RELEASE' | awk -F=  '{ print $2 }'`
         elif [ -f /etc/UnitedLinux-release ] ; then
