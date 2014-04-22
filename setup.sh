@@ -171,7 +171,7 @@ fi
 ########################################
 
 # Test and install pip if not installed
-# pip 1.5.4
+# pip >= 1.5.4
 PIP_VERSION=1.5.4
 command -v pip >/dev/null 2>&1
 INSTALLED=$?
