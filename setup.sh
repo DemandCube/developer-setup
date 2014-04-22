@@ -465,7 +465,7 @@ case $OS_NAME in
                     "CentOS" )
                        echo "$OS_DISTRO - $OS_NAME Proceeding."        
                        VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.rpm" 
-                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.6/VirtualBox-4.3-4.3.6_91406_el6-1.x86_64.rpm"
+                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.10/VirtualBox-4.3-4.3.10_93012_el6-1.x86_64.rpm"
                        VIRTUALBOX_INSTALL_CMD="sudo rpm -ivh"
                        break;;
                     "Ubuntu" )
@@ -478,17 +478,17 @@ case $OS_NAME in
                                case $OS_REVISION in
                                    "12.04" )
                                        VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.deb"
-                                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.6/virtualbox-4.3_4.3.6-91406~Ubuntu~precise_i386.deb"
+                                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.10/virtualbox-4.3_4.3.10-93012~Ubuntu~precise_i386.deb"
                                        VIRTUALBOX_INSTALL_CMD="sudo dpkg -i"
                                        break;;
                                    "12.10" )
                                        VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.deb"
-                                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.6/virtualbox-4.3_4.3.6-91406~Ubuntu~raring_i386.deb"
+                                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.10/virtualbox-4.3_4.3.10-93012~Ubuntu~raring_i386.deb"
                                        VIRTUALBOX_INSTALL_CMD="sudo dpkg -i"
                                        break;;
                                    "13.04" )
                                        VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.deb"
-                                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.6/virtualbox-4.3_4.3.6-91406~Ubuntu~quantal_i386.deb"
+                                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.10/virtualbox-4.3_4.3.10-93012~Ubuntu~quantal_i386.deb"
                                        VIRTUALBOX_INSTALL_CMD="sudo dpkg -i"
                                        break;;
                                     * )
@@ -502,17 +502,17 @@ case $OS_NAME in
                                case $OS_REVISION in
                                    "12.04" )
                                        VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.deb"
-                                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.6/virtualbox-4.3_4.3.6-91406~Ubuntu~precise_amd64.deb"
+                                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.10/virtualbox-4.3_4.3.10-93012~Ubuntu~precise_amd64.deb"
                                        VIRTUALBOX_INSTALL_CMD="sudo dpkg -i"
                                        break;;
                                    "12.10" )
                                        VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.deb"
-                                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.6/virtualbox-4.3_4.3.6-91406~Ubuntu~quantal_amd64.deb"
+                                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.10/virtualbox-4.3_4.3.10-93012~Ubuntu~quantal_amd64.deb"
                                        VIRTUALBOX_INSTALL_CMD="sudo dpkg -i"
                                        break;;
                                    "13.04" )
                                        VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.deb"
-                                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.6/virtualbox-4.3_4.3.6-91406~Ubuntu~raring_amd64.deb"
+                                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.10/virtualbox-4.3_4.3.10-93012~Ubuntu~raring_amd64.deb"
                                        VIRTUALBOX_INSTALL_CMD="sudo dpkg -i"
                                        break;;
                                     * )
@@ -561,10 +561,8 @@ case $OS_NAME in
         INSTALLED=$?
         echo ""
 
-        # REQUIRED_VIRTUALBOX_VERSION=4.2.16
-        # REQUIRED_VIRTUALBOX_URL=http://download.virtualbox.org/virtualbox/4.2.16/VirtualBox-4.2.16-86992-OSX.dmg
-        REQUIRED_VIRTUALBOX_VERSION=4.3.6
-        REQUIRED_VIRTUALBOX_URL=http://download.virtualbox.org/virtualbox/4.3.6/VirtualBox-4.3.6-91406-OSX.dmg
+        REQUIRED_VIRTUALBOX_VERSION=4.3.10
+        REQUIRED_VIRTUALBOX_URL=http://download.virtualbox.org/virtualbox/4.3.10/VirtualBox-4.3.10-93012-OSX.dmg
 
         # https://github.com/noitcudni/vagrant-ae
 
