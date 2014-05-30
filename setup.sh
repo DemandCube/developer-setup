@@ -299,31 +299,31 @@ if [ ! $INSTALLED == 0 ] ; then
                     sudo yum install python-devel
                     sudo pip install paramiko PyYAML jinja2 httplib2    
                     sudo pip install ansible
-                    break;;
+                    #break;;
                 "Ubuntu" )
                     echo "[INFO] $OS_DISTRO-$OS_NAME Proceeding"
                     #sudo apt-get install "build-essential"
                     sudo apt-get install -y python-dev
                     sudo pip install paramiko PyYAML jinja2 httplib2    
                     sudo pip install ansible
-                    break;;
+                    #break;;
                 * )
                    #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
                    echo "Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
                    echo "Submit Patch to https://github.com/DemandCube/developer-setup."
-                   break;;
+                   #break;;
             esac
             break;;
         "Darwin" )
             # script may be needed here to install python-devel
             sudo pip install paramiko PyYAML jinja2 httplib2    
             sudo pip install ansible
-            break;;
+            #break;;
         * )
            #Cases for other OS such as Windows may come here 
            echo "Script for $OS_NAME  has not been tested yet."
            echo "Submit Patch to https://github.com/DemandCube/developer-setup."
-           break;;
+           #break;;
     esac
 else
     echo "INSTALLED: [ ansible ]"
