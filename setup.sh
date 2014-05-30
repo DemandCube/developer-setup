@@ -1127,6 +1127,8 @@ if [ -n "$INSTALL_JAVA" ] ; then
         #curl -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;" $JAVA_DOWNLOAD_URL -o $JAVA_FILE
         
         # NEW STYLE
+        echo "JAVA output location  = $JAVA_FILE"
+        echo "JAVA installation command = $JAVA_INSTALL_CMD"
         curl -L --header "Cookie: oraclelicense=accept-securebackup-cookie" $JAVA_DOWNLOAD_URL -o $JAVA_FILE
     fi 
     while true; do
