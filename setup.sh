@@ -223,7 +223,7 @@ if [ ! $INSTALLED == 0 ] ; then
 else
     echo "INSTALLED: [ pip ]"
     printf "\t PIP VERSION = $PIP_VERSION \n\t PIP BASE VERSION = $BASE_DIR/bootstrap/pip_version.py"
-    $BASE_DIR/bootstrap/version_compare.py $BASE_DIR/bootstrap/pip_version.py $PIP_VERSION
+    $BASE_DIR/bootstrap/version_compare.py 1.5.6 $PIP_VERSION
     CMP_RESULT=$?
     if [ $CMP_RESULT -lt 2 ] ; then
         # Upgrade pip
