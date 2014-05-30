@@ -39,7 +39,7 @@ try:
         print "item"
         print "item"
         print "item"
-        
+        print "item"
         if item != None:
             print item
             break
