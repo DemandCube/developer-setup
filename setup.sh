@@ -1136,6 +1136,9 @@ if [ -n "$INSTALL_JAVA" ] ; then
 	        "CentOS" )
 	            $JAVA_INSTALL_CMD
 	            break;;
+	        "Ubuntu" )
+	            $JAVA_INSTALL_CMD
+	            break;;
 	        * )
 	            eval $JAVA_INSTALL_CMD
 	            break;;   
