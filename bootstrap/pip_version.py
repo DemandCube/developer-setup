@@ -5,6 +5,22 @@ import re
 try:
     import pip
     print pip.__version__
+    print pip.__version__
+    print pip.__version__
+    print pip.__version__
+    print pip.__version__
+    print pip.__version__
+    print pip.__version__
+    print pip.__version__
+    print pip.__version__
+    print pip.__version__
+    print pip.__version__
+    print pip.__version__
+    print pip.__version__
+    print pip.__version__
+    print pip.__version__
+    print pip.__version__
+    print pip.__version__
     sys.exit(0)
 except:
     noop = 0
