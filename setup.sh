@@ -91,7 +91,7 @@ if [ $OS_DISTRO == "CentOS" ] ; then
 elif [ $OS_DISTRO == "Ubuntu" ] ; then
     # dkms for dynamic kernal module support;kernel-devel for kernel soruce
     # and some of other below components are required by virtualbox
-    sudo apt-get install gcc make linux-headers-$(uname -r) dkms build-essential fontconfig fontconfig-config libasound2 libasyncns0 libaudio2 libavahi-client3 libavahi-common-data libavahi-common3 libcaca0 \
+    sudo apt-get install -y gcc make linux-headers-$(uname -r) dkms build-essential fontconfig fontconfig-config libasound2 libasyncns0 libaudio2 libavahi-client3 libavahi-common-data libavahi-common3 libcaca0 \
     libcups2 libflac8 libfontconfig1 libgl1-mesa-dri libgl1-mesa-glx libglapi-mesa libice6 libjpeg-turbo8 libjpeg8 libjson0 liblcms1 \
     libllvm3.0 libmng1 libmysqlclient18 libogg0 libpulse0 libpython2.7 libqt4-dbus libqt4-declarative libqt4-network libqt4-opengl \
     libqt4-script libqt4-sql libqt4-sql-mysql libqt4-xml libqt4-xmlpatterns libqtcore4 libqtgui4 libsdl1.2debian libsm6 libsndfile1 \
@@ -173,6 +173,7 @@ if [ ! $INSTALLED == 0 ] ; then
 	echo "INSTALLED: [ curl installed successfully]"
 else
     echo "INSTALLED: [ curl ]"
+    break;;
 fi
 done
 
@@ -408,6 +409,498 @@ if [[ -n "$INSTALL_NOSE" ]]; then
     $NOSE_INSTALL_CMD $NOSE_DOWNLOAD_URL
     echo "[INFO] nose-$REQUIRED_NOSE_VERSION installed successfully"
 fi
+
+
+########################################
+########################################
+####    
+####   INSTALL VIRTUALBOX
+####
+########################################
+######################################## 
+
+# variable declarations                        
+INSTALL_VIRTUALBOX=''
+REQUIRED_VIRTUALBOX_VERSION=4.3.10
+VERSION_VIRTUALBOX=''
+VIRTUALBOX_DOWNLOAD_URL=''
+VIRTUALBOX_INSTALL_CMD=''
+VIRTUALBOX_FILE=''
+
+#Determining OS and taking action accordingly
+while true; do
+case $OS_NAME in
+    "Linux" )
+            echo  "[INFO]: $OS_NAME is current OS. "
+            # Test if VirtualBox is already installed
+            command -v virtualbox >/dev/null 2>&1
+            INSTALLED=$?
+
+            if [ $INSTALLED == 0 ] ; then
+                echo "[INFO]: VirtualBox is already installed."
+                echo ""
+                # first command outputs full version(eg. 4.2.6r02546) and second command removes release part of version(eg. r025) 
+                VERSION_VIRTUALBOX=`VBoxManage -v | cut -f1 -d"r"`
+                #VERSION_VIRTUALBOX=${VERSION_VIRTUALBOX:0:6} 
+                echo "INSTALLED: [Virtualbox]"
+                printf "\t"
+                echo $VERSION_VIRTUALBOX
+                echo ""
+
+                # Compare the required and found versions 
+                $BASE_DIR/bootstrap/version_compare.py $VERSION_VIRTUALBOX $REQUIRED_VIRTUALBOX_VERSION
+                CMP_RESULT=$?
+                
+                # Test if installed version is lower then required version  
+                if [ ! $CMP_RESULT -eq 2 ] ; then
+                    # Remove VIRTUALBOX if not verion: $REQUIRED_VIRTUALBOX_VERSION      
+                    echo "Current VirtualBox Version: $VERSION_VIRTUALBOX"
+                    echo "Required VirtualBox Version: $REQUIRED_VIRTUALBOX_VERSION"
+                    echo ""                    
+                    echo "Install Correct VirtualBox (Delete and Install)?"
+
+                    while true; do
+                        read -p "Is this ok [y/N]:" yn
+                        case $yn in
+                            [Yy]* ) 
+                                echo "Removing VirtualBox";
+                                INSTALL_VIRTUALBOX=1
+
+                                #Determining OS Distribution and taking remove action accordingly
+                                case $OS_DISTRO in
+                                    "CentOS" )
+                                       echo "$OS_DISTRO - $OS_NAME Proceeding."  
+                                       VM="`rpm -qa | grep VirtualBox`"
+                                       echo "Removing package-$VM"      
+                                       sudo rpm -e "$VM"               
+                                       break;;
+                                    "Ubuntu" )
+                                       echo "$OS_DISTRO - $OS_NAME Proceeding."
+                                       sudo apt-get purge virtualbox*
+                                       break;;
+                                    * )
+                                       #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
+                                       echo "Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
+                                       echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+                                       break;;                                       
+                                esac
+                                break;;
+
+                            [Nn]* ) 
+                                echo "No"; break;;
+                            * ) 
+                                echo "Please answer yes or no.";;
+                        esac
+                    done            
+                fi                                             
+            else
+                INSTALL_VIRTUALBOX=1
+                echo "VirtualBox is Not Installed"
+            fi                        
+            # Test whether to install Virtualbox or not
+            if [ -n "$INSTALL_VIRTUALBOX" ] ; then
+                echo "Install VirtualBox"
+                #Determining OS Distribution and taking install action accordingly
+                while true; do
+                case $OS_DISTRO in
+                    "CentOS" )
+                       echo "$OS_DISTRO - $OS_NAME Proceeding."        
+                       VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.rpm" 
+                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.10/VirtualBox-4.3-4.3.10_93012_el6-1.x86_64.rpm"
+                       VIRTUALBOX_INSTALL_CMD="sudo rpm -ivh"
+                       break;;
+                    "Ubuntu" )
+                       echo "$OS_DISTRO-$OS_ARCH-$OS_REVISION - $OS_NAME Proceeding."
+                       # Determining OS architecture 32-bit or 64-bit
+                       case $OS_ARCH in
+                           # 32-bit OS
+                           "i686" )
+                               # Determine OS version
+                               case $OS_REVISION in
+                                   "12.04" )
+                                       VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.deb"
+                                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.10/virtualbox-4.3_4.3.10-93012~Ubuntu~precise_i386.deb"
+                                       VIRTUALBOX_INSTALL_CMD="sudo dpkg -i"
+                                       break;;
+                                   "12.10" )
+                                       VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.deb"
+                                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.10/virtualbox-4.3_4.3.10-93012~Ubuntu~raring_i386.deb"
+                                       VIRTUALBOX_INSTALL_CMD="sudo dpkg -i"
+                                       break;;
+                                   "13.04" )
+                                       VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.deb"
+                                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.10/virtualbox-4.3_4.3.10-93012~Ubuntu~quantal_i386.deb"
+                                       VIRTUALBOX_INSTALL_CMD="sudo dpkg -i"
+                                       break;;
+                                    * )
+                                       echo "[INFO] Current Version of Script doesn't support this architecture of $OS_NAME"        
+                                       break;;
+                               esac
+                               break;;
+                            # 64-bit OS
+                            "x86_64")
+                               # Determine OS version
+                               case $OS_REVISION in
+                                   "12.04" )
+                                       VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.deb"
+                                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.10/virtualbox-4.3_4.3.10-93012~Ubuntu~precise_amd64.deb"
+                                       VIRTUALBOX_INSTALL_CMD="sudo dpkg -i"
+                                       break;;
+                                   "12.10" )
+                                       VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.deb"
+                                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.10/virtualbox-4.3_4.3.10-93012~Ubuntu~quantal_amd64.deb"
+                                       VIRTUALBOX_INSTALL_CMD="sudo dpkg -i"
+                                       break;;
+                                   "13.04" )
+                                       VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.deb"
+                                       VIRTUALBOX_DOWNLOAD_URL="http://download.virtualbox.org/virtualbox/4.3.10/virtualbox-4.3_4.3.10-93012~Ubuntu~raring_amd64.deb"
+                                       VIRTUALBOX_INSTALL_CMD="sudo dpkg -i"
+                                       break;;
+                                    * )
+                                       echo "[INFO] Current Version of Script doesn't support this architecture of $OS_NAME"        
+                                       break;;
+                               esac
+                               break;;
+                            # other than 32-bit and 64-bit
+                            * ) 
+                               echo "[INFO] Current Version of Script doesn't support this architecture of $OS_NAME"
+                               break;;
+                       esac
+                       break;;
+                    *)
+                       #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
+                       echo "Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
+                       echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+                       break;;                                       
+                esac
+                done
+                # Test if Virtualbox needs to be downloaded
+                if [ ! -d "$VIRTUALBOX_FILE" ] ; then
+                    # Find version here
+                    # http://download.virtualbox.org/virtualbox/
+                    
+                    # check if Downloads directory exists, other create it
+                    if [ ! -d "$HOME/Downloads" ]; then
+                        mkdir "$HOME/Downloads"
+                    fi
+                    curl -Lk $VIRTUALBOX_DOWNLOAD_URL -o $VIRTUALBOX_FILE
+                    echo "[INFO::] Downloaded"
+                fi
+                # Installing downloaded file
+                $VIRTUALBOX_INSTALL_CMD $VIRTUALBOX_FILE
+                sudo service vboxdrv setup                
+                # Removing downloaded file
+                rm $VIRTUALBOX_FILE
+            fi
+            break;;
+    "Darwin")
+        echo "Mac OS X - Proceeding"
+
+        # $BASE_DIR/bootstrap/mac_app_installed.sh
+        # $BASE_DIR/bootstrap/mac_app_version.sh
+        # org.virtualbox.app.VirtualBox
+        $BASE_DIR/bootstrap/mac_app_installed.sh org.virtualbox.app.VirtualBox
+        INSTALLED=$?
+        echo ""
+
+        REQUIRED_VIRTUALBOX_VERSION=4.3.10
+        REQUIRED_VIRTUALBOX_URL=http://download.virtualbox.org/virtualbox/4.3.10/VirtualBox-4.3.10-93012-OSX.dmg
+
+        # https://github.com/noitcudni/vagrant-ae
+
+        if [ $INSTALLED == 1 ] ; then
+            # VirtualBox is installed
+            VERSION_VIRTUALBOX=`$BASE_DIR/bootstrap/mac_app_version.sh org.virtualbox.app.VirtualBox`
+
+            echo "INSTALLED: [ VirtualBox ]"
+            printf "\t"
+            echo "$VERSION_VIRTUALBOX"
+            # Test virtualbox in system
+            $BASE_DIR/bootstrap/version_compare.py $VERSION_VIRTUALBOX $REQUIRED_VIRTUALBOX_VERSION
+            CMP_RESULT=$?
+            if [ ! $CMP_RESULT -eq 2 ] ; then
+                # Remove VIRTUALBOX if not verion: $REQUIRED_VIRTUALBOX_VERSION
+                # http://stackoverflow.com/questions/226703/how-do-i-prompt-for-input-in-a-linux-shell-script
+                
+                echo "Current VirtualBox Version: $VERSION_VIRTUALBOX"
+                echo "Required VirtualBox Version: $REQUIRED_VIRTUALBOX_VERSION"
+                echo ""
+                
+                echo "Install Correct VirtualBox (Delete and Install)?"
+                while true; do
+                    read -p "Is this ok [y/N]:" yn
+                    case $yn in
+                        [Yy]* ) 
+                            echo "Removing VirtualBox";
+                            PATH_VIRTUALBOX=`$BASE_DIR/bootstrap/mac_app_path.sh org.virtualbox.app.VirtualBox`
+                            if [ ! $? -eq 0 ] ; then
+                                echo "Determining Path to VirtualBox returned and error."
+                                echo "Please manually remove VirtualBox"
+                                exit 1;
+                            fi
+                            
+                            echo "Remove Path ($PATH_VIRTUALBOX):?"
+                            while true; do
+                                read -p "Is this ok [y/N]:" yn
+                                case $yn in
+                                    [Yy]* ) 
+                                        echo "Removing VirtualBox";
+                                        INSTALL_VIRTUALBOX=1
+                                        
+                                        # Test if there are any running VM's and shut them down
+                                        # VBoxManage controlvm `VBoxManage list runningvms | awk '{ print $1 }' | tr -d '"' | head -n 1` poweroff
+                                        VM_COUNT=`VBoxManage list runningvms | wc -l | awk '{ print $1 }'`
+                                        while [ $VM_COUNT -gt 0 ]
+                                        do
+                                          VBoxManage controlvm `VBoxManage list runningvms | awk '{ print $1 }' | tr -d '"' | head -n 1` poweroff
+                                          VM_COUNT=`VBoxManage list runningvms | wc -l | awk '{ print $1 }'`
+                                        done
+                                        
+                                        if [ -n "$PATH_VIRTUALBOX" -a -d "$PATH_VIRTUALBOX" ] ; then
+                                            sudo rm -rf $PATH_VIRTUALBOX
+                                        fi
+                                        break;;
+                                    [Nn]* ) echo "Skipping Removing"; break;;
+                                    * ) echo "Please answer yes or no.";;
+                                esac
+                            done
+                            
+                            break;;
+                        [Nn]* ) echo "No"; break;;
+                        * ) echo "Please answer yes or no.";;
+                    esac
+                done
+                
+            fi
+        else
+            # VirtualBox is not installed
+            INSTALL_VIRTUALBOX=1
+            echo "Not Installed"
+        fi
+
+        # Install VirtualBox
+        if [ -n "$INSTALL_VIRTUALBOX" ] ; then
+            echo "Install VirtualBox"
+            VIRTUALBOX_FILE="$HOME/Downloads/VirtualBox-$REQUIRED_VIRTUALBOX_VERSION.dmg"
+            if [ ! -d "$VIRTUALBOX_FILE" ] ; then
+                # Find version here
+                # http://download.virtualbox.org/virtualbox/
+                
+                # check if Downloads directory exists, other create it
+                if [ ! -d "$HOME/Downloads" ]; then
+                    mkdir "$HOME/Downloads"
+                fi
+                curl -Lk ${REQUIRED_VIRTUALBOX_URL} -o $VIRTUALBOX_FILE
+            fi
+            hdiutil attach $VIRTUALBOX_FILE
+            sudo installer -package /Volumes/VirtualBox/VirtualBox.pkg -target '/Volumes/Macintosh HD'
+            hdiutil detach /Volumes/VirtualBox/
+            
+            rm $VIRTUALBOX_FILE
+        fi
+    break;;
+    * )
+       #Cases for other OS such as Windows may come here 
+       echo "Script for $OS_NAME has not been tested yet."
+       echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+       break;;
+esac
+done
+
+
+########################################
+########################################
+####    
+####   INSTALL VAGRANT
+####
+########################################
+########################################
+
+# variable declarations                        
+INSTALL_VAGRANT=''
+REQUIRED_VAGRANT_VERSION=1.5.2
+VERSION_VAGRANT=''
+VAGRANT_DOWNLOAD_URL=''
+VAGRANT_INSTALL_CMD=''
+VAGRANT_FILE=''
+
+# Test if Vagrant is installed
+command -v vagrant >/dev/null 2>&1
+INSTALLED=$?
+ 
+# Test if already installed
+if [ $INSTALLED == 0 ] ; then
+    #echo "Vagrant is already installed."
+    echo ""
+    
+    VERSION_VAGRANT=`vagrant -v | awk '{ print $2 }'`                
+    
+    echo "INSTALLED: [ Vagrant ]"
+    printf "\t"
+    echo "$VERSION_VAGRANT"  
+    
+    # Comparing installed and required versions
+    $BASE_DIR/bootstrap/version_compare.py $VERSION_VAGRANT $REQUIRED_VAGRANT_VERSION
+    CMP_RESULT=$?
+    
+    # Test if installed version is lower then required version
+    if [ ! $CMP_RESULT -eq 2 ] ; then
+        # Remove Vagrant if not verion: $REQUIRED_VAGRANT_VERSION      
+        echo "Current Vagrant Version: $VERSION_VAGRANT"
+        echo "Required Vagrant Version: $REQUIRED_VAGRANT_VERSION"
+        echo ""                    
+        echo "Install Correct Vagrant (Delete and Install)?"
+
+        while true; do
+            read -p "Is this ok [y/N]:" yn
+            case $yn in
+                [Yy]* ) 
+                    echo -e "\n Removing Vagrant \n";
+                    INSTALL_VAGRANT=1
+                    #Determining OS and taking action accordingly
+                    case $OS_NAME in
+                        "Linux" )
+                            echo  "$OS_NAME is current OS. "
+                            echo ""
+
+                            #Determining OS Distribution and taking remove action accordingly
+                            case $OS_DISTRO in
+                                "CentOS" )
+                                   echo -e "$OS_DISTRO - $OS_NAME Proceeding.\n"        
+                                   sudo rm -rf /opt/vagrant
+                                   sudo rm /usr/bin/vagrant                 
+                                   break;;
+                                "Ubuntu" )
+                                   echo -e "$OS_DISTRO - $OS_NAME Proceeding.\n"
+                                   sudo rm -rf /opt/vagrant
+                                   sudo rm /usr/bin/vagrant
+                                   break;;
+                                *)
+                                   #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
+                                   echo "Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
+                                   echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+                                   break;;                                       
+                            esac
+                            break;;
+                        "Darwin" )
+                            echo -e "Mac OS X Proceeding"
+
+                            break;;
+                        * )
+                            #Cases for other Distros such as Windows etc may come here 
+                            echo "Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
+                            echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+                            break;;
+                    esac
+                    break;;
+                [Nn]* ) 
+                    echo "No"; break;;
+                * ) 
+                    echo "Please answer yes or no.";;
+            esac
+        done            
+    fi                                             
+else
+    INSTALL_VAGRANT=1
+    echo "Vagrant is Not Installed"
+fi   
+
+# Test whether Vagrant needs to be installed or not
+if [ -n "$INSTALL_VAGRANT" ] ; then
+    echo "Install Vagrant"
+    
+    # Determining OS and talking actiion accordingly 
+    while true; do
+    case $OS_NAME in              
+        "Linux" )
+            echo  "$OS_NAME is current OS"
+            echo ""
+            
+            # Determining OS Distribution and taking install action accordingly
+            while true; do
+            case $OS_DISTRO in
+                "CentOS" )
+                   echo "$OS_DISTRO - $OS_NAME Proceeding."        
+                   VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.rpm" 
+                   VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/vagrant_1.5.2_x86_64.rpm"
+                   VAGRANT_INSTALL_CMD='sudo rpm -ivh'
+                   break;;
+                "Ubuntu" )
+                   echo "$OS_DISTRO-$OS_ARCH - $OS_NAME Proceeding."
+                   # Determining OS Architecture
+                   while true; do
+                   case $OS_ARCH in
+                       # 32-bit os
+                       "i686" )
+                           echo "$OS_DISTRO - $OS_NAME Proceeding."
+                           VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.deb"
+                           VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/vagrant_1.5.2_i686.deb"
+                           VAGRANT_INSTALL_CMD="sudo dpkg -i"
+                           break;;
+                       # 64-bit os
+                       "x86_64" )
+                           VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.deb"
+                           VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/vagrant_1.5.2_x86_64.deb"
+                           VAGRANT_INSTALL_CMD="sudo dpkg -i"
+                           break;;
+                        # other
+                        * )
+                          #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
+                          echo "Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
+                          echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+                          break;;
+                   esac
+                   done
+                   break;;
+                * )
+                   #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
+                   echo "Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
+                   echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+                   break;;                                       
+            esac
+            done
+            break;;
+
+        "Darwin" )
+            echo "Mac OS X Proceeding"
+            echo ""
+            VAGRANT_FILE="$HOME/Downloads/Vagrant-$REQUIRED_VAGRANT_VERSION.dmg"
+            VAGRANT_DOWNLOAD_URL="https://dl.bintray.com/mitchellh/vagrant/vagrant_1.5.2.dmg"
+            VAGRANT_INSTALL_CMD="hdiutil attach $VAGRANT_FILE && sudo installer -package /Volumes/Vagrant/Vagrant.pkg -target '/Volumes/Macintosh HD' && hdiutil detach /Volumes/Vagrant/"
+            break;;
+        * )
+           #Cases for other OS such as Windows etc may come here 
+           echo "Script for $OS_NAME has not been tested yet."
+           echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+           break;;                 
+    esac
+    done
+
+    # Test if Vagrant needs to be downloaded
+    if [ ! -d "$VAGRANT_FILE" ] ; then
+        # Find version here
+        # http://download.virtualbox.org/virtualbox/
+        
+        # check if Downloads directory exists, other create it
+        if [ ! -d "$HOME/Downloads" ]; then
+            mkdir "$HOME/Downloads"
+        fi
+        curl -Lk $VAGRANT_DOWNLOAD_URL -o $VAGRANT_FILE
+    fi
+    # Installing downloaded file
+    while true; do
+    case $OS_NAME in
+        "Linux" )
+            $VAGRANT_INSTALL_CMD $VAGRANT_FILE
+            break;;
+        "Darwin" )
+        eval $VAGRANT_INSTALL_CMD
+        break;;   
+    esac 
+    done
+    # Removing downloaded file
+    rm $VAGRANT_FILE
+fi    
 
 
 ########################################
