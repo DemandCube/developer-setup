@@ -427,6 +427,7 @@ VIRTUALBOX_INSTALL_CMD=''
 VIRTUALBOX_FILE=''
 
 #Determining OS and taking action accordingly
+while true; do
 case $OS_NAME in
     "Linux" )
             echo  "[INFO]: $OS_NAME is current OS. "
@@ -499,6 +500,7 @@ case $OS_NAME in
             if [ -n "$INSTALL_VIRTUALBOX" ] ; then
                 echo "Install VirtualBox"
                 #Determining OS Distribution and taking install action accordingly
+                while true; do
                 case $OS_DISTRO in
                     "CentOS" )
                        echo "$OS_DISTRO - $OS_NAME Proceeding."        
@@ -570,6 +572,7 @@ case $OS_NAME in
                        echo "Submit Patch to https://github.com/DemandCube/developer-setup."
                        break;;                                       
                 esac
+                done
                 # Test if Virtualbox needs to be downloaded
                 if [ ! -d "$VIRTUALBOX_FILE" ] ; then
                     # Find version here
@@ -701,3 +704,4 @@ case $OS_NAME in
        echo "Submit Patch to https://github.com/DemandCube/developer-setup."
        break;;
 esac
+done
