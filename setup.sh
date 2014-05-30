@@ -170,6 +170,7 @@ if [ ! $INSTALLED == 0 ] ; then
 			echo "Install curl"
 			break;;
 	esac
+	echo "INSTALLED: [ curl installed successfully]"
 else
     echo "INSTALLED: [ curl ]"
 fi
@@ -190,6 +191,7 @@ echo ""
 
 if [ ! $INSTALLED == 0 ] ; then
     echo "Installing easy_install it was missing"
+    sudo apt-get install -y python-setuptools
     curl http://python-distribute.org/distribute_setup.py -o distribute_setup.py
     sudo python distribute_setup.py
     sudo rm distribute_setup.py
