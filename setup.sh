@@ -887,6 +887,7 @@ if [ -n "$INSTALL_VAGRANT" ] ; then
         curl -Lk $VAGRANT_DOWNLOAD_URL -o $VAGRANT_FILE
     fi
     # Installing downloaded file
+    while true; do
     case $OS_NAME in
         "Linux" )
             $VAGRANT_INSTALL_CMD $VAGRANT_FILE
@@ -894,7 +895,8 @@ if [ -n "$INSTALL_VAGRANT" ] ; then
         "Darwin" )
         eval $VAGRANT_INSTALL_CMD
         break;;   
-    esac               
+    esac 
+    done
     # Removing downloaded file
     rm $VAGRANT_FILE
 fi    
