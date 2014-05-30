@@ -152,14 +152,15 @@ fi
 command -v curl >/dev/null 2>&1
 INSTALLED=$?
 echo ""
-
+while true; do
 if [ ! $INSTALLED == 0 ] ; then
 	echo "[INFO] $OS_NAME is current OS"
+	echo "INSTALLING: [ curl ]"
 	# determining os distribution in case of linux and taking action accordingly
 	case $OS_DISTRO in
         	"CentOS" ) sudo yum install curl-devel break;;
 
-		"Ubuntu" ) sudo apt-get install curl break;;
+		"Ubuntu" ) sudo apt-get install -y curl break;;
  		
 		* ) 	#Cases for other Distros such as Debian,SuSe,Solaris etc
 			echo "Install curl"
@@ -168,6 +169,7 @@ if [ ! $INSTALLED == 0 ] ; then
 else
     echo "INSTALLED: [ curl ]"
 fi
+done
 
 ########################################
 ########################################
