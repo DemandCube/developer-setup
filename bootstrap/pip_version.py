@@ -30,6 +30,16 @@ try:
     file = pip.__file__
     tuple = re.search('(pip-([\d]\.[\d]\.[\d])-|pip-([\d]\.[\d])-|pip-([\d])-)',file).groups()[1:4]
     for item in tuple:
+        print "item"
+        print "item"
+        print "item"
+        print "item"
+        print "item"
+        print "item"
+        print "item"
+        print "item"
+        print "item"
+        
         if item != None:
             print item
             break
