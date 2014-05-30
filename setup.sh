@@ -313,8 +313,8 @@ if [ ! $INSTALLED == 0 ] ; then
                     echo "[INFO] $OS_DISTRO-$OS_NAME Proceeding"
                     #sudo apt-get install "build-essential"
                     sudo apt-get install -y python-dev
-                    sudo apt-get install -y paramiko PyYAML jinja2 httplib2    
-                    sudo apt-get install -y ansible
+                    sudo pip install paramiko PyYAML jinja2 httplib2    
+                    sudo pip install ansible
                     break;;
                 * )
                    #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
