@@ -1190,8 +1190,8 @@ if [ $INSTALLED == 0 ] ; then
         echo ""
     
         echo "Install Correct Git (Delete and Install)?"
-        while true; do
             read -p "Is this ok [y/N]:" yn
+            while true; do
             case $yn in
                 [Yy]* ) 
                     echo "Setting Git to be removed";
@@ -1243,7 +1243,10 @@ if [ $INSTALLED == 0 ] ; then
                     INSTALL_GIT=1
                     break;;
                 [Nn]* ) echo "Skipping"; break;;
-                * ) echo "Please answer yes or no.";;
+                * ) 
+                echo "Please answer yes or no."
+                y
+                ;;
             esac
         done
     
@@ -1354,7 +1357,9 @@ if [ -n "$INSTALL_GIT" ] ; then
 	                    rm $GIT_FILE
 	                    break;;
 	                [Nn]* ) echo "Skipping"; break;;
-	                * ) echo "Please answer yes or no.";;
+	                * ) echo "Please answer yes or no."
+	                y
+	                ;;
 	            esac
 	        done
 	        break;;
