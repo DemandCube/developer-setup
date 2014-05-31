@@ -340,7 +340,7 @@ else
     echo "INSTALLED: [ ansible ]"
     printf "\t"
     ansible --version | awk '{ print $2 }'
-    break;;
+    break
 fi
 done
 
