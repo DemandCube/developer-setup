@@ -62,6 +62,7 @@ BASE_DIR=$(cd $(dirname $0);  pwd -P)
 #### OS_REVISION
 #### OS_KERNEL_VER
 #### OS_ARCH
+# sudo ln -sf bash /bin/sh should be done for Ubuntu in case if source command doesn't work
 sudo ln -sf bash /bin/sh
 source $BASE_DIR/bootstrap/os_meta_info.sh
 #./bootstrap/os_meta_info.sh
