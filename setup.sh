@@ -1244,9 +1244,7 @@ if [ $INSTALLED == 0 ] ; then
                     break;;
                 [Nn]* ) echo "Skipping"; break;;
                 * ) 
-                echo "Please answer yes or no."
-                y
-                ;;
+                echo "Please answer yes or no.";;
             esac
         done
     
@@ -1357,9 +1355,7 @@ if [ -n "$INSTALL_GIT" ] ; then
 	                    rm $GIT_FILE
 	                    break;;
 	                [Nn]* ) echo "Skipping"; break;;
-	                * ) echo "Please answer yes or no."
-	                y
-	                ;;
+	                * ) echo "Please answer yes or no.";;
 	            esac
 	        done
 	        break;;
