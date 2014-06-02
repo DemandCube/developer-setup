@@ -158,7 +158,7 @@ if [ ! $INSTALLED == 0 ] ; then
 	echo "[INFO] $OS_NAME is current OS"
 	echo "INSTALLING: [ curl ]"
 	# determining os distribution in case of linux and taking action accordingly
-	while true; do
+	#while true; do
 		case $OS_DISTRO in
 	        	"CentOS" ) 
 	        		sudo yum install curl-devel 
@@ -172,7 +172,7 @@ if [ ! $INSTALLED == 0 ] ; then
 				echo "Install curl"
 				break;;
 		esac
-	done
+	#done
 	echo "INSTALLED: [ curl installed successfully]"
 else
     echo "INSTALLED: [ curl ]"
