@@ -18,6 +18,6 @@ RUN mkdir /home/developersetup
 RUN git clone https://git@github.com/jeroldleslie/developer-setup.git /home/developersetup
 
 RUN cd /home/developersetup
-RUN expect "y/N" { send "y\r" } 
+RUN expect "/home/developersetup/setup.sh" { send "y\r" } 
 RUN bash /home/developersetup/setup.sh
 
