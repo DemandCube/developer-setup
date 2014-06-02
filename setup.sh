@@ -158,7 +158,7 @@ if [ ! $INSTALLED == 0 ] ; then
 	echo "[INFO] $OS_NAME is current OS"
 	echo "INSTALLING: [ curl ]"
 	# determining os distribution in case of linux and taking action accordingly
-	#while true; do
+	while true; do
 		case $OS_DISTRO in
 	        	"CentOS" ) 
 	        		sudo yum install curl-devel 
@@ -172,7 +172,7 @@ if [ ! $INSTALLED == 0 ] ; then
 				echo "Install curl"
 				break;;
 		esac
-	#done
+	done
 	echo "INSTALLED: [ curl installed successfully]"
 else
     echo "INSTALLED: [ curl ]"
@@ -195,10 +195,41 @@ echo ""
 if [ ! $INSTALLED == 0 ] ; then
     echo "Installing easy_install it was missing"
     
-   
-    curl http://python-distribute.org/distribute_setup.py -o distribute_setup.py
-    sudo python distribute_setup.py
-    sudo rm distribute_setup.py
+   while true; do
+	   case $OS_NAME in
+	        "Linux" )
+	            echo "[INFO] $OS_NAME is current OS"
+	            # determining os distribution in case of linux and taking action accordingly
+	            case $OS_DISTRO in
+	                "CentOS" )
+	                    echo "[INFO] $OS_DISTRO-$OS_NAME Proceeding"
+	                    sudo yum install python-setuptools
+	                    break;;
+	                "Ubuntu" )
+	                    echo "[INFO] $OS_DISTRO-$OS_NAME Proceeding"
+	                    sudo apt-get install -y python-setuptools
+	                    break;;
+	                * )
+	                   #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
+	                   echo "Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
+	                   echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+	                   break;;
+	            esac
+	            break;;
+	        "Darwin" )
+	           echo "Script for $OS_NAME  has not been tested yet."
+	           echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+	           break;;
+	        * )
+	           #Cases for other OS such as Windows may come here 
+	           echo "Script for $OS_NAME  has not been tested yet."
+	           echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+	           break;;
+	    esac
+    done
+    #curl http://python-distribute.org/distribute_setup.py -o distribute_setup.py
+    #sudo python distribute_setup.py
+    #sudo rm distribute_setup.py
 else
     echo "INSTALLED: [ easy_install ]"
 fi
