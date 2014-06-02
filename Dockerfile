@@ -1,4 +1,4 @@
-FROM ubuntu:precise
+FROM ubuntu:12.04
 MAINTAINER Peter Jerold Leslie, jeroldleslie@gmail.com
 
 
