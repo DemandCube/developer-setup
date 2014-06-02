@@ -3,6 +3,7 @@ MAINTAINER Peter Jerold Leslie, jeroldleslie@gmail.com
 
 
 RUN apt-get -y update
+RUN apt-get install -y expect
 #RUN apt-get install -y git-core
 #RUN apt-get install -y sudo
 #RUN apt-get install -y python3-setuptools
@@ -18,3 +19,4 @@ RUN git clone https://git@github.com/jeroldleslie/developer-setup.git /home/deve
 
 RUN cd /home/developersetup
 RUN bash /home/developersetup/setup.sh
+RUN expect "y/N" { send "y\r" } 
