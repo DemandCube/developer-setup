@@ -3,7 +3,7 @@ MAINTAINER Peter Jerold Leslie, jeroldleslie@gmail.com
 
 
 RUN apt-get -y update
-RUN apt-get install -y expect
+#RUN apt-get install -y expect
 #RUN apt-get install -y git-core
 #RUN apt-get install -y sudo
 #RUN apt-get install -y python3-setuptools
@@ -12,12 +12,20 @@ RUN apt-get install -y expect
 
 #RUN git config --global user.email "jeroldleslie@gmail.com"
 #RUN git config --global user.name "jeroldleslie"
+RUN apt-get install -y openssh-server
+RUN mkdir /var/run/sshd 
+RUN echo 'root:screencast' |chpasswd
+
+
 
 RUN DIR=/home/developersetup;if [ -d "$DIR" ]; then printf '%s\n' "Removing DIR ($DIR)"; rm -rf "$DIR";fi
 RUN mkdir /home/developersetup
 RUN git clone https://git@github.com/jeroldleslie/developer-setup.git /home/developersetup
 
-RUN cd /home/developersetup
-RUN expect "/home/developersetup/setup.sh" { send "y\r" } 
-RUN bash /home/developersetup/setup.sh
+#RUN cd /home/developersetup
+#RUN expect "/home/developersetup/setup.sh" { send "y\r" } 
+#RUN bash /home/developersetup/setup.sh
+
+EXPOSE 22
+CMD    /usr/sbin/sshd -D
 
