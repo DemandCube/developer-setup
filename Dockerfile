@@ -28,6 +28,6 @@ RUN apt-get install -y openssh-server
 RUN mkdir /var/run/sshd 
 RUN echo 'root:screencast' |chpasswd
 
-EXPOSE 22 49159
+EXPOSE 22:49161
 CMD    /usr/sbin/sshd -D
 
