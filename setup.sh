@@ -62,9 +62,10 @@ BASE_DIR=$(cd $(dirname $0);  pwd -P)
 #### OS_REVISION
 #### OS_KERNEL_VER
 #### OS_ARCH
-sudo ln -sf bash /bin/sh #should be done for Ubuntu in case if source command doesn't work
+# sudo ln -sf bash /bin/sh should be done for Ubuntu in case if source command doesn't work
+sudo ln -sf bash /bin/sh
 source $BASE_DIR/bootstrap/os_meta_info.sh
-#bash $BASE_DIR/bootstrap/os_meta_info.sh
+#./bootstrap/os_meta_info.sh
 
 # installing developement tools withch are required to build and run softwares in linux
 echo ""
@@ -91,7 +92,7 @@ if [ $OS_DISTRO == "CentOS" ] ; then
 elif [ $OS_DISTRO == "Ubuntu" ] ; then
     # dkms for dynamic kernal module support;kernel-devel for kernel soruce
     # and some of other below components are required by virtualbox
-    sudo apt-get install gcc make linux-headers-$(uname -r) dkms build-essential fontconfig fontconfig-config libasound2 libasyncns0 libaudio2 libavahi-client3 libavahi-common-data libavahi-common3 libcaca0 \
+    sudo apt-get install -y gcc make linux-headers-$(uname -r) dkms build-essential fontconfig fontconfig-config libasound2 libasyncns0 libaudio2 libavahi-client3 libavahi-common-data libavahi-common3 libcaca0 \
     libcups2 libflac8 libfontconfig1 libgl1-mesa-dri libgl1-mesa-glx libglapi-mesa libice6 libjpeg-turbo8 libjpeg8 libjson0 liblcms1 \
     libllvm3.0 libmng1 libmysqlclient18 libogg0 libpulse0 libpython2.7 libqt4-dbus libqt4-declarative libqt4-network libqt4-opengl \
     libqt4-script libqt4-sql libqt4-sql-mysql libqt4-xml libqt4-xmlpatterns libqtcore4 libqtgui4 libsdl1.2debian libsm6 libsndfile1 \
@@ -155,19 +156,28 @@ echo ""
 
 if [ ! $INSTALLED == 0 ] ; then
 	echo "[INFO] $OS_NAME is current OS"
+	echo "INSTALLING: [ curl ]"
 	# determining os distribution in case of linux and taking action accordingly
-	case $OS_DISTRO in
-        	"CentOS" ) sudo yum install curl-devel break;;
-
-		"Ubuntu" ) sudo apt-get install curl break;;
- 		
-		* ) 	#Cases for other Distros such as Debian,SuSe,Solaris etc
-			echo "Install curl"
-			break;;
-	esac
+	while true; do
+		case $OS_DISTRO in
+	        	"CentOS" ) 
+	        		sudo yum install curl-devel 
+	        		break;;
+	
+			"Ubuntu" ) 
+				sudo apt-get install -y curl 
+				break;;
+	 		
+			* ) 	#Cases for other Distros such as Debian,SuSe,Solaris etc
+				echo "Install curl"
+				break;;
+		esac
+	done
+	echo "INSTALLED: [ curl installed successfully]"
 else
     echo "INSTALLED: [ curl ]"
 fi
+
 
 ########################################
 ########################################
@@ -184,9 +194,42 @@ echo ""
 
 if [ ! $INSTALLED == 0 ] ; then
     echo "Installing easy_install it was missing"
-    curl http://python-distribute.org/distribute_setup.py -o distribute_setup.py
-    sudo python distribute_setup.py
-    sudo rm distribute_setup.py
+    
+   while true; do
+	   case $OS_NAME in
+	        "Linux" )
+	            echo "[INFO] $OS_NAME is current OS"
+	            # determining os distribution in case of linux and taking action accordingly
+	            case $OS_DISTRO in
+	                "CentOS" )
+	                    echo "[INFO] $OS_DISTRO-$OS_NAME Proceeding"
+	                    sudo yum install python-setuptools
+	                    break;;
+	                "Ubuntu" )
+	                    echo "[INFO] $OS_DISTRO-$OS_NAME Proceeding"
+	                    sudo apt-get install -y python-setuptools
+	                    break;;
+	                * )
+	                   #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
+	                   echo "Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
+	                   echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+	                   break;;
+	            esac
+	            break;;
+	        "Darwin" )
+	           echo "Script for $OS_NAME  has not been tested yet."
+	           echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+	           break;;
+	        * )
+	           #Cases for other OS such as Windows may come here 
+	           echo "Script for $OS_NAME  has not been tested yet."
+	           echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+	           break;;
+	    esac
+    done
+    #curl http://python-distribute.org/distribute_setup.py -o distribute_setup.py
+    #sudo python distribute_setup.py
+    #sudo rm distribute_setup.py
 else
     echo "INSTALLED: [ easy_install ]"
 fi
@@ -212,7 +255,6 @@ if [ ! $INSTALLED == 0 ] ; then
     sudo easy_install pip
 else
     echo "INSTALLED: [ pip ]"
-    printf "\t"
     $BASE_DIR/bootstrap/version_compare.py `$BASE_DIR/bootstrap/pip_version.py` $PIP_VERSION
     CMP_RESULT=$?
     if [ $CMP_RESULT -lt 2 ] ; then
@@ -285,6 +327,7 @@ echo ""
 
 # Todo test for version and upgrade
 # Version 1.4.4
+while true; do 
 if [ ! $INSTALLED == 0 ] ; then
     echo "INSTALLING: [ ansible ]"
     # determining OS and taking action accordingly
@@ -329,8 +372,9 @@ else
     echo "INSTALLED: [ ansible ]"
     printf "\t"
     ansible --version | awk '{ print $2 }'
+    break
 fi
-
+done
 
 ########################################
 ########################################
@@ -418,6 +462,7 @@ VIRTUALBOX_INSTALL_CMD=''
 VIRTUALBOX_FILE=''
 
 #Determining OS and taking action accordingly
+while true; do
 case $OS_NAME in
     "Linux" )
             echo  "[INFO]: $OS_NAME is current OS. "
@@ -490,6 +535,7 @@ case $OS_NAME in
             if [ -n "$INSTALL_VIRTUALBOX" ] ; then
                 echo "Install VirtualBox"
                 #Determining OS Distribution and taking install action accordingly
+                while true; do
                 case $OS_DISTRO in
                     "CentOS" )
                        echo "$OS_DISTRO - $OS_NAME Proceeding."        
@@ -561,6 +607,7 @@ case $OS_NAME in
                        echo "Submit Patch to https://github.com/DemandCube/developer-setup."
                        break;;                                       
                 esac
+                done
                 # Test if Virtualbox needs to be downloaded
                 if [ ! -d "$VIRTUALBOX_FILE" ] ; then
                     # Find version here
@@ -692,6 +739,8 @@ case $OS_NAME in
        echo "Submit Patch to https://github.com/DemandCube/developer-setup."
        break;;
 esac
+done
+
 
 ########################################
 ########################################
@@ -795,12 +844,14 @@ if [ -n "$INSTALL_VAGRANT" ] ; then
     echo "Install Vagrant"
     
     # Determining OS and talking actiion accordingly 
+    while true; do
     case $OS_NAME in              
         "Linux" )
             echo  "$OS_NAME is current OS"
             echo ""
             
             # Determining OS Distribution and taking install action accordingly
+            while true; do
             case $OS_DISTRO in
                 "CentOS" )
                    echo "$OS_DISTRO - $OS_NAME Proceeding."        
@@ -811,6 +862,7 @@ if [ -n "$INSTALL_VAGRANT" ] ; then
                 "Ubuntu" )
                    echo "$OS_DISTRO-$OS_ARCH - $OS_NAME Proceeding."
                    # Determining OS Architecture
+                   while true; do
                    case $OS_ARCH in
                        # 32-bit os
                        "i686" )
@@ -832,6 +884,7 @@ if [ -n "$INSTALL_VAGRANT" ] ; then
                           echo "Submit Patch to https://github.com/DemandCube/developer-setup."
                           break;;
                    esac
+                   done
                    break;;
                 * )
                    #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
@@ -839,6 +892,7 @@ if [ -n "$INSTALL_VAGRANT" ] ; then
                    echo "Submit Patch to https://github.com/DemandCube/developer-setup."
                    break;;                                       
             esac
+            done
             break;;
 
         "Darwin" )
@@ -854,6 +908,7 @@ if [ -n "$INSTALL_VAGRANT" ] ; then
            echo "Submit Patch to https://github.com/DemandCube/developer-setup."
            break;;                 
     esac
+    done
 
     # Test if Vagrant needs to be downloaded
     if [ ! -d "$VAGRANT_FILE" ] ; then
@@ -867,6 +922,7 @@ if [ -n "$INSTALL_VAGRANT" ] ; then
         curl -Lk $VAGRANT_DOWNLOAD_URL -o $VAGRANT_FILE
     fi
     # Installing downloaded file
+    while true; do
     case $OS_NAME in
         "Linux" )
             $VAGRANT_INSTALL_CMD $VAGRANT_FILE
@@ -874,7 +930,8 @@ if [ -n "$INSTALL_VAGRANT" ] ; then
         "Darwin" )
         eval $VAGRANT_INSTALL_CMD
         break;;   
-    esac               
+    esac 
+    done
     # Removing downloaded file
     rm $VAGRANT_FILE
 fi    
@@ -976,38 +1033,42 @@ if [ $INSTALLED == 0 ] ; then
                     # ~/.vagrant.d
                     INSTALL_JAVA=1
                     #Determining OS and taking remove action accordingly
-                    case $OS_NAME in
-                        "Linux" )
-                            echo  "[INFO] $OS_NAME is current OS. "
-                           
-                            #Determining OS Distribution and taking remove action accordingly
-                            case $OS_DISTRO in
-                                "CentOS" )
-                                   echo -e "[INFO] $OS_DISTRO - $OS_NAME Proceeding.\n"        
-                                                 
-                                   break;;
-                                "Ubuntu" )
-                                   echo -e "[INFO::] $OS_DISTRO - $OS_NAME Proceeding.\n"
-                                   
-                                   break;;
-                                *)
-                                   #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
-                                   echo "[INFO] Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
-                                   echo "[INFO] Submit Patch to https://github.com/DemandCube/developer-setup."
-                                   break;;                                       
-                            esac
-                            break;;
-                        "Darwin" )
-                            echo -e "Mac OS X Proceeding"
-                            echo  "[INFO] Script was unable to uninstall/remove java! Please uninstall/remove it manually"
-                            echo  "[INFO] Cause::: No Script to uninstall. Please add Script to uninstall****************"
-                            break;;
-                        * )
-                            #Cases for other OS such as Windows etc may come here 
-                            echo "Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
-                            echo "Submit Patch to https://github.com/DemandCube/developer-setup."
-                            break;;
-                    esac
+                    while true; do
+	                    case $OS_NAME in
+	                        "Linux" )
+	                            echo  "[INFO] $OS_NAME is current OS. "
+	                           
+	                            #Determining OS Distribution and taking remove action accordingly
+	                            while true; do
+		                            case $OS_DISTRO in
+		                                "CentOS" )
+		                                   echo -e "[INFO] $OS_DISTRO - $OS_NAME Proceeding.\n"        
+		                                                 
+		                                   break;;
+		                                "Ubuntu" )
+		                                   echo -e "[INFO::] $OS_DISTRO - $OS_NAME Proceeding.\n"
+		                                   
+		                                   break;;
+		                                *)
+		                                   #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
+		                                   echo "[INFO] Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
+		                                   echo "[INFO] Submit Patch to https://github.com/DemandCube/developer-setup."
+		                                   break;;                                       
+		                            esac
+	                            done
+	                            break;;
+	                        "Darwin" )
+	                            echo -e "Mac OS X Proceeding"
+	                            echo  "[INFO] Script was unable to uninstall/remove java! Please uninstall/remove it manually"
+	                            echo  "[INFO] Cause::: No Script to uninstall. Please add Script to uninstall****************"
+	                            break;;
+	                        * )
+	                            #Cases for other OS such as Windows etc may come here 
+	                            echo "Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
+	                            echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+	                            break;;
+	                    esac
+                    done
                     break;;
                 [Nn]* ) echo "No"; break;;
                 * ) echo "Please answer yes or no.";;
@@ -1022,64 +1083,67 @@ fi
 # Install Java
 if [ -n "$INSTALL_JAVA" ] ; then
     echo "Install Java"
-    
-    case $OS_NAME in              
-        "Linux" )
-           echo  "$OS_NAME is current OS"
-           echo ""
-           case $OS_DISTRO in
-               "CentOS" )
-                   echo "$OS_DISTRO-$OS_NAME Proceeding..."
-                   echo ""
-                   JAVA_FILE="$HOME/Downloads/jdk-7u51-linux-x64.rpm"
-                   JAVA_DOWNLOAD_URL="http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-linux-x64.rpm"
-                   JAVA_INSTALL_CMD="sudo rpm -ivh $JAVA_FILE"
-                   break ;;
-                "Ubuntu" )
-                   echo "$OS_DISTRO-$OS_ARCH - $OS_NAME Proceeding."
-                   # Determining OS Architecture
-                   case $OS_ARCH in
-                       # 32-bit os
-                       "i686" )
-                            JAVA_FILE="$HOME/Downloads/jdk-7u51-linux-x64.tar.gz"
-                            JAVA_DOWNLOAD_URL="http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-linux-i586.tar.gz"
-                            JAVA_INSTALL_CMD="cd /opt && sudo tar -xzf $JAVA_FILE && echo 'export JAVA_HOME=/opt/jdk1.7.0_51' >> $HOME/.bashrc && echo 'export PATH=$PATH:$JAVA_HOME/bin' >> $HOME/.bashrc && cd $HOME && source ~/.bashrc"
-                           break;;
-                       # 64-bit os
-                       "x86_64" )
-                            JAVA_FILE="$HOME/Downloads/jdk-7u51-linux-x64.tar.gz"
-                            JAVA_DOWNLOAD_URL="http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-linux-x64.tar.gz"
-                            JAVA_INSTALL_CMD="cd /opt && sudo tar -xzf $JAVA_FILE && echo 'export JAVA_HOME=/opt/jdk1.7.0_51' >> $HOME/.bashrc && echo 'export PATH=$PATH:$JAVA_HOME/bin' >> $HOME/.bashrc && cd $HOME && source ~/.bashrc"
-                           break;;
-                        # other
-                        * )
-                          #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
-                          echo "Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
-                          echo "Submit Patch to https://github.com/DemandCube/developer-setup."
-                          break;;
-                   esac
-                   break;;                  
-                   
-                * )
-                  #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
-                  echo "Script for $OS_DISTRO has not been tested yet."
-                  echo "Submit Patch to https://github.com/DemandCube/developer-setup."
-                  break ;;
-           esac
-           break ;;
-        "Darwin" )
-           echo "Mac OS X Proceeding..."
-           echo ""
-           JAVA_FILE="$HOME/Downloads/jdk-7u51-macosx-x64.dmg"
-           JAVA_DOWNLOAD_URL='http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg'
-           JAVA_INSTALL_CMD="hdiutil attach $JAVA_FILE && sudo installer -package '/Volumes/JDK 7 Update 51/JDK 7 Update 51.pkg' -target '/Volumes/Macintosh HD' && hdiutil detach '/Volumes/JDK 7 Update 51/'"
-           break ;;
-        * )
-           #Cases for other OS such as Windows etc may come here 
-           echo "Script for $OS_NAME has not been tested yet."
-           echo "Submit Patch to https://github.com/DemandCube/developer-setup."
-           break;; 
-    esac   
+    while true; do
+	    case $OS_NAME in              
+	        "Linux" )
+	           echo  "$OS_NAME is current OS"
+	           echo ""
+	           while true; do
+		           case $OS_DISTRO in
+		               "CentOS" )
+		                   echo "$OS_DISTRO-$OS_NAME Proceeding..."
+		                   echo ""
+		                   JAVA_FILE="$HOME/Downloads/jdk-7u51-linux-x64.rpm"
+		                   JAVA_DOWNLOAD_URL="http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-linux-x64.rpm"
+		                   JAVA_INSTALL_CMD="sudo rpm -ivh $JAVA_FILE"
+		                   break ;;
+		                "Ubuntu" )
+		                   echo "$OS_DISTRO-$OS_ARCH - $OS_NAME Proceeding."
+		                   # Determining OS Architecture
+		                   case $OS_ARCH in
+		                       # 32-bit os
+		                       "i686" )
+		                            JAVA_FILE="$HOME/Downloads/jdk-7u51-linux-x64.tar.gz"
+		                            JAVA_DOWNLOAD_URL="http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-linux-i586.tar.gz"
+		                            JAVA_INSTALL_CMD="cd /opt && sudo tar -xzf $JAVA_FILE && echo 'export JAVA_HOME=/opt/jdk1.7.0_51' >> $HOME/.bashrc && echo 'export PATH=$PATH:$JAVA_HOME/bin' >> $HOME/.bashrc && cd $HOME && source ~/.bashrc"
+		                           break;;
+		                       # 64-bit os
+		                       "x86_64" )
+		                            JAVA_FILE="$HOME/Downloads/jdk-7u51-linux-x64.tar.gz"
+		                            JAVA_DOWNLOAD_URL="http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-linux-x64.tar.gz"
+		                            JAVA_INSTALL_CMD="cd /opt && sudo tar -xzf $JAVA_FILE && echo 'export JAVA_HOME=/opt/jdk1.7.0_51' >> $HOME/.bashrc && echo 'export PATH=$PATH:$JAVA_HOME/bin' >> $HOME/.bashrc && cd $HOME && source ~/.bashrc"
+		                           break;;
+		                        # other
+		                        * )
+		                          #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
+		                          echo "Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
+		                          echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+		                          break;;
+		                   esac
+		                   break;;                  
+		                   
+		                * )
+		                  #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
+		                  echo "Script for $OS_DISTRO has not been tested yet."
+		                  echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+		                  break ;;
+		           esac
+		   done
+	           break ;;
+	        "Darwin" )
+	           echo "Mac OS X Proceeding..."
+	           echo ""
+	           JAVA_FILE="$HOME/Downloads/jdk-7u51-macosx-x64.dmg"
+	           JAVA_DOWNLOAD_URL='http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg'
+	           JAVA_INSTALL_CMD="hdiutil attach $JAVA_FILE && sudo installer -package '/Volumes/JDK 7 Update 51/JDK 7 Update 51.pkg' -target '/Volumes/Macintosh HD' && hdiutil detach '/Volumes/JDK 7 Update 51/'"
+	           break ;;
+	        * )
+	           #Cases for other OS such as Windows etc may come here 
+	           echo "Script for $OS_NAME has not been tested yet."
+	           echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+	           break;; 
+	    esac
+    done
     if [ ! -d "$JAVA_FILE" ] ; then
         # Find version here
         # curl -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;" http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg -o jdk-7u51-macosx-x64.dmg
@@ -1096,16 +1160,23 @@ if [ -n "$INSTALL_JAVA" ] ; then
         #curl -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;" $JAVA_DOWNLOAD_URL -o $JAVA_FILE
         
         # NEW STYLE
+        echo "JAVA output location  = $JAVA_FILE"
+        echo "JAVA installation command = $JAVA_INSTALL_CMD"
         curl -L --header "Cookie: oraclelicense=accept-securebackup-cookie" $JAVA_DOWNLOAD_URL -o $JAVA_FILE
     fi 
-    case $OS_DISTRO in
-        "CentOS" )
-            $JAVA_INSTALL_CMD
-            break;;
-        * )
-            eval $JAVA_INSTALL_CMD
-            break;;   
-    esac
+    while true; do
+	    case $OS_DISTRO in
+	        "CentOS" )
+	            $JAVA_INSTALL_CMD
+	            break;;
+	        "Ubuntu" )
+	            $JAVA_INSTALL_CMD
+	            break;;
+	        * )
+	            eval $JAVA_INSTALL_CMD
+	            break;;   
+	    esac
+    done
     rm $JAVA_FILE
 fi
 
@@ -1152,57 +1223,61 @@ if [ $INSTALLED == 0 ] ; then
         echo ""
     
         echo "Install Correct Git (Delete and Install)?"
-        while true; do
             read -p "Is this ok [y/N]:" yn
+            while true; do
             case $yn in
                 [Yy]* ) 
                     echo "Setting Git to be removed";
                     UNINSTALL_GIT=1
-                    
-                    case $OS_NAME in
-                         "Linux" )
-                            echo "$OS_NAME Proceeding"
-                            case $OS_DISTRO in
-                                "CentOS" )
-                                    echo "$OS_DISTRO-$OS_NAME Proceeding"
-                                    GIT=`which git`
-                                    sudo rm $GIT
-                                    #### also git direcotry in home needs to be removed
-                                    break;;
-                                "Ubuntu" )
-                                    echo "$OS_DISTRO-$OS_NAME Proceeding"
-                                    GIT=`which git`
-                                    sudo rm $GIT
-                                    #### also git direcotry in home needs to be removed
-                                    break;;
-                                * )
-                                     #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
-                                      echo "Script for $OS_DISTRO has not been tested yet."
-                                      echo "Submit Patch to https://github.com/DemandCube/developer-setup."
-                                    break;;
-                            esac
-                            break;;
-                         "Darwin" )
-                            echo "Mac OS X Proceeding"
-                            # For Mac OS X
-                            #Navigate to /Library/Git/GitVirtualMachines and remove the directory whose name matches the following format:*
-                            #    /Library/Git/GitVirtualMachines/jdk<major>.<minor>.<macro[_update]>.jdk
-                            #For example, to uninstall 7u6:
-                            #    % rm -rf jdk1.7.0_06.jdk
-                            GIT=`which git`
-                            sudo rm $GIT
-                            #### also needs git direcotry in home removed
-                            break;;
-                          * )
-                            #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
-                            echo "Script for $OS_NAME has not been tested yet."
-                            echo  "Submit Patch to https://github.com/DemandCube/developer-setup."
-                            break;;
-                    esac                 
+                    while true; do
+	                    case $OS_NAME in
+	                         "Linux" )
+	                            echo "$OS_NAME Proceeding"
+	                            while true; do
+		                            case $OS_DISTRO in
+		                                "CentOS" )
+		                                    echo "$OS_DISTRO-$OS_NAME Proceeding"
+		                                    GIT=`which git`
+		                                    sudo rm $GIT
+		                                    #### also git direcotry in home needs to be removed
+		                                    break;;
+		                                "Ubuntu" )
+		                                    echo "$OS_DISTRO-$OS_NAME Proceeding"
+		                                    GIT=`which git`
+		                                    sudo rm $GIT
+		                                    #### also git direcotry in home needs to be removed
+		                                    break;;
+		                                * )
+		                                     #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
+		                                      echo "Script for $OS_DISTRO has not been tested yet."
+		                                      echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+		                                    break;;
+		                            esac
+		                    done
+	                            break;;
+	                         "Darwin" )
+	                            echo "Mac OS X Proceeding"
+	                            # For Mac OS X
+	                            #Navigate to /Library/Git/GitVirtualMachines and remove the directory whose name matches the following format:*
+	                            #    /Library/Git/GitVirtualMachines/jdk<major>.<minor>.<macro[_update]>.jdk
+	                            #For example, to uninstall 7u6:
+	                            #    % rm -rf jdk1.7.0_06.jdk
+	                            GIT=`which git`
+	                            sudo rm $GIT
+	                            #### also needs git direcotry in home removed
+	                            break;;
+	                          * )
+	                            #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
+	                            echo "Script for $OS_NAME has not been tested yet."
+	                            echo  "Submit Patch to https://github.com/DemandCube/developer-setup."
+	                            break;;
+	                    esac   
+	            done
                     INSTALL_GIT=1
                     break;;
                 [Nn]* ) echo "Skipping"; break;;
-                * ) echo "Please answer yes or no.";;
+                * ) 
+                echo "Please answer yes or no.";;
             esac
         done
     
@@ -1217,110 +1292,114 @@ fi
 if [ -n "$INSTALL_GIT" ] ; then
     echo "Install Git"
 
-    case $OS_NAME in
-      "Linux" )
-         echo "$OS_NAME Proceeding"
-         case $OS_DISTRO in
-             "CentOS" )
-                 echo "$OS_DISTRO-$OS_NAME Proceeding"
-                 GIT_FILE="$HOME/Downloads/git-1.8.5.3.tar.gz"
-                 GIT_DOWNLOAD_URL="http://git-core.googlecode.com/files/git-1.8.5.3.tar.gz"
-                 GIT_INSTALL_CMD="sudo yum install curl-devel expat-devel gettext-devel zlib-devel perl-ExtUtils-MakeMaker asciidoc xmlto openssl-devel && cd $HOME/Downloads && tar -xzf $GIT_FILE && cd git-1.8.5.3 && ./configure --prefix=/usr --without-tcltk  && make && sudo make install"
-                 break;;
-             "Ubuntu" )
-                 echo "$OS_DISTRO-$OS_NAME Proceeding"
-                 GIT_FILE="$HOME/Downloads/git-1.8.5.3.tar.gz"
-                 GIT_DOWNLOAD_URL="http://git-core.googlecode.com/files/git-1.8.5.3.tar.gz"
-                 GIT_INSTALL_CMD="sudo apt-get install libcurl4-gnutls-dev libexpat1-dev gettext zlib1g-dev libz-dev libssl-dev &&  cd $HOME/Downloads && tar -xzf $GIT_FILE && cd git-1.8.5.3 && ./configure --prefix=/usr --without-tcltk && make && sudo make install"
-                 break;;
-             * )
-                 #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
-                 echo "Script for $OS_DISTRO has not been tested yet."
-                 echo "Submit Patch to https://github.com/DemandCube/developer-setup."
-                 break;;
-         esac
-          if [ ! -d "$GIT_FILE" ] ; then
-            #checking for Downloads folder
-            if [ ! -d "$HOME/Downloads" ]; then
-                mkdir "$HOME/Downloads"
-            fi  
-            curl -Lk $GIT_DOWNLOAD_URL -o $GIT_FILE
-          fi 
-          #http://stackoverflow.com/questions/2005192/how-to-execute-a-bash-command-stored-as-a-string-with-quotes-and-asterisk
-          eval $GIT_INSTALL_CMD
-          rm $GIT_FILE
-          break;;
-      "Darwin" )
-        echo "Mac OS X Proceeding"
-        GIT_FILE="$HOME/Downloads/git-1.8.4.2-intel-universal-snow-leopard.dmg"
-        if [ ! -d "$GIT_FILE" ] ; then
-            # Find version here
-            # curl -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;" http://download.oracle.com/otn-pub/git/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg -o jdk-7u51-macosx-x64.dmg
-            # http://download.oracle.com/otn-pub/git/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg
-            # http://download.oracle.com/otn-pub/git/jdk/7u51-b13/jdk-7u51-linux-x64.rpm
-            
-            # check if Downloads directory exists, other create it
-            if [ ! -d "$HOME/Downloads" ]; then
-                mkdir "$HOME/Downloads"
-            fi            
-            curl -L https://git-osx-installer.googlecode.com/files/git-1.8.4.2-intel-universal-snow-leopard.dmg -o $GIT_FILE
-        fi
-        VOLUME_PATH_GIT='/Volumes/Git 1.8.4.2 Snow Leopard Intel Universal/'
-        PACKAGE_NAME_GIT='git-1.8.4.2-intel-universal-snow-leopard.pkg'
-        
-        hdiutil attach $GIT_FILE
-        
-        if [ -n "$INSTALL_GIT" ] ; then
-            sudo "${VOLUME_PATH_GIT}uninstall.sh"
-        fi
-        
-        sudo installer -package "${VOLUME_PATH_GIT}${PACKAGE_NAME_GIT}" -target '/Volumes/Macintosh HD'
-        sudo "${VOLUME_PATH_GIT}setup git PATH for non-terminal programs.sh"
-        
-        hdiutil detach "$VOLUME_PATH_GIT"
-        
-        NEW_VERSION_GIT=`git --version | awk '{print $3}'`
-        
-        if [ "$VERSION_GIT" == "$NEW_VERSION_GIT" ] ; then
-            echo "Installed git version isn't matching so creating symbolic link to correct version"
-            sudo mv /usr/bin/git /usr/bin/git-{$VERSION_GIT}
-            sudo ln -s /usr/local/git/bin/git /usr/bin/git
-            TEST_VERSION_GIT=`git --version | awk '{print $3}'`
-            if [ "$VERSION_GIT" == "$TEST_VERSION_GIT" ] ; then
-                echo "Didn't work!"
-                echo ""
-                echo "YOU!!!!!"
-                echo " Need to investigate why GIT didn't update properly, probably a path issue"
-                echo "Should install git to /usr/local/git"
-                echo "which git"
-                echo "git --version"
-                echo "ls -al `which git`"
-            else
-                echo "INSTALLED: [ Git ]"
-                printf "\t"
-                echo "$TEST_VERSION_GIT"
-            fi
-        fi
-        
-        echo "Remove downloaded file ($GIT_FILE) ?"
-        while true; do
-            read -p "Is this ok [y/N]:" yn
-            case $yn in
-                [Yy]* ) 
-                    rm $GIT_FILE
-                    break;;
-                [Nn]* ) echo "Skipping"; break;;
-                * ) echo "Please answer yes or no.";;
-            esac
-        done
-        break;;
-      * )
-        #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
-        echo "Script for $OS_NAME has not been tested yet."
-        echo "Submit Patch to https://github.com/DemandCube/developer-setup."
-        break;;
-   esac
+    while true; do
+	    case $OS_NAME in
+	      "Linux" )
+	         echo "$OS_NAME Proceeding"
+	         while true; do
+		         case $OS_DISTRO in
+		             "CentOS" )
+		                 echo "$OS_DISTRO-$OS_NAME Proceeding"
+		                 GIT_FILE="$HOME/Downloads/git-1.8.5.3.tar.gz"
+		                 GIT_DOWNLOAD_URL="http://git-core.googlecode.com/files/git-1.8.5.3.tar.gz"
+		                 GIT_INSTALL_CMD="sudo yum install curl-devel expat-devel gettext-devel zlib-devel perl-ExtUtils-MakeMaker asciidoc xmlto openssl-devel && cd $HOME/Downloads && tar -xzf $GIT_FILE && cd git-1.8.5.3 && ./configure --prefix=/usr --without-tcltk  && make && sudo make install"
+		                 break;;
+		             "Ubuntu" )
+		                 echo "$OS_DISTRO-$OS_NAME Proceeding"
+		                 GIT_FILE="$HOME/Downloads/git-1.8.5.3.tar.gz"
+		                 GIT_DOWNLOAD_URL="http://git-core.googlecode.com/files/git-1.8.5.3.tar.gz"
+		                 GIT_INSTALL_CMD="sudo apt-get install libcurl4-gnutls-dev libexpat1-dev gettext zlib1g-dev libz-dev libssl-dev &&  cd $HOME/Downloads && tar -xzf $GIT_FILE && cd git-1.8.5.3 && ./configure --prefix=/usr --without-tcltk && make && sudo make install"
+		                 break;;
+		             * )
+		                 #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
+		                 echo "Script for $OS_DISTRO has not been tested yet."
+		                 echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+		                 break;;
+		         esac
+		  done
+	          if [ ! -d "$GIT_FILE" ] ; then
+	            #checking for Downloads folder
+	            if [ ! -d "$HOME/Downloads" ]; then
+	                mkdir "$HOME/Downloads"
+	            fi  
+	            curl -Lk $GIT_DOWNLOAD_URL -o $GIT_FILE
+	          fi 
+	          #http://stackoverflow.com/questions/2005192/how-to-execute-a-bash-command-stored-as-a-string-with-quotes-and-asterisk
+	          eval $GIT_INSTALL_CMD
+	          rm $GIT_FILE
+	          break;;
+	      "Darwin" )
+	        echo "Mac OS X Proceeding"
+	        GIT_FILE="$HOME/Downloads/git-1.8.4.2-intel-universal-snow-leopard.dmg"
+	        if [ ! -d "$GIT_FILE" ] ; then
+	            # Find version here
+	            # curl -L --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;" http://download.oracle.com/otn-pub/git/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg -o jdk-7u51-macosx-x64.dmg
+	            # http://download.oracle.com/otn-pub/git/jdk/7u51-b13/jdk-7u51-macosx-x64.dmg
+	            # http://download.oracle.com/otn-pub/git/jdk/7u51-b13/jdk-7u51-linux-x64.rpm
+	            
+	            # check if Downloads directory exists, other create it
+	            if [ ! -d "$HOME/Downloads" ]; then
+	                mkdir "$HOME/Downloads"
+	            fi            
+	            curl -L https://git-osx-installer.googlecode.com/files/git-1.8.4.2-intel-universal-snow-leopard.dmg -o $GIT_FILE
+	        fi
+	        VOLUME_PATH_GIT='/Volumes/Git 1.8.4.2 Snow Leopard Intel Universal/'
+	        PACKAGE_NAME_GIT='git-1.8.4.2-intel-universal-snow-leopard.pkg'
+	        
+	        hdiutil attach $GIT_FILE
+	        
+	        if [ -n "$INSTALL_GIT" ] ; then
+	            sudo "${VOLUME_PATH_GIT}uninstall.sh"
+	        fi
+	        
+	        sudo installer -package "${VOLUME_PATH_GIT}${PACKAGE_NAME_GIT}" -target '/Volumes/Macintosh HD'
+	        sudo "${VOLUME_PATH_GIT}setup git PATH for non-terminal programs.sh"
+	        
+	        hdiutil detach "$VOLUME_PATH_GIT"
+	        
+	        NEW_VERSION_GIT=`git --version | awk '{print $3}'`
+	        
+	        if [ "$VERSION_GIT" == "$NEW_VERSION_GIT" ] ; then
+	            echo "Installed git version isn't matching so creating symbolic link to correct version"
+	            sudo mv /usr/bin/git /usr/bin/git-{$VERSION_GIT}
+	            sudo ln -s /usr/local/git/bin/git /usr/bin/git
+	            TEST_VERSION_GIT=`git --version | awk '{print $3}'`
+	            if [ "$VERSION_GIT" == "$TEST_VERSION_GIT" ] ; then
+	                echo "Didn't work!"
+	                echo ""
+	                echo "YOU!!!!!"
+	                echo " Need to investigate why GIT didn't update properly, probably a path issue"
+	                echo "Should install git to /usr/local/git"
+	                echo "which git"
+	                echo "git --version"
+	                echo "ls -al `which git`"
+	            else
+	                echo "INSTALLED: [ Git ]"
+	                printf "\t"
+	                echo "$TEST_VERSION_GIT"
+	            fi
+	        fi
+	        
+	        echo "Remove downloaded file ($GIT_FILE) ?"
+	        while true; do
+	            read -p "Is this ok [y/N]:" yn
+	            case $yn in
+	                [Yy]* ) 
+	                    rm $GIT_FILE
+	                    break;;
+	                [Nn]* ) echo "Skipping"; break;;
+	                * ) echo "Please answer yes or no.";;
+	            esac
+	        done
+	        break;;
+	      * )
+	        #Cases for other Distros such as Debian,Ubuntu,SuSe etc may come here 
+	        echo "Script for $OS_NAME has not been tested yet."
+	        echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+	        break;;
+	   esac
+   done
 fi
-    
+echo "Deployment successfully completed..."
 # BASE_DIR=$(cd $(dirname $0);  pwd -P)
 # ansible-playbook $BASE_DIR/helloworld_local.yaml -i $BASE_DIR/inventoryfile
