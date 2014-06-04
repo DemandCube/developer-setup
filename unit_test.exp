@@ -1,5 +1,5 @@
 #!/usr/bin/expect -f
 
 set timeout 60
-spawn /home/developersetup/setup.sh
+spawn bash /home/developersetup/setup.sh
 expect "Deployment successfully completed..." {send "\r"}
