@@ -70,7 +70,7 @@ bash $BASE_DIR/bootstrap/os_meta_info.sh
 echo ""
 echo "[INFO]: Installing common developement tools************************************"
 echo ""
-if [ $OS_DISTRO = "CentOS" ] ; then
+if [ $OS_DISTRO == "CentOS" ] ; then
     #dkms for dynamic kernal module support;kernel-devel for kernel soruce
     # and some of other below components are required by virtualbox
     sudo yum install binutils qt gcc make patch libgomp glibc-headers glibc-devel \
@@ -88,7 +88,7 @@ if [ $OS_DISTRO = "CentOS" ] ; then
     # glibc-static zlib-static glibc-devel.i686 libstdc++.i686 libpng-devel
     ######################....if above first set of commands are insufficient...###############
 
-elif [ $OS_DISTRO = "Ubuntu" ] ; then
+elif [ $OS_DISTRO == "Ubuntu" ] ; then
     # dkms for dynamic kernal module support;kernel-devel for kernel soruce
     # and some of other below components are required by virtualbox
     sudo apt-get install gcc make linux-headers-$(uname -r) dkms build-essential fontconfig fontconfig-config libasound2 libasyncns0 libaudio2 libavahi-client3 libavahi-common-data libavahi-common3 libcaca0 \
@@ -120,7 +120,7 @@ fi
 command -v python >/dev/null 2>&1
 INSTALLED=$?
 
-if [ ! $INSTALLED = 0 ] ; then
+if [ ! $INSTALLED == 0 ] ; then
     echo "Install python it's missing"
     exit 1
 fi
