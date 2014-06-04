@@ -2,6 +2,7 @@
 
 set timeout 600
 spawn bash /home/developersetup/setup.sh
-expect "Do you want to continue [Y/n]?" { send "y\r" exp_continue}
+expect {Do you want to continue [Y/n]?} 
+send "y\r" exp_continue
 expect "Deployment successfully completed..." {send "\r"}
 interact
