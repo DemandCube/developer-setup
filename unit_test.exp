@@ -7,9 +7,6 @@ expect {
         send "y\r"
         exp_continue
     }
-    "% " {
-        #Do whatever is needed here, after which program flow will continue *outside* of the expect block
-    }
 }
 expect "Deployment successfully completed..." {send "\r"}
 interact
