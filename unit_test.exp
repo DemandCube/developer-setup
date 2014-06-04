@@ -6,7 +6,11 @@ puts "Developer Setup Started"
 expect "\[Y/n]" {
         send "y\r";
         expect "INSTALLED" {
-                puts "installeddddddddddddddd........."
+                if { $expect_out(0,string) == "INSTALLED" } {
+                        puts "$expect_out(buffer) PASS";
+                } else {
+                    puts "FAIL";
+                }                                                       
         }
 }
 
