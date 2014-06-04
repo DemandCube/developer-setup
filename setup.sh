@@ -63,8 +63,8 @@ BASE_DIR=$(cd $(dirname $0);  pwd -P)
 #### OS_KERNEL_VER
 #### OS_ARCH
 sudo ln -sf bash /bin/sh #should be done for Ubuntu in case if source command doesn't work
-#source $BASE_DIR/bootstrap/os_meta_info.sh
-$BASE_DIR/bootstrap/os_meta_info.sh
+source $BASE_DIR/bootstrap/os_meta_info.sh
+#$BASE_DIR/bootstrap/os_meta_info.sh
 
 # installing developement tools withch are required to build and run softwares in linux
 echo ""
