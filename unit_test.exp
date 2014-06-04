@@ -2,12 +2,16 @@
 
 set timeout 6000
 spawn bash /home/developersetup/setup.sh
+expect "[INFO]: Installing common developement tools*"{
+        puts "Developer Setup Started"
+        exp_continue
+}
 expect "\[Y/n]" {
         send "y\r"
         exp_continue
     }
 expect "INSTALLED: [ python ]"{
-puts "INSTALLED PYTHON PASS"
+        puts "INSTALLED PYTHON PASS"
 }
 
 
