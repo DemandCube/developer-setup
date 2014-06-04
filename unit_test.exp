@@ -2,3 +2,4 @@
 
 set timeout 30
 spawn /home/developersetup/setup.sh
+expect "Deployment successfully completed..." {send "\r"}
