@@ -2,5 +2,5 @@
 
 set timeout 60
 spawn bash /home/developersetup/setup.sh
-expect "Do you want to continue [Y/n]?" { send "y\r"}
+expect "Do you want to continue [Y/n]?" { send "y\r" ext_continue}
 expect "Deployment successfully completed..." {send "\r"}
