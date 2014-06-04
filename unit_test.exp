@@ -4,8 +4,12 @@ set timeout 6000
 spawn bash /home/developersetup/setup.sh
 expect "\[Y/n]" {
         send "y\r"
-        #exp_continue
+        exp_continue
     }
+expect "INSTALLED: [ python ]"{
+puts "INSTALLED PYTHON PASS"
+}
+
 
 #expect "Deployment successfully completed..." {send "\r"}
 interact
