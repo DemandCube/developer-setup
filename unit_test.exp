@@ -4,7 +4,7 @@ set timeout 600
 spawn bash /home/developersetup/setup.sh
 expect "\[Y/n]" {
         send "y\r"
-        exp_continue
+        #exp_continue
     }
 
 #expect "Deployment successfully completed..." {send "\r"}
