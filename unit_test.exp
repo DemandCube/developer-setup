@@ -11,7 +11,8 @@ expect {
                         puts "$expect_out(buffer) PASS";
                 } else  {
                         puts "FAIL";
-                }                                                       
+                } 
+        }
 }
 
 
