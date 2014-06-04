@@ -7,5 +7,5 @@ expect "\[Y/n]" {
         exp_continue
     }
 
-expect "Deployment successfully completed..." {send "\r"}
+#expect "Deployment successfully completed..." {send "\r"}
 interact
