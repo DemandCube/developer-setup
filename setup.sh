@@ -69,7 +69,7 @@ source $BASE_DIR/bootstrap/os_meta_info.sh
 
 # installing developement tools withch are required to build and run softwares in linux
 echo ""
-echo "[INFO]: Installing common developement tools************************************"
+echo "[INFO]: Installing common developement tools*************************************"
 echo ""
 if [ $OS_DISTRO == "CentOS" ] ; then
     #dkms for dynamic kernal module support;kernel-devel for kernel soruce
