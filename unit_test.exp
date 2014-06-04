@@ -6,7 +6,7 @@ puts "Developer Setup Started"
 
         expect "\[Y/n]" {
                 send "y\r"
-                expect "INSTALLED: [ python ]"{
+                expect "INSTALLED: \[ python ]"{
                         puts "INSTALLED PYTHON PASS"
                 }
     }
