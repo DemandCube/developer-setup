@@ -3,7 +3,7 @@ MAINTAINER Peter Jerold Leslie, jeroldleslie@gmail.com
 
 #RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
 RUN apt-get update
-#RUN apt-get install -y expect
+RUN apt-get install -y expect
 #RUN apt-get install -y git-core
 #RUN apt-get install -y sudo
 #RUN apt-get install -y python3-setuptools
@@ -24,10 +24,12 @@ RUN git clone https://git@github.com/jeroldleslie/developer-setup.git /home/deve
 #RUN expect "/home/developersetup/setup.sh" { send "y\r" } 
 #RUN bash /home/developersetup/setup.sh
 
-RUN apt-get install -y openssh-server
-RUN mkdir /var/run/sshd 
-RUN echo 'root:screencast' |chpasswd
+RUN /home/developersetup/unittest.exp
 
-EXPOSE 22
-CMD    /usr/sbin/sshd -D
+#RUN apt-get install -y openssh-server
+#RUN mkdir /var/run/sshd 
+#RUN echo 'root:screencast' |chpasswd
+
+#EXPOSE 22
+#CMD    /usr/sbin/sshd -D
 
