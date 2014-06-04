@@ -2,7 +2,7 @@
 
 set timeout 6000
 spawn bash /home/developersetup/setup.sh
-expect "[INFO]: Installing common developement tools*"{
+expect "Installing common developement tools"{
         puts "Developer Setup Started"
         exp_continue
 }
