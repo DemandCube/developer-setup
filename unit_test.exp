@@ -1,6 +1,6 @@
 #!/usr/bin/expect -f
 
-set timeout 600
+set timeout 6000
 spawn bash /home/developersetup/setup.sh
 expect "\[Y/n]" {
         send "y\r"
