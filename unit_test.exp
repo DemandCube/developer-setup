@@ -7,7 +7,7 @@ puts "Developer Setup Started"
 
 expect "INSTALLED" {
         if { $expect_out(0,string) == "INSTALLED" } {
-                puts "$expect_out(string) PASS";
+                puts "$expect_out(buffer) PASS";
         } else  {
                 puts "FAIL";
         } 
