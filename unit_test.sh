@@ -62,9 +62,9 @@ command -v git --version >/dev/null 2>&1
 INSTALLED=$?
 if [ $INSTALLED == 0 ] ; then
     VERSION=`git --version | awk '{print $3}'`
-    echo "PASS: [Git $VERSION]"
+    echo "PASS: [ Git $VERSION ]"
 else
-     echo "FAIL: [Git]"
+    echo "FAIL: [ Git ]"
 fi
 
 #/home/developersetup/unit_test.exp
