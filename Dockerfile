@@ -24,7 +24,7 @@ RUN git clone https://git@github.com/jeroldleslie/developer-setup.git /home/deve
 #RUN expect "/home/developersetup/setup.sh" { send "y\r" } 
 #RUN bash /home/developersetup/setup.sh
 
-RUN bash /home/developersetup/unit_test.sh
+RUN bash /home/developersetup/unittest.sh
 
 #RUN apt-get install -y openssh-server
 #RUN mkdir /var/run/sshd 
