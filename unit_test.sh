@@ -12,7 +12,25 @@ expect "\[y|Y/n|N]" {
 #        } else  {
 #                puts "FAIL";
 #        } 
-#}
-interact'
+#}'
+
+command -v git --version >/dev/null 2>&1
+INSTALLED=$?
+echo ""
+
+if [ $INSTALLED == 0 ] ; then
+    #  Git is installed
+    # git version 1.7.4.4
+    VERSION_GIT=`git --version | awk '{print $3}'`
+    
+    echo "PASS: [Git $VERSION_GIT]"
+    #printf "\t"
+    #echo "$VERSION_GIT"
+
+else
+    # Git is not installed
+    #INSTALL_GIT=1
+     echo "FAIL: [Git]"
+fi
 
 #/home/developersetup/unit_test.exp
