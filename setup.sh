@@ -4,6 +4,43 @@ source $BASE_DIR/bootstrap/os_meta_info.sh
 ########################################
 ########################################
 ####    
+####   INSTALL CURL
+####
+########################################
+########################################
+
+# Test if easy_install if not install manually
+command -v curl >/dev/null 2>&1
+INSTALLED=$?
+echo ""
+
+if [ ! $INSTALLED == 0 ] ; then
+	echo "[INFO] $OS_NAME is current OS"
+	echo "INSTALLING: [ curl ]"
+	# determining os distribution in case of linux and taking action accordingly
+	while true; do
+		case $OS_DISTRO in
+	        	"CentOS" ) 
+	        		sudo yum install curl-devel 
+	        		break;;
+	
+			"Ubuntu" ) 
+				sudo apt-get install -y curl 
+				break;;
+	 		
+			* ) 	#Cases for other Distros such as Debian,SuSe,Solaris etc
+				echo "Install curl"
+				break;;
+		esac
+	done
+	echo "INSTALLED: [ curl installed successfully]"
+else
+    echo "INSTALLED: [ curl ]"
+fi
+
+########################################
+########################################
+####    
 ####   INSTALL GIT
 ####
 ########################################
