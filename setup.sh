@@ -1,3 +1,4 @@
+BASE_DIR=$(cd $(dirname $0);  pwd -P)
 sudo ln -sf bash /bin/sh
 source $BASE_DIR/bootstrap/os_meta_info.sh
 ########################################
