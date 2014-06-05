@@ -2,7 +2,7 @@
 expect -c 'set timeout 6000
 spawn bash /home/developersetup/setup.sh
 puts "Developer Setup Started"
-expect "\[Y/n]" { 
+expect "\[y|Y/n|N]" { 
   send "y\r";
   exp_continue;
 }
