@@ -50,7 +50,7 @@ command -v vagrant >/dev/null 2>&1
 INSTALLED=$?
 
 if [ $INSTALLED == 0 ] ; then
-    VERSION_VAGRANT=`vagrant -v | awk '{ print $2 }'`                
+    VERSION=`vagrant -v | awk '{ print $2 }'`                
     echo "PASS: [ Vagrant $VERSION]"
 else
     echo "FAIL: [ Vagrant ]"
@@ -59,9 +59,9 @@ fi
 command -v java -version >/dev/null 2>&1
 INSTALLED=$?
 if [ $INSTALLED == 0 ] ; then
-    VERSION_JAVA=`java -version 2>&1 | awk '{ print $3 }' | head -n 1 | tr -d '"'`
-    VERSION_JAVA=${VERSION_JAVA%%_*}
-    echo "PASS: [ Java $VERSION_JAVA]"
+    VERSION=`java -version 2>&1 | awk '{ print $3 }' | head -n 1 | tr -d '"'`
+    VERSION=${VERSION_JAVA%%_*}
+    echo "PASS: [ Java $VERSION]"
 else
     echo "FAIL: [ Java ]"
 fi
