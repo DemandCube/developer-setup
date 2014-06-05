@@ -183,7 +183,7 @@ if [ -n "$INSTALL_GIT" ] ; then
 	            curl -Lk $GIT_DOWNLOAD_URL -o $GIT_FILE
 	          fi 
 	          #http://stackoverflow.com/questions/2005192/how-to-execute-a-bash-command-stored-as-a-string-with-quotes-and-asterisk
-	          eval $GIT_INSTALL_CMD
+	          $GIT_INSTALL_CMD
 	          rm $GIT_FILE
 	          break;;
 	      "Darwin" )
