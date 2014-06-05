@@ -81,7 +81,7 @@ if [ $OS_DISTRO == "CentOS" ] ; then
     gstreamer gstreamer-plugins-base gstreamer-tools iso-codes lcms-libs libXft libXi \
     libXrandr libXv libgudev1 libjpeg-turbo libmng libogg liboil libthai libtheora libtiff \
     libvisual libvorbis mesa-libGLU pango phonon-backend-gstreamer pixman qt-sqlite \
-    qt-x11 libudev libXmu SDL-static
+    qt-x11 libudev libXmu SDL-static libxml2-devel libxslt-devel
 
     #######################...........OR..........############################################
     # sudo yum install gcc-c++ make libcap-devel libcurl-devel libIDL-devel libstdc++-static \
