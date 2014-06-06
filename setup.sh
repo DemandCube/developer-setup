@@ -72,7 +72,6 @@ echo ""
 echo "[INFO]: Installing common developement tools*************************************"
 echo ""
 
-echo "INSTALLED: [ LESLIE ]"
 if [ $OS_DISTRO == "CentOS" ] ; then
     #dkms for dynamic kernal module support;kernel-devel for kernel soruce
     # and some of other below components are required by virtualbox
