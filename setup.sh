@@ -71,7 +71,34 @@ source $BASE_DIR/bootstrap/os_meta_info.sh
 echo ""
 echo "[INFO]: Installing common developement tools*************************************"
 echo ""
+if [ $OS_DISTRO == "CentOS" ] ; then
+    #dkms for dynamic kernal module support;kernel-devel for kernel soruce
+    # and some of other below components are required by virtualbox
+    sudo yum install binutils qt gcc make patch libgomp glibc-headers glibc-devel \
+    kernel-headers kernel-devel dkms alsa-lib cairo cdparanoia-libs fontconfig freetype \
+    gstreamer gstreamer-plugins-base gstreamer-tools iso-codes lcms-libs libXft libXi \
+    libXrandr libXv libgudev1 libjpeg-turbo libmng libogg liboil libthai libtheora libtiff \
+    libvisual libvorbis mesa-libGLU pango phonon-backend-gstreamer pixman qt-sqlite \
+    qt-x11 libudev libXmu SDL-static libxml2-devel libxslt-devel
 
+    #######################...........OR..........############################################
+    # sudo yum install gcc-c++ make libcap-devel libcurl-devel libIDL-devel libstdc++-static \
+    # libxslt-devel libXmu-devel openssl-devel pam-devel pulseaudio-libs-devel \
+    # python-devel qt-devel SDL_ttf-devel SDL-static texlive-latex wine-core \
+    # device-mapper-devel wget subversion subversion-gnome kernel-devel \
+    # glibc-static zlib-static glibc-devel.i686 libstdc++.i686 libpng-devel
+    ######################....if above first set of commands are insufficient...###############
+
+elif [ $OS_DISTRO == "Ubuntu" ] ; then
+    # dkms for dynamic kernal module support;kernel-devel for kernel soruce
+    # and some of other below components are required by virtualbox
+    sudo apt-get install gcc make linux-headers-$(uname -r) dkms build-essential fontconfig fontconfig-config libasound2 libasyncns0 libaudio2 libavahi-client3 libavahi-common-data libavahi-common3 libcaca0 \
+    libcups2 libflac8 libfontconfig1 libgl1-mesa-dri libgl1-mesa-glx libglapi-mesa libice6 libjpeg-turbo8 libjpeg8 libjson0 liblcms1 \
+    libllvm3.0 libmng1 libmysqlclient18 libogg0 libpulse0 libpython2.7 libqt4-dbus libqt4-declarative libqt4-network libqt4-opengl \
+    libqt4-script libqt4-sql libqt4-sql-mysql libqt4-xml libqt4-xmlpatterns libqtcore4 libqtgui4 libsdl1.2debian libsm6 libsndfile1 \
+    libtiff4 libvorbis0a libvorbisenc2 libvpx1 libx11-xcb1 libxcb-glx0 libxcursor1 libxdamage1 libxfixes3 libxi6 libxinerama1 libxmu6 \
+    libxrender1 libxt6 libxxf86vm1 mysql-common qdbus ttf-dejavu-core x11-common libxml2 libxml2-dev libxslt1-dev
+fi
 
 ########################################
 ########################################
