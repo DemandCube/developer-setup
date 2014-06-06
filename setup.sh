@@ -218,7 +218,14 @@ if [ -n "$INSTALL_GIT" ] ; then
 	            curl -Lk $GIT_DOWNLOAD_URL -o $GIT_FILE
 	          fi 
 	          #http://stackoverflow.com/questions/2005192/how-to-execute-a-bash-command-stored-as-a-string-with-quotes-and-asterisk
-	          eval "$GIT_INSTALL_CMD"
+	         # eval "$GIT_INSTALL_CMD"
+	          sudo apt-get install libcurl4-gnutls-dev libexpat1-dev gettext zlib1g-dev libz-dev libssl-dev;
+	          cd $HOME/Downloads;
+	          tar -xzf $GIT_FILE;
+	          cd git-1.8.5.3;
+	          ./configure --prefix=/usr --without-tcltk;
+	          make;
+	          sudo make install
 	          rm $GIT_FILE
 	          break;;
 	      "Darwin" )
