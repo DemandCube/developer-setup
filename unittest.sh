@@ -1,7 +1,7 @@
 #!/bin/sh
 BASE_DIR=$(cd $(dirname $0);  pwd -P)
-
-#$BASE_DIR/bootstrap/os_meta_info.sh
+#sudo ln -sf bash /bin/sh
+source $BASE_DIR/bootstrap/os_meta_info.sh
 
 ./bootstrap/os_meta_info.sh
 if [ $OS_DISTRO == "CentOS" ] ; then
