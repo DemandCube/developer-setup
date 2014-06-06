@@ -1,5 +1,4 @@
 #!/bin/sh
-exit 1;
 BASE_DIR=$(cd $(dirname $0);  pwd -P)
 #sudo ln -sf bash /bin/sh
 source $BASE_DIR/bootstrap/os_meta_info.sh
@@ -38,13 +37,13 @@ if [ ! $INSTALLED == 0 ] ; then
     EXIT_VALUE=1;
 else
     echo "PASS: [ pip ]"
-    EXIT_VALUE=0;
 fi
 
 command -v ansible >/dev/null 2>&1
 INSTALLED=$?
 if [ ! $INSTALLED == 0 ] ; then
     echo "FAIL: [ ansible ]"
+    EXIT_VALUE=1;
 else
     VERSION=`ansible --version | awk '{ print $2 }'`
     echo "PASS: [ ansible $VERSION]"
@@ -57,6 +56,7 @@ if [ $INSTALLED == 0 ] ; then
     echo "PASS: [ nose $VERSION]"
 else
     echo "FAIL: [ nose ]"
+    EXIT_VALUE=1;
 fi
 
 command -v virtualbox >/dev/null 2>&1
@@ -66,6 +66,7 @@ if [ $INSTALLED == 0 ] ; then
     echo "PASS: [ Virtualbox $VERSION]"
 else
     echo "FAIL: [ Virtualbox ]"
+    EXIT_VALUE=1;
 fi
 
 command -v vagrant >/dev/null 2>&1
@@ -76,6 +77,7 @@ if [ $INSTALLED == 0 ] ; then
     echo "PASS: [ Vagrant $VERSION]"
 else
     echo "FAIL: [ Vagrant ]"
+    EXIT_VALUE=1;
 fi 
 
 command -v java -version >/dev/null 2>&1
@@ -86,7 +88,10 @@ if [ $INSTALLED == 0 ] ; then
     echo "PASS: [ Java $VERSION]"
 else
     echo "FAIL: [ Java ]"
+    EXIT_VALUE=1;
 fi
+
+
 
 command -v git --version >/dev/null 2>&1
 INSTALLED=$?
@@ -95,6 +100,7 @@ if [ $INSTALLED == 0 ] ; then
     echo "PASS: [ Git $VERSION ]"
 else
     echo "FAIL: [ Git ]"
+    EXIT_VALUE=1;
 fi
-
 echo "*************************************************************************************************************"
+exit $EXIT_VALUE;
