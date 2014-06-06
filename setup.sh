@@ -71,6 +71,7 @@ source $BASE_DIR/bootstrap/os_meta_info.sh
 echo ""
 echo "[INFO]: Installing common developement tools*************************************"
 echo ""
+
 if [ $OS_DISTRO == "CentOS" ] ; then
     #dkms for dynamic kernal module support;kernel-devel for kernel soruce
     # and some of other below components are required by virtualbox
@@ -98,6 +99,205 @@ elif [ $OS_DISTRO == "Ubuntu" ] ; then
     libqt4-script libqt4-sql libqt4-sql-mysql libqt4-xml libqt4-xmlpatterns libqtcore4 libqtgui4 libsdl1.2debian libsm6 libsndfile1 \
     libtiff4 libvorbis0a libvorbisenc2 libvpx1 libx11-xcb1 libxcb-glx0 libxcursor1 libxdamage1 libxfixes3 libxi6 libxinerama1 libxmu6 \
     libxrender1 libxt6 libxxf86vm1 mysql-common qdbus ttf-dejavu-core x11-common libxml2 libxml2-dev libxslt1-dev
+fi
+
+#######################################
+#######################################
+###
+### Installation of python,easy_install
+### pip,and ansible with little change
+### is same for Ubuntu,Mac,and CentOS
+#######################################
+#######################################
+
+########################################
+########################################
+####    
+####   INSTALL PYTHON
+####
+########################################
+########################################
+
+# Test if python is installed
+command -v python >/dev/null 2>&1
+INSTALLED=$?
+
+if [ ! $INSTALLED == 0 ] ; then
+    echo "Install python it's missing"
+    exit 1
+fi
+
+# Test if python version is 2.6 or above
+# python 2.7.5
+python -c 'import sys; version=sys.version_info[0]*10; version=version+sys.version_info[1];sys.exit(1)if(version<26) else sys.exit(0)'
+INSTALLED=$?
+echo ""
+
+if [ ! $INSTALLED == 0 ] ; then
+    echo "Install python greater than 2.6"
+    exit 1
+else
+    echo "INSTALLED: [ python ]"
+    printf "\t"
+    python -V 2>&1 | awk '{ print $2 }'
+fi
+
+########################################
+########################################
+####    
+####   INSTALL CURL
+####
+########################################
+########################################
+
+# Test if easy_install if not install manually
+command -v curl >/dev/null 2>&1
+INSTALLED=$?
+echo ""
+
+if [ ! $INSTALLED == 0 ] ; then
+	echo "[INFO] $OS_NAME is current OS"
+	echo "INSTALLING: [ curl ]"
+	# determining os distribution in case of linux and taking action accordingly
+	while true; do
+		case $OS_DISTRO in
+	        	"CentOS" ) 
+	        		sudo yum install curl-devel 
+	        		break;;
+	
+			"Ubuntu" ) 
+				sudo apt-get install -y curl 
+				break;;
+	 		
+			* ) 	#Cases for other Distros such as Debian,SuSe,Solaris etc
+				echo "Install curl"
+				break;;
+		esac
+	done
+	echo "INSTALLED: [ curl installed successfully]"
+else
+    echo "INSTALLED: [ curl ]"
+fi
+
+
+########################################
+########################################
+####    
+####   INSTALL EASY_INSTALL
+####
+########################################
+########################################
+
+# Test if easy_install if not install manually
+command -v easy_install >/dev/null 2>&1
+INSTALLED=$?
+echo ""
+
+if [ ! $INSTALLED == 0 ] ; then
+    echo "Installing easy_install it was missing"
+    
+   while true; do
+	   case $OS_NAME in
+	        "Linux" )
+	            echo "[INFO] $OS_NAME is current OS"
+	            # determining os distribution in case of linux and taking action accordingly
+	            case $OS_DISTRO in
+	                "CentOS" )
+	                    echo "[INFO] $OS_DISTRO-$OS_NAME Proceeding"
+	                    sudo yum install python-setuptools
+	                    break;;
+	                "Ubuntu" )
+	                    echo "[INFO] $OS_DISTRO-$OS_NAME Proceeding"
+	                    sudo apt-get install -y python-setuptools
+	                    break;;
+	                * )
+	                   #Cases for other Distros such as Debian,Ubuntu,SuSe,Solaris etc may come here 
+	                   echo "Script for $OS_NAME "-" $OS_DISTRO has not been tested yet."
+	                   echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+	                   break;;
+	            esac
+	            break;;
+	        "Darwin" )
+	           echo "Script for $OS_NAME  has not been tested yet."
+	           echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+	           break;;
+	        * )
+	           #Cases for other OS such as Windows may come here 
+	           echo "Script for $OS_NAME  has not been tested yet."
+	           echo "Submit Patch to https://github.com/DemandCube/developer-setup."
+	           break;;
+	    esac
+    done
+    #curl http://python-distribute.org/distribute_setup.py -o distribute_setup.py
+    #sudo python distribute_setup.py
+    #sudo rm distribute_setup.py
+else
+    echo "INSTALLED: [ easy_install ]"
+fi
+
+########################################
+########################################
+####    
+####   INSTALL PIP
+####
+########################################
+########################################
+
+# Test and install pip if not installed
+# pip >= 1.5.4
+PIP_VERSION=1.5.4
+command -v pip >/dev/null 2>&1
+INSTALLED=$?
+echo ""
+
+if [ ! $INSTALLED == 0 ] ; then
+    echo "INSTALLING: [ pip ]"
+    printf "\t"
+    sudo easy_install pip
+else
+    echo "INSTALLED: [ pip ]"
+    $BASE_DIR/bootstrap/version_compare.py `$BASE_DIR/bootstrap/pip_version.py` $PIP_VERSION
+    CMP_RESULT=$?
+    if [ $CMP_RESULT -lt 2 ] ; then
+        # Upgrade pip
+        $BASE_DIR/bootstrap/pip_version.py
+        echo "Upgrading pip to $PIP_VERSION"
+        # http://www.pip-installer.org/en/latest/installing.html#install-or-upgrade-pip
+        sudo pip install --upgrade setuptools
+        SETUPTOOLS_RESULT=$?
+        if [ $SETUPTOOLS_RESULT -ne 0 ] ; then
+            echo "upgrading setuptools failed try manually"
+            exit 1
+        fi
+        curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py -O
+        CURL_RESULT=$?
+        if [ $CURL_RESULT -ne 0 ] ; then
+            echo "downloading new pip failed try manually"
+            exit 1
+        fi
+        sudo python get-pip.py
+        PIP_RESULT=$?
+        echo "PIP_RESULT:$PIP_RESULT"
+        if [ $PIP_RESULT -ne 0 ] ; then
+            echo "upgrading pip failed try manually"
+            exit 1
+        fi
+        rm get-pip.py
+        echo "New Pip Version"
+        $BASE_DIR/bootstrap/pip_version.py
+        # https://pypi.python.org/pypi/setuptools#installation-instructions
+        # Instructions to Install setuptools
+        # 
+        # curl https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py -O
+        # sudo python ez_setup.py
+        # rm ez_setup.py
+    elif [ $CMP_RESULT -eq 0 ] ; then
+        echo "There was an error comparing the pip version, please check manually"
+        exit 1
+    else
+        $BASE_DIR/bootstrap/pip_version.py
+    fi
+    # pip -V  # pip verions only works on 1.4
 fi
 
 ########################################
