@@ -1,4 +1,5 @@
 #!/bin/sh
+exit 1;
 BASE_DIR=$(cd $(dirname $0);  pwd -P)
 #sudo ln -sf bash /bin/sh
 source $BASE_DIR/bootstrap/os_meta_info.sh
@@ -29,12 +30,15 @@ echo "**************************************************************************
 echo "                                      Developer-Setup Unit Test Results                                     "
 echo "*************************************************************************************************************"
 
+EXIT_VALUE=0;
 command -v pip >/dev/null 2>&1
 INSTALLED=$?
 if [ ! $INSTALLED == 0 ] ; then
     echo "FAIL: [ pip ]"
+    EXIT_VALUE=1;
 else
     echo "PASS: [ pip ]"
+    EXIT_VALUE=0;
 fi
 
 command -v ansible >/dev/null 2>&1
