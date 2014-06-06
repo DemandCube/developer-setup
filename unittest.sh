@@ -3,7 +3,7 @@ BASE_DIR=$(cd $(dirname $0);  pwd -P)
 #sudo ln -sf bash /bin/sh
 source $BASE_DIR/bootstrap/os_meta_info.sh
 
-./bootstrap/os_meta_info.sh
+#./bootstrap/os_meta_info.sh
 if [ $OS_DISTRO == "CentOS" ] ; then
     sudo yum update
     sudo yum -y install expect
