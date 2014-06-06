@@ -2,9 +2,9 @@ FROM ubuntu:12.04
 MAINTAINER Peter Jerold Leslie, jeroldleslie@gmail.com
 
 #RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
-RUN apt-get update
+#RUN apt-get update
 #RUN apt-get install -y expect
-RUN apt-get install -y git-core
+#RUN apt-get install -y git-core
 #RUN apt-get install -y sudo
 #RUN apt-get install -y python3-setuptools
 #RUN easy_install3 pip
