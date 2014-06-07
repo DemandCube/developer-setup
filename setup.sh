@@ -1168,14 +1168,11 @@ if [ -n "$INSTALL_JAVA" ] ; then
     while true; do
 	    case $OS_DISTRO in
 	        "CentOS" )
-	            $JAVA_INSTALL_CMD
-	            break;;
-	        "Ubuntu" )
-	            $JAVA_INSTALL_CMD
-	            break;;
-	        * )
-	            eval $JAVA_INSTALL_CMD
-	            break;;   
+        	 	$JAVA_INSTALL_CMD
+        	 	break;
+        	 * )
+            		eval $JAVA_INSTALL_CMD
+            		break;;      
 	    esac
     done
     rm $JAVA_FILE
