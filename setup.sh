@@ -1169,7 +1169,7 @@ if [ -n "$INSTALL_JAVA" ] ; then
 	    case $OS_DISTRO in
 	        "CentOS" )
         	 	$JAVA_INSTALL_CMD
-        	 	break;
+        	 	break;;
         	 * )
             		eval $JAVA_INSTALL_CMD
             		break;;      
